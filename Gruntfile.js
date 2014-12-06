@@ -4,10 +4,22 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
+      options: {
+        ignores: ['src/bower_components/**/*.js']
+      },
       all: [
         'Gruntfile.js',
         'src/**/*.js'
       ]
+    },
+    wiredep: {
+      target: {
+        src: [
+          './**/*.html'
+        ],
+        dependencies: true,
+        devDependencies: true
+      }
     },
     'http-server': {
       'dev': {
@@ -16,13 +28,14 @@ module.exports = function(grunt) {
         ext: 'html',
         showDir: true,
         autoIndex: true
-      }
+      },
     }
   });
 
   // Plugins
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-http-server');
+  grunt.loadNpmTasks('grunt-wiredep');
 
   // Default task(s)
   grunt.registerTask('default', ['jshint']);

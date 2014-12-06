@@ -1,0 +1,32 @@
+{
+  "name": "bonito",
+  "version": "0.0.0",
+  "homepage": "https://github.com/packetbeat/bonito",
+  "authors": [
+    "Tudor Golubenco <tudor@packetbeat.com>"
+  ],
+  "description": "A web-UI for the Packetbeat application monitoring system",
+  "main": "src/index.html",
+  "keywords": [
+    "apm",
+    "monitoring",
+    "dashboard",
+    "packetbeat",
+    "elasticsearch",
+    "kibana"
+  ],
+  "license": "Apache 2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.3.5",
+    "bootstrap": "~3.3.1",
+    "jquery": "~2.1.1"
+  }
+}
