@@ -1,7 +1,7 @@
 <nav class="navbar navbar-default navbar-static-top">
   <div class="container-fluid">
 
-    <!-- Collapsed navbar -->
+    <!-- Collapse button and "brand" -->
     <div class="navbar-header">
       <button ng-click="bonito.isCollapsed=!bonito.isCollapsed" type="button" class="navbar-toggle">
         <span class="sr-only">Toggle navigation</span>
@@ -12,10 +12,10 @@
       <a class="navbar-brand" href="#"><img style="width=22px" src="styles/bonito-18px.png" alt="Bonito logo">Bonito</a>
     </div>
 
-    <!-- Full navbar -->
+    <!-- Links -->
     <div collapse="bonito.isCollapsed" class="navbar-collapse" id="bonito-primary-navbar">
       <ul class="nav navbar-nav">
-        <li ng-repeat="page in bonito.pages" ng-class="{active: bonito.activePage === page}">
+        <li ng-repeat="page in bonito.pages" ng-class="{active: bonito.activePage.path === page.path}">
           <a ng-href="#{{page.path}}">{{ page.name }}</a>
         </li>
       </ul>
