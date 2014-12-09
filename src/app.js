@@ -61,13 +61,6 @@
 
   }]);
 
-  app.controller('BonitoAppCtrl', ['Pages', function(Pages) {
-    this.pages = Pages.getPages();
-
-    // the activePage reference is shared between controllers
-    this.activePage = Pages.activePage;
-  }]);
-
   app.controller('ServicesMapCtrl', ['Pages', '_', function(Pages, _) {
     _.assign(Pages.activePage, Pages.getPageById('services'));
     Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'map');
