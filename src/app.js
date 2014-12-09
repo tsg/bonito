@@ -18,7 +18,14 @@
       path: 'discover'
     }, {
       name: 'Services',
-      path: 'services'
+      path: 'services',
+      subPages: [{
+        name: 'Overview',
+        path: 'overview'
+      }, {
+        name: 'Map',
+        path: 'map'
+      }]
     }, {
       name: 'Anomalies',
       path: 'anomalies'
@@ -38,14 +45,17 @@
       },
 
       getPageById: function(path) {
-        var to_return = null;
-        _.forEach(pages, function(page) {
-          if (page.path === path) {
-            to_return = page;
-            return false;
-          }
+        var idx = _.findIndex(pages, function(page) {
+          return page.path === path;
         });
-        return to_return;
+        return pages[idx];
+      },
+
+      subpageById: function(page, path) {
+        var idx = _.findIndex(page.subPages, function(subpage) {
+          return subpage.path === path;
+        });
+        return page.subPages[idx];
       }
     };
 
@@ -58,26 +68,40 @@
     this.activePage = Pages.activePage;
   }]);
 
-  app.controller('ServicesCtrl', ['Pages', function(Pages) {
-    Pages.activePage.path = Pages.getPageById('services').path;
+  app.controller('ServicesMapCtrl', ['Pages', '_', function(Pages, _) {
+    _.assign(Pages.activePage, Pages.getPageById('services'));
+    Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'map');
   }]);
 
-  app.controller('SettingsCtrl', ['Pages', function(Pages) {
-    Pages.activePage.path = Pages.getPageById('settings').path;
+  app.controller('ServicesOverviewCtrl', ['Pages', '_', function(Pages, _) {
+    _.assign(Pages.activePage, Pages.getPageById('services'));
+    Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'overview');
+  }]);
+
+  app.controller('SettingsCtrl', ['Pages', '_', function(Pages, _) {
+    _.assign(Pages.activePage, Pages.getPageById('settings'));
+    Pages.activePage.subPages = [];
   }]);
 
   app.config(['$routeProvider', function($routeProvider) {
     $routeProvider.
+      when('/services/overview', {
+        templateUrl: 'servicesOverview.html',
+        controller: 'ServicesOverviewCtrl'
+      }).
+      when('/services/map', {
+        templateUrl: 'servicesMap.html',
+        controller: 'ServicesMapCtrl'
+      }).
       when('/services', {
-        templateUrl: 'services.html',
-        controller: 'ServicesCtrl'
+        redirectTo: '/services/overview'
       }).
       when('/settings', {
         templateUrl: 'settings.html',
         controller: 'SettingsCtrl'
       }).
       otherwise({
-        redirectTo: '/services'
+        redirectTo: '/services/overview'
       });
   }]);
 })();

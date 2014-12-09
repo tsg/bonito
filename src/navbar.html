@@ -25,5 +25,21 @@
       </ul>
     </div>
     <!-- /Full navbar -->
+
+
+  </div>
+
+
+</nav>
+
+<!-- Sub navbar -->
+<nav ng-show="bonito.activePage.subPages.length > 0" class="navbar navbar-inverse navbar-static-top">
+  <div class="container-fluid">
+    <ul class="nav navbar-nav">
+      <li ng-repeat="subpage in bonito.activePage.subPages" ng-class="{active: bonito.activePage.activeSubpage.path === subpage.path}">
+        <a ng-href="#{{bonito.activePage.path}}/{{subpage.path}}">{{ subpage.name }}</a>
+      </li>
+    </ul>
   </div>
 </nav>
+<!-- /Sub-navbar -->
