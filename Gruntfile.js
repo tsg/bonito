@@ -19,6 +19,16 @@ module.exports = function(grunt) {
         ],
         dependencies: true,
         devDependencies: true
+      },
+      karma: {
+        src: ['test/karma.conf.js'],
+        fileTypes: {
+          js: {
+            block: /(([\s\t]*)\/\/\s*bower:*(\S*))(\n|\r|.)*?(\/\/\s*endbower)/gi,
+            detect: { js: /'(.*\.js)'/gi },
+            replace: { js: '\'{{filePath}}\',' }
+          }
+        }
       }
     },
     'http-server': {
@@ -52,6 +62,15 @@ module.exports = function(grunt) {
           spawn: false
         }
       }
+    },
+    karma: {
+      dev: {
+        configFile: 'test/karma.conf.js',
+      },
+      once: {
+        configFile: 'test/karma.conf.js',
+        singleRun: true
+      }
     }
   });
 
@@ -61,6 +80,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-http-server');
   grunt.loadNpmTasks('grunt-wiredep');
+  grunt.loadNpmTasks('grunt-karma');
 
   // Custom tasks
   grunt.registerTask('dev', function() {
@@ -73,6 +93,12 @@ module.exports = function(grunt) {
     ];
 
     grunt.task.run(tasks);
+  });
+
+  grunt.registerTask('test', function() {
+    grunt.task.run([
+      'karma:once'
+    ]);
   });
 
   // Default task(s)

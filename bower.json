@@ -31,6 +31,10 @@
     "jquery": "~2.1.1",
     "angular-bootstrap": "~0.12.0",
     "lodash": "~2.4.1",
-    "angular-lodash-module": "~1.0.2"
+    "angular-lodash-module": "~1.0.2",
+    "angular-mocks": "~1.3.6"
+  },
+  "resolutions": {
+    "angular": ">=1 <1.3.0"
   }
 }
