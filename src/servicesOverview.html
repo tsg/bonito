@@ -1,3 +1,9 @@
-<div ng-controller='ServicesOverviewCtrl as app'>
-  Services Overview
+<div class="services-overview container-fluid" ng-controller='ServicesOverviewCtrl as app'>
+
+<div ng-repeat="row in app.rows" class="row">
+  <div ng-repeat="panel in row" class="{{app.panelClass}}">
+    <div class="panel" style="height:{{app.panelHeight}}px;"></div>
+  </div>
+</div>
+
 </div>

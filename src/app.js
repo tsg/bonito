@@ -6,6 +6,7 @@
     'ngRoute',
     'lodash',
 
+    'services-overview',
     'navbar-directive'
   ]);
 
@@ -66,10 +67,6 @@
     Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'map');
   }]);
 
-  app.controller('ServicesOverviewCtrl', ['Pages', '_', function(Pages, _) {
-    _.assign(Pages.activePage, Pages.getPageById('services'));
-    Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'overview');
-  }]);
 
   app.controller('SettingsCtrl', ['Pages', '_', function(Pages, _) {
     _.assign(Pages.activePage, Pages.getPageById('settings'));
