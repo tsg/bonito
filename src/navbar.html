@@ -13,7 +13,7 @@
     </div>
 
     <!-- Links -->
-    <div collapse="navbar.isCollapsed" class="navbar-collapse" id="bonito-primary-navbar">
+    <div collapse="navbar.isCollapsed" class="navbar-collapse" id="bonito-navbar">
       <ul class="nav navbar-nav">
         <li ng-repeat="page in navbar.pages" ng-class="{active: navbar.activePage.path === page.path}">
           <a ng-href="#{{page.path}}">{{ page.name }}</a>
@@ -33,7 +33,7 @@
 </nav>
 
 <!-- Sub navbar -->
-<nav ng-show="navbar.activePage.subPages.length > 0" class="navbar navbar-inverse navbar-static-top">
+<nav ng-show="navbar.activePage.subPages.length > 0" class="navbar navbar-inverse navbar-static-top" id="bonito-subnav">
   <div class="container-fluid">
     <ul class="nav navbar-nav">
       <li ng-repeat="subpage in navbar.activePage.subPages" ng-class="{active: navbar.activePage.activeSubpage.path === subpage.path}">
