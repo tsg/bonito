@@ -1,9 +1,13 @@
 <div class="services-overview container-fluid" ng-controller='ServicesOverviewCtrl as app'>
 
-<div ng-repeat="row in app.rows" class="row">
-  <div ng-repeat="panel in row" class="{{app.panelClass}}">
-    <div class="panel" style="height:{{app.panelHeight}}px;"></div>
+  <div infinite-scroll='app.loadMore()'>
+    <div ng-repeat="panel in app.panels" class="panel"
+      style="width:{{app.panelWidth}}px; height:{{app.panelHeight}}px;">
+
+      {{ panel.name }}<br />
+      Requests per second: {{ panel.size }}<br />
+      Errors: {{ panel.errors }}<br />
+    </div>
   </div>
-</div>
 
 </div>

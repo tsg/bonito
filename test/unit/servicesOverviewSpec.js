@@ -3,11 +3,17 @@
 
   beforeEach(module('bonitoApp'));
 
-  describe('servicesOverviewCtrl', function() {
+  describe('ServicesOverviewCtrl', function() {
     var ctrl;
 
     beforeEach(inject(function($controller) {
-      ctrl = $controller("ServicesOverviewCtrl as app", {$scope: {}});
+      ctrl = $controller("ServicesOverviewCtrl as app", {
+        $scope: {},
+        $routeParams: {
+          pageSize: 16,
+          rowsPerPage: 4
+        }
+      });
     }));
 
     it('should switch to the #/services/overview page', inject(function(Pages) {
@@ -19,13 +25,30 @@
       expect(ctrl.perRow).toBe(4);
     });
 
-    it('should group the panels into rows', function() {
-      expect(ctrl.rows.length).toBe(20);
+    it('shouled have a pageSize of 16', function() {
+      expect(ctrl.pageSize).toBe(16);
+      expect(ctrl.rowsPerPage).toBe(4);
     });
 
-    it('should have panel class col-md-3', function() {
-      expect(ctrl.panelClass).toBe('col-sm-3');
+    it('should have loaded 16 elemenets', function() {
+      expect(ctrl.panels.length).toBe(16);
     });
+
+    it('should load another 16 elements when called', function() {
+      expect(ctrl.panels.length).toBe(16);
+      ctrl.loadMore();
+      expect(ctrl.panels.length).toBe(32);
+      ctrl.loadMore();
+      expect(ctrl.panels.length).toBe(48);
+    });
+
+    it('shouldn\'t load more than 81 panels', function() {
+      _.forEach(_.range(10), function() {
+        ctrl.loadMore();
+      });
+      expect(ctrl.panels.length).toBe(81);
+    });
+
   });
 
 })();

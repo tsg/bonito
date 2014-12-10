@@ -1,15 +1,17 @@
 (function() {
   'use strict';
 
-  var app = angular.module('services-overview', []);
+  var app = angular.module('services-overview', [
+    'infinite-scroll'
+  ]);
 
   app.factory('ServicesProxy', function() {
     var test_data = [];
-    for (var i = 1; i < 80; i++) {
+    for (var i = 0; i < 81; i++) {
       test_data.push({
         name: 'Service#' + i,
-        size: i,
-        errors: i % 4
+        size: _.random(1000*(1 << i), 1000*(1 << (i+1))),
+        errors: _.random(0, i)
       });
     }
 
@@ -25,8 +27,6 @@
     _.assign(Pages.activePage, Pages.getPageById('services'));
     Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'overview');
 
-    this.panels = ServicesProxy.Data;
-
     // config
     this.perRow = $routeParams.perRow || 4;
     this.panelSizeRatio = $routeParams.panelSizeRatio || 1.618;
@@ -39,24 +39,39 @@
       // on phones, always have one per row
       this.perRow = 1;
     }
-    this.panelClass = 'col-sm-' + (12 / this.perRow);
 
     // approximately calculate the ideal width and height of a panel
     var padding = 30;
     this.panelWidth = Math.floor((angular.element(window).width() - padding) / this.perRow) - padding;
     this.panelHeight = Math.floor(this.panelWidth / this.panelSizeRatio);
 
-    // group panels into rows
-    this.rows = [];
-    var that = this;
-    _.forEach(_.range(0, this.panels.length, this.perRow), function(idx) {
-      var row = [];
-      for (var i=idx; i < idx + that.perRow; i++) {
-        row.push(that.panels[i]);
-      }
-      that.rows.push(row);
-    });
+    this.rowsPerPage = $routeParams.rowsPerPage ||
+      (Math.ceil(angular.element(window).height() / (this.panelHeight + padding)));
+    this.pageSize = $routeParams.pageSize || this.rowsPerPage * this.perRow;
 
+    // initial page
+    this.panels = ServicesProxy.Data.slice(0, this.pageSize);
+    this.loaded = this.pageSize;
+
+    var ctrl = this;
+    this.loadMore = function() {
+      if (ctrl.loaded > ServicesProxy.Data.length) {
+        // that was all
+        return false;
+      }
+
+      var toAdd = ServicesProxy.Data.slice(ctrl.loaded, ctrl.loaded + ctrl.pageSize);
+
+      _.forEach(toAdd, function(panel) {
+        if (_.isObject(panel)) {
+          ctrl.panels.push(panel);
+        } else {
+          return false;
+        }
+      });
+
+      ctrl.loaded += ctrl.pageSize;
+    };
 
   }]);
 })();
