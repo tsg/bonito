@@ -71,6 +71,13 @@ module.exports = function(grunt) {
         configFile: 'test/karma.conf.js',
         singleRun: true
       }
+    },
+    protractor: {
+      dev: {
+        options: {
+          configFile: 'test/protractor-conf.js'
+        }
+      }
     }
   });
 
@@ -81,6 +88,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-http-server');
   grunt.loadNpmTasks('grunt-wiredep');
   grunt.loadNpmTasks('grunt-karma');
+  grunt.loadNpmTasks('grunt-protractor-runner');
 
   // Custom tasks
   grunt.registerTask('dev', function() {
