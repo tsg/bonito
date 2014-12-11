@@ -1,15 +1,25 @@
 <div class="services-overview container-fluid" ng-controller='ServicesOverviewCtrl as app'>
 
   <div infinite-scroll='app.loadMore()' infinite-scroll-distance="1">
-    <div ng-repeat="panel in app.panels" class="panel"
-      style="width:{{app.panelWidth}}px; height:{{app.panelHeight}}px;">
 
-      {{ panel.name }}<br />
-      Requests per second: {{ panel.size }}<br />
-      Errors: {{ panel.errors }}<br />
+    <div ng-repeat="panel in app.panels" class="bpanel"
+        style="width:{{app.panelWidth}}px; height:{{app.panelHeight}}px;">
+
+      <div class="bpanel-header">
+        <span class="name">
+          {{ panel.name }}
+        </span>
+        <span class="volume">
+          <span class="volume-label">Volume:</span> {{ panel.size|number }}/s
+        </span>
+      </div>
+
+      <div class="bpanel-graph">
+      </div>
+
     </div>
 
-    <!-- required by the inifinite-scroll to correctly get it's height. See FAQ -->
+    <!-- required by the infinite-scroll to correctly get it's height. See FAQ -->
     <div style='clear: both;'></div>
   </div>
 
