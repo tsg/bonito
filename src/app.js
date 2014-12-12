@@ -9,7 +9,8 @@
 
     'services-overview',
     'navbar-directive',
-    'panel-directive'
+    'panel-directive',
+    'bonito-filters'
   ]);
 
   app.factory('Pages', ['_', function(_) {

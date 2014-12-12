@@ -34,7 +34,7 @@
           top: parseInt(attrs.marginTop) || 20,
           right: parseInt(attrs.marginRight) || 20,
           bottom: parseInt(attrs.marginBottom) || 30,
-          left: parseInt(attrs.marginLeft) || 50
+          left: parseInt(attrs.marginLeft) || 35
         };
         // width and height are mandatory parameters
         var totalWidth = parseInt(attrs.width);
@@ -68,7 +68,8 @@
             .orient('bottom');
           var yAxis = d3.svg.axis()
             .scale(y)
-            .orient('left');
+            .orient('left')
+            .tickFormat(d3.format('s'));  // iso prefixes
 
           x.domain(d3.extent(data, function(d) { return d.ts; }));
           y.domain([0, d3.max(data, function(d) { return d.value; })]);

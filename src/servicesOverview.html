@@ -10,7 +10,7 @@
           {{ panel.name }}
         </span>
         <span class="volume">
-          <span class="volume-label">Volume:</span> {{ panel.size|number }}/s
+          <span class="volume-label">Volume:</span> {{ panel.size|humanNumber:0 }}/s
         </span>
       </div>
 
