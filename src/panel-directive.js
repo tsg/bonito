@@ -41,6 +41,7 @@
         var totalHeight = parseInt(attrs.height);
 
 
+
         // define rendering function
         scope.render = function(data) {
           // clean
@@ -104,7 +105,6 @@
           // draw grid
           chart.append('g')
             .attr('class', 'grid')
-            .attr('transform', 'transalate(0,' + height + ')')
             .call(xAxis
               .tickSize(height, 0, 0)
               .tickFormat(''));
@@ -113,6 +113,49 @@
             .call(yAxis
               .tickSize(-width, 0, 0)
               .tickFormat(''));
+
+          // tooltip system, based on
+          // http://www.d3noob.org/2014/07/my-favourite-tooltip-method-for-line.html
+          var focus = chart.append('g')
+            .style('display', 'none');
+
+          focus.append('circle')
+            .attr('class', 'focus-circle')
+            .attr('r', 4);
+          focus.append('text')
+            .attr('class', 'focus-value-label')
+            .attr('dx', 8)
+            .attr('dy', '-.3em');
+
+          chart.append('rect')
+            .attr('width', width)
+            .attr('height', height)
+            .style('fill', 'none')
+            .style('pointer-events', 'all')
+            .on('mouseover', function() { focus.style('display', null); })
+            .on('mouseout', function() { focus.style('display', 'none'); })
+            .on('mousemove', mousemove);
+
+          var formatComas = d3.format('0,000');
+
+          function mousemove() {
+            var bisectTs = d3.bisector(function(d) { return d.ts; }).left,
+              x0 = x.invert(d3.mouse(this)[0]),
+              i = bisectTs(data, x0, 1),
+              d0 = data[i-1],
+              d1 = data[i],
+              d = x0 - d0.ts > d1.ts - x0 ? d1 : d0;
+
+            focus.select('circle.focus-circle')
+              .attr('transform',
+                'translate(' + x(d.ts) + ', ' + y(d.value) + ')');
+
+            focus.select('text.focus-value-label')
+              .attr('transform',
+                'translate(' + x(d.ts) + ', ' + y(d.value) + ')')
+              .text(formatComas(d.value));
+
+          }
 
         };
       }
