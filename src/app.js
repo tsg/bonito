@@ -5,9 +5,11 @@
     'ui.bootstrap',
     'ngRoute',
     'lodash',
+    'd3',
 
     'services-overview',
-    'navbar-directive'
+    'navbar-directive',
+    'panel-directive'
   ]);
 
   app.factory('Pages', ['_', function(_) {

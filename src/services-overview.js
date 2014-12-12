@@ -7,11 +7,26 @@
 
   app.factory('ServicesProxy', function() {
     var test_data = [];
+
+    this.generateData = function(min, max) {
+      var end = +(new Date());
+      var start = end - 120 * 1000;
+      var data = [];
+      for (var t = start; t < end; t+= 1000) {
+        data.push({
+          'ts': new Date(t),
+          'value': _.random(min, max)
+        });
+      }
+      return data;
+    };
+
     for (var i = 0; i < 81; i++) {
       test_data.push({
         name: 'Service#' + i,
-        size: _.random(1000*(1 << i), 1000*(1 << (i+1))),
-        errors: _.random(0, i)
+        size: _.random(100*(1 << i), 100*(1 << (i+1))),
+        errors: _.random(0, i),
+        values: this.generateData(100*(1 << i), 100*(1 << (i+1)))
       });
     }
 

@@ -14,6 +14,7 @@ module.exports = function(config){
       '../src/bower_components/angular-lodash-module/angular-lodash-module.js',
       '../src/bower_components/angular-mocks/angular-mocks.js',
       '../src/bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js',
+      '../src/bower_components/d3/d3.js',
       // endbower
       '../src/*.js',
 

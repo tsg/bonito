@@ -27,9 +27,6 @@
         }
       }
     }
-    .bpanel-graph {
-      height: auto;
-    }
     border: 1px solid @gray-light;
     background: @gray-lighter;
     float: left;
@@ -37,5 +34,23 @@
     overflow: hidden;
     .border-bottom-radius(5px);
     .border-top-radius(5px);
+  }
+
+  .svgpanel {
+    background: @gray-lighter;
+    .axis {
+      path, line {
+        fill: none;
+        stroke: @gray;
+        shape-rendering: crispEdges;
+      }
+      text {
+        font-size: 9px;
+        fill: @gray-dark;
+      }
+    }
+    .area {
+      fill: @brand-success;
+    }
   }
 }
