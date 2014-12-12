@@ -44,7 +44,7 @@
         // define rendering function
         scope.render = function(data) {
           // clean
-          svg.selectAll("*").remove();
+          svg.selectAll('*').remove();
 
           var width = totalWidth - margin.left - margin.right;
           var height = totalHeight - margin.top - margin.bottom;
@@ -55,8 +55,6 @@
             .attr('height', height)
             .attr('transform', 'translate(' + margin.left +', ' + margin.bottom + ')');
 
-          console.log("height", height);
-
           // scales & axes
           var x = d3.time.scale()
             .range([0, width]);
@@ -65,25 +63,26 @@
 
           var xAxis = d3.svg.axis()
             .scale(x)
-            .orient('bottom');
+            .orient('bottom')
+            .ticks(8);
           var yAxis = d3.svg.axis()
             .scale(y)
             .orient('left')
+            .ticks(5)
             .tickFormat(d3.format('s'));  // iso prefixes
 
           x.domain(d3.extent(data, function(d) { return d.ts; }));
           y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
-          // area
-          var area = d3.svg.area()
+          // line
+          var line = d3.svg.line()
             .x(function(d) { return x(d.ts); })
-            .y0(height)
-            .y1(function(d) { return y(d.value); });
+            .y(function(d) { return y(d.value); });
 
           chart.append('path')
             .datum(data)
-            .attr('class', 'area')
-            .attr('d', area);
+            .attr('class', 'line')
+            .attr('d', line);
 
           // draw axes
           chart.append('g')
@@ -91,15 +90,30 @@
             .attr('transform', 'translate(0,' + height + ')')
             .call(xAxis);
 
-          chart.append("g")
-              .attr("class", "y axis")
+          chart.append('g')
+              .attr('class', 'y axis')
               .call(yAxis)
-            .append("text")
-              .attr("transform", "rotate(-90)")
-              .attr("y", 6)
-              .attr("dy", ".71em")
-              .style("text-anchor", "end")
-              .text("Requests/s");
+            .append('text')
+              .attr('transform', 'rotate(-90)')
+              .attr('y', 6)
+              .attr('x', -height + 6)
+              .attr('dy', '.71em')
+              .style('text-anchor', 'beggining')
+              .text('Requests/s');
+
+          // draw grid
+          chart.append('g')
+            .attr('class', 'grid')
+            .attr('transform', 'transalate(0,' + height + ')')
+            .call(xAxis
+              .tickSize(height, 0, 0)
+              .tickFormat(''));
+          chart.append('g')
+            .attr('class', 'grid')
+            .call(yAxis
+              .tickSize(-width, 0, 0)
+              .tickFormat(''));
+
         };
       }
     };

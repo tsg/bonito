@@ -49,8 +49,21 @@
         fill: @gray-dark;
       }
     }
-    .area {
-      fill: @brand-success;
+    .line {
+      fill: none;
+      stroke: @brand-success;
+      stroke-width: 1.5px;
+    }
+    .grid {
+      .tick {
+        stroke: @gray-light;
+        stroke-dasharray: 2,2;
+        stroke-width: 0.4;
+        opacity: 0.7;
+      }
+      path {
+        stroke-width: 0;
+      }
     }
   }
 }
