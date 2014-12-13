@@ -7,9 +7,9 @@
     'lodash',
     'd3',
 
-    'services-overview',
+    'services-list',
     'navbar-directive',
-    'panel-directive',
+    'svggraph-directive',
     'bonito-filters'
   ]);
 
@@ -79,8 +79,8 @@
   app.config(['$routeProvider', function($routeProvider) {
     $routeProvider.
       when('/services/overview', {
-        templateUrl: 'servicesOverview.html',
-        controller: 'ServicesOverviewCtrl'
+        templateUrl: 'services-list.html',
+        controller: 'ServicesListCtrl'
       }).
       when('/services/map', {
         templateUrl: 'servicesMap.html',

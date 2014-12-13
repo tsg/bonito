@@ -1,10 +1,12 @@
 (function() {
   'use strict';
 
-  var app = angular.module('services-overview', [
+  // Displays a grid of panels each representing a service.
+  var app = angular.module('services-list', [
     'infinite-scroll'
   ]);
 
+  // Test service
   app.factory('ServicesProxy', function() {
     var test_data = [];
 
@@ -35,7 +37,7 @@
     };
   });
 
-  app.controller('ServicesOverviewCtrl',
+  app.controller('ServicesListCtrl',
       ['_', 'Pages', 'ServicesProxy', '$routeParams',
       function(_, Pages, ServicesProxy, $routeParams) {
 

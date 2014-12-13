@@ -3,11 +3,11 @@
 
   beforeEach(module('bonitoApp'));
 
-  describe('ServicesOverviewCtrl', function() {
+  describe('ServicesListCtrl', function() {
     var ctrl;
 
     beforeEach(inject(function($controller) {
-      ctrl = $controller("ServicesOverviewCtrl as app", {
+      ctrl = $controller("ServicesListCtrl as app", {
         $scope: {},
         $routeParams: {
           pageSize: 16,

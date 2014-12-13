@@ -1,9 +1,9 @@
 (function() {
   'use strict';
 
-  var app = angular.module('panel-directive', []);
+  var app = angular.module('svggraph-directive', []);
 
-  app.directive('svgpanel', ['d3', function(d3) {
+  app.directive('svggraph', ['d3', function(d3) {
     return {
       restrict: 'E',
       link: function(scope, element, attrs) {
@@ -17,9 +17,9 @@
         window.onresize = function() {
           return scope.$apply();
         };
-        scope.$watch(function(){
+        scope.$watch(function() {
             return angular.element(window)[0].innerWidth;
-          }, function(){
+          }, function() {
             return scope.render(scope.panel.values);
           }
         );
