@@ -1,0 +1,29 @@
+.services-list {
+  .bpanel {
+    .bpanel-header {
+      margin: 0;
+      background: white;
+      height: 30px;
+      padding: 5px;
+      .name {
+        font-size: @font-size-h4;
+      }
+      .volume {
+        float: right;
+        font-size: @font-size-h4;
+        .volume-label {
+          font-size: @font-size-small;
+          color: @gray;
+          text-transform: uppercase;
+        }
+      }
+    }
+    border: 1px solid @gray-light;
+    background: @gray-lighter;
+    float: left;
+    margin: 15px;
+    overflow: hidden;
+    .border-bottom-radius(5px);
+    .border-top-radius(5px);
+  }
+}

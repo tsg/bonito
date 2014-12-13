@@ -1,4 +1,4 @@
-<div class="services-overview container-fluid" ng-controller='ServicesListCtrl as app'>
+<div class="services-list container-fluid" ng-controller='ServicesListCtrl as app'>
 
   <div infinite-scroll='app.loadMore()' infinite-scroll-distance="1">
 
@@ -14,7 +14,7 @@
         </span>
       </div>
 
-      <svggraph width="{{app.panelWidth}}" height="{{app.panelHeight-35}}"></svggraph>
+      <svggraph data="panel.values" width="{{app.panelWidth}}" height="{{app.panelHeight-35}}"></svggraph>
 
     </div>
 

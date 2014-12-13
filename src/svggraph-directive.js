@@ -3,15 +3,22 @@
 
   var app = angular.module('svggraph-directive', []);
 
+  /**
+   * Draws a graph using D3. The data, the width and height parameters are
+   * required.
+   */
   app.directive('svggraph', ['d3', function(d3) {
     return {
       restrict: 'E',
+      scope: {
+        data: '='  // bi-directional data binding
+      },
       link: function(scope, element, attrs) {
         var svg = d3.select(element[0])
           .append('svg')
           .attr('width', '100%')
           .attr('height', '100%')
-          .attr('class', 'svgpanel');
+          .attr('class', 'svggraph');
 
         // on window resize, re-render d3 canvas
         window.onresize = function() {
@@ -20,13 +27,13 @@
         scope.$watch(function() {
             return angular.element(window)[0].innerWidth;
           }, function() {
-            return scope.render(scope.panel.values);
+            return scope.render(scope.data);
           }
         );
 
         // watch for data changes and re-render
-        scope.$watch('panel', function(newVals, oldVals) {
-          return scope.render(newVals.values);
+        scope.$watch('data', function(newVals, oldVals) {
+          return scope.render(newVals);
         }, true);
 
         // config

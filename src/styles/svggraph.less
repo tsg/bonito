@@ -1,0 +1,43 @@
+
+.svggraph {
+  background: @gray-lighter;
+  .axis {
+    path, line {
+      fill: none;
+      stroke: @gray;
+      shape-rendering: crispEdges;
+    }
+    text {
+      font-size: 9px;
+      fill: @gray-dark;
+    }
+  }
+  .line {
+    fill: none;
+    stroke: @brand-success;
+    stroke-width: 1.5px;
+  }
+  .grid {
+    .tick {
+      stroke: @gray-light;
+      stroke-dasharray: 2,2;
+      stroke-width: 0.4;
+      opacity: 0.7;
+    }
+    path {
+      stroke-width: 0;
+    }
+  }
+  .focus-circle {
+    fill: none;
+    stroke: @gray-darker;
+  }
+  .focus-value-label {
+    fill: @gray-darker;
+    font-size: @font-size-small;
+  }
+  .focus-ts-label {
+    fill: @gray-darker;
+    font-size: @font-size-small;
+  }
+}
