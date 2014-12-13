@@ -126,6 +126,10 @@
             .attr('class', 'focus-value-label')
             .attr('dx', 8)
             .attr('dy', '-.3em');
+          focus.append('text')
+            .attr('class', 'focus-ts-label')
+            .attr('dx', 8)
+            .attr('dy', '1em');
 
           chart.append('rect')
             .attr('width', width)
@@ -137,6 +141,7 @@
             .on('mousemove', mousemove);
 
           var formatComas = d3.format('0,000');
+          var formatTs = d3.time.format('%H:%M:%S');
 
           function mousemove() {
             var bisectTs = d3.bisector(function(d) { return d.ts; }).left,
@@ -154,6 +159,10 @@
               .attr('transform',
                 'translate(' + x(d.ts) + ', ' + y(d.value) + ')')
               .text(formatComas(d.value));
+            focus.select('text.focus-ts-label')
+              .attr('transform',
+                'translate(' + x(d.ts) + ', ' + y(d.value) + ')')
+              .text(formatTs(d.ts));
 
           }
 
