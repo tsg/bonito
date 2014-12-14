@@ -2,6 +2,24 @@
 
   <div infinite-scroll='app.loadMore()' infinite-scroll-distance="1">
 
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-9">
+          <!-- filters go here -->
+        </div>
+        <div class="col-md-3">
+          <!-- quick search goes here -->
+          <form class="panels-quick-filter has-feedback">
+            <div class="form-group">
+              <input type="search" class="form-control input-sm"
+                placeholder="Filter services.." />
+                <i class="fa fa-search form-control-feedback"></i>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <div ng-repeat="panel in app.panels" class="bpanel"
         style="width:{{app.panelWidth}}px; height:{{app.panelHeight}}px;">
 
