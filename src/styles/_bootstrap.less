@@ -1,5 +1,9 @@
 @bs-less-dir: "../bower_components/bootstrap/less";
 
+/**
+ * Custom build for font-awesome.
+ */
+
 // Variables and mixins
 @import "@{bs-less-dir}/variables.less";
 @import "@{bs-less-dir}/mixins.less";
@@ -7,7 +11,7 @@
 // Reset and dependencies
 @import "@{bs-less-dir}/normalize.less";
 @import "@{bs-less-dir}/print.less";
-@import "@{bs-less-dir}/glyphicons.less";
+//@import "@{bs-less-dir}/glyphicons.less"; <- using Font-Awesome instead
 
 // Core CSS
 @import "@{bs-less-dir}/scaffolding.less";
