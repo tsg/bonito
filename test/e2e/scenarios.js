@@ -33,5 +33,51 @@
       });
     });
 
+    describe('Services filtering', function() {
+      beforeEach(function() {
+        browser.get('/index.html#/services/overview?perRow=4');
+      });
+
+      it('should get for panels per row when requested', function() {
+        expect(element.all(by.css('.bpanel')).count()).toBeGreaterThan(10);
+      });
+
+      it('should filter out everything when entering garbage', function() {
+        element(by.model('app.filter')).sendKeys('Nada');
+        expect(element.all(by.css('.bpanel')).count()).toBe(0);
+      });
+
+      it('should get only one panel when entering a particular filter', function() {
+        element(by.model('app.filter')).sendKeys('^Service31$');
+        expect(element.all(by.css('.bpanel')).count()).toBe(1);
+      });
+
+      it('should get two one panels when filtering with an or', function() {
+        element(by.model('app.filter')).sendKeys('e31$|e2$');
+        expect(element.all(by.css('.bpanel')).count()).toBe(2);
+      });
+
+      it('should update the location bar', function() {
+        element(by.model('app.filter')).sendKeys('Test');
+        browser.getLocationAbsUrl().then(function(url) {
+          expect(url.split('#')[1]).toContain('filter=Test');
+        });
+      });
+
+      it('should clear the location bar when removing the filter', function() {
+        element(by.model('app.filter')).sendKeys('Test');
+        browser.getLocationAbsUrl().then(function(url) {
+          expect(url.split('#')[1]).toContain('filter=Test');
+
+          element(by.model('app.filter')).clear().then(function() {
+            browser.getLocationAbsUrl().then(function(url) {
+              expect(url.split('#')[1]).toNotContain('filter=');
+            });
+          });
+        });
+      });
+
+    });
+
   });
 })();
