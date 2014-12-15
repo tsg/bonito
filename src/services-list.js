@@ -122,7 +122,15 @@
 
     // set a watcher on the quick filter
     $scope.$watch('app.filter', function() {
-      $location.search('filter', ctrl.filter);
+      if (ctrl.filter !== '') {
+        $location.search('filter', ctrl.filter);
+      } else {
+        // remove the 'filter' parameter
+        if ($location.$$search.filter) {
+          delete $location.$$search.filter;
+          $location.$$compose();
+        }
+      }
 
       // reload first page
       ctrl.panels = [];
