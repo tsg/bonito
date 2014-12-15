@@ -4,11 +4,15 @@
   beforeEach(module('bonitoApp'));
 
   describe('ServicesListCtrl', function() {
-    var ctrl;
+    var ctrl,
+      $controller,
+      $rootScope;
 
-    beforeEach(inject(function($controller) {
+    beforeEach(inject(function(_$controller_, _$rootScope_) {
+      $controller = _$controller_;
+      $rootScope = _$rootScope_;
       ctrl = $controller("ServicesListCtrl as app", {
-        $scope: {},
+        $scope: $rootScope,
         $routeParams: {
           pageSize: 16,
           rowsPerPage: 4
@@ -47,6 +51,45 @@
         ctrl.loadMore();
       });
       expect(ctrl.panels.length).toBe(81);
+    });
+
+    it('should load only one panel when called with a filter', function() {
+      ctrl = $controller("ServicesListCtrl as app", {
+        $scope: $rootScope,
+        $routeParams: {
+          pageSize: 16,
+          rowsPerPage: 4,
+          filter: 'Service31'
+        }
+      });
+
+      expect(ctrl.panels.length).toBe(1);
+    });
+
+
+    it('should accept a regexp', function() {
+      ctrl = $controller("ServicesListCtrl as app", {
+        $scope: $rootScope,
+        $routeParams: {
+          pageSize: 16,
+          rowsPerPage: 4,
+          filter: 'Service31|Service53'
+        }
+      });
+
+      expect(ctrl.panels.length).toBe(2);
+    });
+
+    it('should filter panels when entering something in the search box', function() {
+      $rootScope.app.filter = 'Hello';
+      $rootScope.$digest();
+      expect(ctrl.panels.length).toBe(0);
+    });
+
+    it('should filter with regex', function() {
+      $rootScope.app.filter = 'Service2$|Service3$';
+      $rootScope.$digest();
+      expect(ctrl.panels.length).toBe(2);
     });
 
   });

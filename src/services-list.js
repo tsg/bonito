@@ -6,7 +6,9 @@
     'infinite-scroll'
   ]);
 
-  // Test service
+  /**
+   * Test service for services.
+   */
   app.factory('ServicesProxy', function() {
     var test_data = [];
 
@@ -25,7 +27,7 @@
 
     for (var i = 0; i < 81; i++) {
       test_data.push({
-        name: 'Service#' + i,
+        name: 'Service' + i,
         size: _.random(100*(1 << i), 100*(1 << (i+1))),
         errors: _.random(0, i),
         values: this.generateData(100*(1 << i), 100*(1 << (i+1)))
@@ -37,9 +39,12 @@
     };
   });
 
+  /**
+   * Controller for the Services Grid page.
+   */
   app.controller('ServicesListCtrl',
-      ['_', 'Pages', 'ServicesProxy', '$routeParams',
-      function(_, Pages, ServicesProxy, $routeParams) {
+       ['_', 'Pages', 'ServicesProxy', '$routeParams', '$location', '$scope',
+    function(_, Pages, ServicesProxy, $routeParams, $location, $scope) {
 
     _.assign(Pages.activePage, Pages.getPageById('services'));
     Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'overview');
@@ -66,18 +71,36 @@
       (Math.ceil(angular.element(window).height() / (this.panelHeight + padding)));
     this.pageSize = $routeParams.pageSize || this.rowsPerPage * this.perRow;
 
-    // initial page
-    this.panels = ServicesProxy.Data.slice(0, this.pageSize);
-    this.loaded = this.pageSize;
+
+    this.filter = $routeParams.filter || '';
 
     var ctrl = this;
+
+    /**
+     * Returns true if the service name matches the regexp from the
+     * quick filter box.
+     */
+    this.filterServices = function(service) {
+      var re = new RegExp(ctrl.filter, 'i');
+      if (re.test(service.name)) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+
+    /**
+     * Loads the next "page" of panels.
+     */
     this.loadMore = function() {
       if (ctrl.loaded > ServicesProxy.Data.length) {
         // that was all
         return false;
       }
 
-      var toAdd = ServicesProxy.Data.slice(ctrl.loaded, ctrl.loaded + ctrl.pageSize);
+      var toAdd = ServicesProxy.Data
+        .filter(ctrl.filterServices)
+        .slice(ctrl.loaded, ctrl.loaded + ctrl.pageSize);
 
       _.forEach(toAdd, function(panel) {
         if (_.isObject(panel)) {
@@ -89,6 +112,25 @@
 
       ctrl.loaded += ctrl.pageSize;
     };
+
+
+    // initial page
+    this.panels = ServicesProxy.Data
+      .filter(this.filterServices)
+      .slice(0, this.pageSize);
+    this.loaded = this.pageSize;
+
+    // set a watcher on the quick filter
+    $scope.$watch('app.filter', function() {
+      $location.search('filter', ctrl.filter);
+
+      // reload first page
+      ctrl.panels = [];
+      ctrl.panels = ServicesProxy.Data
+        .filter(ctrl.filterServices)
+        .slice(0, ctrl.pageSize);
+      ctrl.loaded = ctrl.pageSize;
+    });
 
   }]);
 })();

@@ -80,7 +80,8 @@
     $routeProvider.
       when('/services/overview', {
         templateUrl: 'services-list.html',
-        controller: 'ServicesListCtrl'
+        controller: 'ServicesListCtrl',
+        reloadOnSearch: false
       }).
       when('/services/map', {
         templateUrl: 'servicesMap.html',
