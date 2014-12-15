@@ -28,8 +28,6 @@
 
 
   </div>
-
-
 </nav>
 
 <!-- Sub navbar -->
@@ -38,6 +36,11 @@
     <ul class="nav navbar-nav">
       <li ng-repeat="subpage in navbar.activePage.subPages" ng-class="{active: navbar.activePage.activeSubpage.path === subpage.path}">
         <a ng-href="#{{navbar.activePage.path}}/{{subpage.path}}">{{ subpage.name }}</a>
+      </li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li>
+        <div ng-transclude></div>
       </li>
     </ul>
   </div>

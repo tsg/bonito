@@ -7,6 +7,7 @@
     return {
       restrict: 'E',
       templateUrl: 'navbar.html',
+      transclude: true,
       controller: ["Pages", function(Pages) {
         this.pages = Pages.getPages();
 
