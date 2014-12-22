@@ -1,20 +1,35 @@
 <div ng-controller='ServicesListCtrl as app'>
   <navbar>
     <!-- this goes into the sub-navbar -->
-    <form class="panels-quick-filter has-feedback">
-      <div class="form-group">
-        <input type="search" class="form-control input-sm"
-          placeholder="Filter services.." ng-model="app.filter" />
-          <i class="fa fa-search form-control-feedback"></i>
-      </div>
-    </form>
+    <ul class="nav navbar-nav navbar-right">
+      <li>
+        <form class="panels-quick-filter has-feedback">
+          <div class="form-group">
+            <input type="search" class="form-control input-sm"
+              placeholder="Filter services.." ng-model="app.filter" />
+              <i class="fa fa-search form-control-feedback"></i>
+          </div>
+        </form>
+      </li>
+      <li>
+        <div class="right-buttons">
+          <button type="button" class="btn btn-link" ng-click="app.configToggle()">
+            <i class="fa fa-2x fa-cog"></i>
+          </button>
+        </div>
+      </li>
+    </ul>
   </navbar>
+
+  <config visible="app.configVisible">
+    Hi
+  </config>
 
   <div class="services-list container-fluid"
        infinite-scroll='app.loadMore()' infinite-scroll-distance="1">
 
     <div ng-repeat="panel in app.panels" class="bpanel"
-        style="width:{{app.panelWidth}}px; height:{{app.panelHeight}}px;">
+        ng-style="{width: app.panelWidth + 'px', height: app.panelHeight + 'px'}">
 
       <div class="bpanel-header">
         <span class="name">

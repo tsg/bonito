@@ -3,7 +3,9 @@
 
   // Displays a grid of panels each representing a service.
   var app = angular.module('services-list', [
-    'infinite-scroll'
+    'infinite-scroll',
+
+    'config-directive'
   ]);
 
   /**
@@ -111,6 +113,11 @@
       });
 
       ctrl.loaded += ctrl.pageSize;
+    };
+
+    this.configToggle = function() {
+      this.configVisible = !this.configVisible;
+      console.log("configVisible = ", this.configVisible);
     };
 
 
