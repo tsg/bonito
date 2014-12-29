@@ -138,19 +138,9 @@
             .attr('dx', 8)
             .attr('dy', '1em');
 
-          chart.append('rect')
-            .attr('width', width)
-            .attr('height', height)
-            .style('fill', 'none')
-            .style('pointer-events', 'all')
-            .on('mouseover', function() { focus.style('display', null); })
-            .on('mouseout', function() { focus.style('display', 'none'); })
-            .on('mousemove', mousemove);
-
           var formatComas = d3.format('0,000');
           var formatTs = d3.time.format('%H:%M:%S');
-
-          function mousemove() {
+          var mousemove = function() {
             var bisectTs = d3.bisector(function(d) { return d.ts; }).left,
               x0 = x.invert(d3.mouse(this)[0]),
               i = bisectTs(data, x0, 1),
@@ -170,8 +160,16 @@
               .attr('transform',
                 'translate(' + x(d.ts) + ', ' + y(d.value) + ')')
               .text(formatTs(d.ts));
+          };
 
-          }
+          chart.append('rect')
+            .attr('width', width)
+            .attr('height', height)
+            .style('fill', 'none')
+            .style('pointer-events', 'all')
+            .on('mouseover', function() { focus.style('display', null); })
+            .on('mouseout', function() { focus.style('display', 'none'); })
+            .on('mousemove', mousemove);
 
         };
       }
