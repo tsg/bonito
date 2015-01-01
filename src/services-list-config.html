@@ -5,16 +5,16 @@
         <div class="form-group">
             <label for="panelsPerRow">Panels per row</label><br />
             <label class="radio-inline">
-              <input type="radio" name="panelsPerRow" ng-model="app.perRow" value="1"> 1
+              <input type="radio" name="panelsPerRow" ng-model="app.perRow" ng-change="app.updatePerRow()" value="1"> 1
             </label>
             <label class="radio-inline">
-              <input type="radio" name="panelsPerRow" ng-model="app.perRow" value="2"> 2
+              <input type="radio" name="panelsPerRow" ng-model="app.perRow" ng-change="app.updatePerRow()" value="2"> 2
             </label>
             <label class="radio-inline">
-              <input type="radio" name="panelsPerRow" ng-model="app.perRow" value="4"> 4
+              <input type="radio" name="panelsPerRow" ng-model="app.perRow" ng-change="app.updatePerRow()" value="4"> 4
             </label>
             <label class="radio-inline">
-              <input type="radio" name="panelsPerRow" ng-model="app.perRow" value="6"> 6
+              <input type="radio" name="panelsPerRow" ng-model="app.perRow" ng-change="app.updatePerRow()" value="6"> 6
             </label>
         </div>
       </div>

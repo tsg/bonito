@@ -82,13 +82,13 @@
 
     it('should filter panels when entering something in the search box', function() {
       $rootScope.app.filter = 'Hello';
-      $rootScope.$digest();
+      $rootScope.app.updateFilter();
       expect(ctrl.panels.length).toBe(0);
     });
 
     it('should filter with regex', function() {
       $rootScope.app.filter = 'Service2$|Service3$';
-      $rootScope.$digest();
+      $rootScope.app.updateFilter();
       expect(ctrl.panels.length).toBe(2);
     });
 

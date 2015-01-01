@@ -135,8 +135,10 @@
     };
 
 
-    // set a watcher on the quick filter
-    $scope.$watch('app.filter', function() {
+    /**
+     * Called when the filter is updated.
+     */
+    this.updateFilter = function() {
       if (ctrl.filter !== '') {
         $location.search('filter', ctrl.filter);
       } else {
@@ -148,22 +150,12 @@
       }
 
       ctrl.render();
-    });
+    };
 
-    $scope.$watch('app.perRow', function(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        if (ctrl.perRow !== '4') {
-          $location.search('perRow', ctrl.perRow);
-        } else {
-          // remove the 'perRow' parameter
-          if ($location.$$search.perRow) {
-            delete $location.$$search.perRow;
-            $location.$$compose();
-          }
-        }
-        ctrl.render();
-      }
-    });
+    this.updatePerRow = function() {
+      $location.search('perRow', ctrl.perRow);
+      ctrl.render();
+    };
 
     // first rendering
     ctrl.render();
