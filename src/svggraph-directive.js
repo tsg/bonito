@@ -20,13 +20,10 @@
           .attr('height', '100%')
           .attr('class', 'svggraph');
 
-        // on window resize, re-render d3 canvas
-        window.onresize = function() {
-          return scope.$apply();
-        };
+        //watch for resizes
         scope.$watch(function() {
-            return angular.element(window)[0].innerWidth;
-          }, function() {
+            return [element.parent().innerWidth(), element.parent().innerHeight()].join('x');
+          }, function(newVals) {
             return scope.render(scope.data);
           }
         );
@@ -43,16 +40,14 @@
           bottom: parseInt(attrs.marginBottom) || 30,
           left: parseInt(attrs.marginLeft) || 35
         };
-        // width and height are mandatory parameters
-        var totalWidth = parseInt(attrs.width);
-        var totalHeight = parseInt(attrs.height);
-
-
 
         // define rendering function
         scope.render = function(data) {
           // clean
           svg.selectAll('*').remove();
+
+          var totalWidth = element.parent().innerWidth();
+          var totalHeight = element.parent().innerHeight() - 35; // header height
 
           var width = totalWidth - margin.left - margin.right;
           var height = totalHeight - margin.top - margin.bottom;

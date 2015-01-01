@@ -64,14 +64,6 @@
       this.perRow = 1;
     }
 
-    // approximately calculate the ideal width and height of a panel
-    var padding = 30;
-    this.panelWidth = Math.floor((angular.element(window).width() - padding) / this.perRow) - padding;
-    this.panelHeight = Math.floor(this.panelWidth / this.panelSizeRatio);
-
-    this.rowsPerPage = $routeParams.rowsPerPage ||
-      (Math.ceil(angular.element(window).height() / (this.panelHeight + padding)));
-    this.pageSize = $routeParams.pageSize || this.rowsPerPage * this.perRow;
 
 
     this.filter = $routeParams.filter || '';
@@ -120,12 +112,28 @@
       console.log("configVisible = ", this.configVisible);
     };
 
+    /**
+     * (re-)renders the services list page.
+     */
+    this.render = function() {
 
-    // initial page
-    this.panels = ServicesProxy.Data
-      .filter(this.filterServices)
-      .slice(0, this.pageSize);
-    this.loaded = this.pageSize;
+      // approximately calculate the ideal width and height of a panel
+      var padding = 30;
+      this.panelWidth = Math.floor((angular.element(window).width() - padding) / this.perRow) - padding;
+      this.panelHeight = Math.floor(this.panelWidth / this.panelSizeRatio);
+
+      this.rowsPerPage = $routeParams.rowsPerPage ||
+        (Math.ceil(angular.element(window).height() / (this.panelHeight + padding)));
+      this.pageSize = $routeParams.pageSize || this.rowsPerPage * this.perRow;
+
+      // initial page
+      ctrl.panels = [];
+      ctrl.panels = ServicesProxy.Data
+        .filter(ctrl.filterServices)
+        .slice(0, ctrl.pageSize);
+      ctrl.loaded = ctrl.pageSize;
+    };
+
 
     // set a watcher on the quick filter
     $scope.$watch('app.filter', function() {
@@ -139,13 +147,26 @@
         }
       }
 
-      // reload first page
-      ctrl.panels = [];
-      ctrl.panels = ServicesProxy.Data
-        .filter(ctrl.filterServices)
-        .slice(0, ctrl.pageSize);
-      ctrl.loaded = ctrl.pageSize;
+      ctrl.render();
     });
+
+    $scope.$watch('app.perRow', function(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        if (ctrl.perRow !== '4') {
+          $location.search('perRow', ctrl.perRow);
+        } else {
+          // remove the 'perRow' parameter
+          if ($location.$$search.perRow) {
+            delete $location.$$search.perRow;
+            $location.$$compose();
+          }
+        }
+        ctrl.render();
+      }
+    });
+
+    // first rendering
+    ctrl.render();
 
   }]);
 })();

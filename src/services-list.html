@@ -22,7 +22,7 @@
   </navbar>
 
   <config visible="app.configVisible">
-    Hi
+    <ng-include src="'services-list-config.html'"></ng-include>
   </config>
 
   <div class="services-list container-fluid"
@@ -40,7 +40,7 @@
         </span>
       </div>
 
-      <svggraph data="panel.values" width="{{app.panelWidth}}" height="{{app.panelHeight-35}}"></svggraph>
+      <svggraph data="panel.values"></svggraph>
 
     </div>
 

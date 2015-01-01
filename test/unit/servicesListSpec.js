@@ -29,7 +29,7 @@
       expect(ctrl.perRow).toBe(4);
     });
 
-    it('shouled have a pageSize of 16', function() {
+    it('should have a pageSize of 16', function() {
       expect(ctrl.pageSize).toBe(16);
       expect(ctrl.rowsPerPage).toBe(4);
     });
