@@ -38,7 +38,7 @@
         browser.get('/index.html#/services/overview?perRow=4');
       });
 
-      it('should get for panels per row when requested', function() {
+      it('should get four panels per row when requested', function() {
         expect(element.all(by.css('.bpanel')).count()).toBeGreaterThan(10);
       });
 
@@ -73,6 +73,56 @@
             browser.getLocationAbsUrl().then(function(url) {
               expect(url.split('#')[1]).toNotContain('filter=');
             });
+          });
+        });
+      });
+
+    });
+
+    describe('Services perRow settings', function() {
+      beforeEach(function() {
+        browser.get('/index.html#/services/overview');
+      });
+
+      var expectPanelsPerRowToBe = function(expected) {
+        browser.driver.manage().window().getSize().then(function(browserSize) {
+            element.all(by.css('.bpanel')).get(0).getSize().then(function(size) {
+              expect(Math.floor(browserSize.width / (size.width + 30))).toBe(expected);
+          });
+        });
+      };
+
+      it('should get four panels per row by default', function() {
+        expectPanelsPerRowToBe(4);
+      });
+
+      it('should expand settings when clicking the cog', function() {
+        expect(element(by.css('.config')).isDisplayed()).toBeFalsy();
+        element(by.css('.fa-cog')).click().then(function() {
+          expect(element(by.css('.config')).isDisplayed()).toBeTruthy();
+        });
+      });
+
+      it('should change the width of the panels when selecting perRow=2', function() {
+        element(by.css('.fa-cog')).click().then(function() {
+          element(by.xpath('//input[@ng-model="app.perRow" and @value="2"]')).click().then(function() {
+            expectPanelsPerRowToBe(2);
+          });
+        });
+      });
+
+      it('should change the width of the panels when selecting perRow=1', function() {
+        element(by.css('.fa-cog')).click().then(function() {
+          element(by.xpath('//input[@ng-model="app.perRow" and @value="1"]')).click().then(function() {
+            expectPanelsPerRowToBe(1);
+          });
+        });
+      });
+
+      it('should change the width of the panels when selecting perRow=6', function() {
+        element(by.css('.fa-cog')).click().then(function() {
+          element(by.xpath('//input[@ng-model="app.perRow" and @value="6"]')).click().then(function() {
+            expectPanelsPerRowToBe(6);
           });
         });
       });
