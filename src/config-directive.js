@@ -14,7 +14,6 @@
       controller: function($scope) {
         var config = this;
         this.close = function() {
-          console.log("close called");
           $scope.visible = false;
         };
       },

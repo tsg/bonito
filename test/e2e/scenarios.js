@@ -129,5 +129,40 @@
 
     });
 
+    describe('Services perRow settings', function() {
+      beforeEach(function() {
+        browser.get('/index.html#/services/overview');
+      });
+
+      it ('should update the location bar', function() {
+        element(by.css('.fa-cog')).click().then(function() {
+          element(by.xpath('//input[@ng-model="app.sortOrder" and @value="volume"]')).click().then(function() {
+
+            browser.getLocationAbsUrl().then(function(url) {
+              expect(url.split('#')[1]).toContain('sortOrder=volume');
+            });
+
+          });
+        });
+      });
+
+
+      it ('should sort by errors by default', function() {
+        element(by.css('.fa-cog')).click().then(function() {
+          expect(element(by.css('input[name="sortOrder"]:checked')).getAttribute('value')).toBe('errors');
+        });
+      });
+
+      it ('should route based on the location URL', function() {
+        browser.get('/index.html#/services/overview?sortOrder=alpha').then(function() {
+          element(by.css('.fa-cog')).click().then(function() {
+            expect(element(by.css('input[name="sortOrder"]:checked')).getAttribute('value')).toBe('alpha');
+          });
+        });
+      });
+
+    });
+
+
   });
 })();
