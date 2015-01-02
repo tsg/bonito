@@ -18,6 +18,54 @@
             </label>
         </div>
       </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label for="sortOrder">Sort order</label><br />
+
+          <div class="radio">
+            <label>
+              <input type="radio" name="sortOrder" ng-model="app.sortOrder" ng-change="app.updateSortOrder()" value="errors"> Error rate then volume
+            </label>
+          </div>
+
+          <div class="radio">
+            <label>
+              <input type="radio" name="sortOrder" ng-model="app.sortOrder" ng-change="app.updateSortOrder()" value="volume"> Volume
+            </label>
+          </div>
+
+          <div class="radio">
+            <label>
+              <input type="radio" name="sortOrder" ng-model="app.sortOrder" ng-change="app.updateSortOrder()" value="alpha"> Alphabetical
+            </label>
+          </div>
+
+          <div class="radio">
+            <label>
+              <input type="radio" name="sortOrder" ng-model="app.sortOrder" ng-change="app.updateSortOrder()" value="995th"> Response time 99.5th
+            </label>
+          </div>
+
+          <div class="radio">
+            <label>
+              <input type="radio" name="sortOrder" ng-model="app.sortOrder" ng-change="app.updateSortOrder()" value="99th"> Response time 99th
+            </label>
+          </div>
+
+          <div class="radio">
+            <label>
+              <input type="radio" name="sortOrder" ng-model="app.sortOrder" ng-change="app.updateSortOrder()" value="95th"> Response time 95th
+            </label>
+          </div>
+
+          <div class="radio">
+            <label>
+              <input type="radio" name="sortOrder" ng-model="app.sortOrder" ng-change="app.updateSortOrder()" value="50th"> Response time 50th
+            </label>
+          </div>
+
+        </div>
+      </div>
     </div>
   </div>
 </form>

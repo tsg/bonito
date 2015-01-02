@@ -37,7 +37,25 @@
     }
 
     return {
-      Data: test_data
+      Data: test_data,
+
+      sorted: function(key) {
+        switch (key) {
+          case 'errors':
+            return test_data.sort(function(a, b) {
+              if (a.errors === b.errors) {
+                return a.size - b.size;
+              }
+              return a.errors - b.errors;
+            });
+          case 'volume':
+            return _.sortBy(test_data, function(d) { return d.size; });
+          case 'alpha':
+            return _.sortBy(test_data, 'name');
+          default:
+            return test_data;
+        }
+      }
     };
   });
 
@@ -63,6 +81,8 @@
       // on phones, always have one per row
       this.perRow = 1;
     }
+
+    this.sortOrder = $routeParams.sortOrder || 'errors';
 
 
 
@@ -92,7 +112,8 @@
         return false;
       }
 
-      var toAdd = ServicesProxy.Data
+      var toAdd = ServicesProxy
+        .sorted(ctrl.sortOrder)
         .filter(ctrl.filterServices)
         .slice(ctrl.loaded, ctrl.loaded + ctrl.pageSize);
 
@@ -109,7 +130,6 @@
 
     this.configToggle = function() {
       this.configVisible = !this.configVisible;
-      console.log("configVisible = ", this.configVisible);
     };
 
     /**
@@ -128,7 +148,8 @@
 
       // initial page
       ctrl.panels = [];
-      ctrl.panels = ServicesProxy.Data
+      ctrl.panels = ServicesProxy
+        .sorted(ctrl.sortOrder)
         .filter(ctrl.filterServices)
         .slice(0, ctrl.pageSize);
       ctrl.loaded = ctrl.pageSize;
@@ -154,6 +175,11 @@
 
     this.updatePerRow = function() {
       $location.search('perRow', ctrl.perRow);
+      ctrl.render();
+    };
+
+    this.updateSortOrder = function() {
+      $location.search('sortOrder', ctrl.sortOrder);
       ctrl.render();
     };
 
