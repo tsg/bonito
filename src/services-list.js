@@ -46,7 +46,7 @@
               if (a.errors === b.errors) {
                 return a.size - b.size;
               }
-              return a.errors - b.errors;
+              return b.errors - a.errors;
             });
           case 'volume':
             return _.sortBy(test_data, function(d) { return d.size; });
