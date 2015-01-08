@@ -11,14 +11,11 @@
     return {
       restrict: 'E',
       scope: {
-        data: '='  // bi-directional data binding
+        data: '=',  // bi-directional data binding
+        height: '=',
+        width: '='
       },
       link: function(scope, element, attrs) {
-        var svg = d3.select(element[0])
-          .append('svg')
-          .attr('width', '100%')
-          .attr('height', '100%')
-          .attr('class', 'svggraph');
 
         //watch for resizes
         scope.$watch(function() {
@@ -32,6 +29,11 @@
         scope.$watch('data', function(newVals, oldVals) {
           return scope.render(newVals);
         }, true);
+        scope.$watch('height', function(newVal, oldVal) {
+          if (newVal !== oldVal) {
+            console.log('Height changed: ', newVal);
+          }
+        }, true);
 
         // config
         var margin = {
@@ -41,16 +43,26 @@
           left: parseInt(attrs.marginLeft) || 35
         };
 
+
         // define rendering function
         scope.render = function(data) {
           // clean
-          svg.selectAll('*').remove();
+          d3.select(element[0])
+            .select('svg').remove();
 
-          var totalWidth = element.parent().innerWidth();
-          var totalHeight = element.parent().innerHeight() - 35; // header height
+          console.log('scope.height: ', scope.height);
+
+          var totalWidth = scope.width || element.parent().innerWidth();
+          var totalHeight = scope.height;
 
           var width = totalWidth - margin.left - margin.right;
           var height = totalHeight - margin.top - margin.bottom;
+
+          var svg = d3.select(element[0])
+            .append('svg')
+            .attr('width', totalWidth)
+            .attr('height', totalHeight)
+            .attr('class', 'svggraph');
 
           var chart = svg.append('g')
             .attr('class', 'chart')

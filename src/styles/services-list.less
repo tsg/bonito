@@ -1,8 +1,15 @@
 .services-list {
   .bpanel {
+    background: white;
+    border: 1px solid @gray-light;
+    float: left;
+    margin: 15px;
+    overflow: hidden;
+    .border-bottom-radius(5px);
+    .border-top-radius(5px);
+
     .bpanel-header {
       margin: 0;
-      background: white;
       height: 30px;
       padding: 5px;
       .name {
@@ -18,13 +25,18 @@
         }
       }
     }
-    border: 1px solid @gray-light;
-    background: @gray-lighter;
-    float: left;
-    margin: 15px;
-    overflow: hidden;
-    .border-bottom-radius(5px);
-    .border-top-radius(5px);
+
+    table {
+      margin-bottom: 0px;
+      padding: 5px;
+      th {
+        text-align: right;
+      }
+    }
+
+    svg {
+      background: @gray-lighter;
+    }
   }
 }
 

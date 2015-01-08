@@ -31,18 +31,56 @@
        infinite-scroll='app.loadMore()' infinite-scroll-distance="1">
 
     <div ng-repeat="panel in app.panels" class="bpanel"
-        ng-style="{width: app.panelWidth + 'px', height: app.panelHeight + 'px'}">
+        ng-style="{width: app.panelWidth + 'px'}">
 
       <div class="bpanel-header">
         <span class="name">
           {{ panel.name }}
         </span>
-        <span class="volume">
-          <span class="volume-label">Volume:</span> {{ panel.size|humanNumber:0 }}/s
-        </span>
       </div>
 
-      <svggraph data="panel.values"></svggraph>
+      <svggraph height="app.panelHeight" data="panel.values"></svggraph>
+
+        <table class="table table-condensed" style="width:50%;float:left">
+          <tr>
+            <th>Volume</th>
+            <td>{{ panel.size|humanNumber:0 }}/s</td>
+          </tr>
+          <tr>
+            <th>Hosts</th>
+            <td>42</td>
+          </tr>
+          <tr>
+            <th>Per Host</th>
+            <td>{{ panel.size/42|humanNumber:0 }}</td>
+          </tr>
+          <tr>
+            <th>Errors/1000</th>
+            <td>{{ panel.errors|humanNumber:0 }}</td>
+          </tr>
+        </table>
+        <table class="table table-condensed" style="width:50%;">
+          <tr>
+            <th>Max</th>
+            <td>1.1s</td>
+          </tr>
+          <tr>
+            <th>99p</th>
+            <td>123ms</td>
+          </tr>
+          <tr>
+            <th>95p</th>
+            <td>10ms</td>
+          </tr>
+          <tr>
+            <th>50p</th>
+            <td>1ms</td>
+          </tr>
+          <tr>
+            <th>Mean</th>
+            <td>23ms</td>
+          </tr>
+        </table>
 
     </div>
 
