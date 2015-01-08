@@ -14,6 +14,9 @@
       if (isNaN(input) || !isFinite(input)) {
         return '-';
       }
+      if (input === 0) {
+        return '0';
+      }
       var negativeSign = '';
       if (input < 0) {
         input = -input;
