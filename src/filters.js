@@ -47,7 +47,7 @@
   });
 
   /**
-   * Returns a class for each prefix to allow coloring 
+   * Returns a class for each number prefix to allow coloring.
    */
   app.filter('humanNumberClass', function() {
     return function(input, precision) {
@@ -71,6 +71,25 @@
   app.filter('humanDuration', function() {
     return function(input, precision) {
       return transform(input, precision, ['micro', 'ms', 's', 'm', 'h'], 1000);
+    };
+  });
+
+  /**
+   * Returns a class for each duration prefix to allow coloring.
+   */
+  app.filter('humanDurationClass', function() {
+    return function(input, precision) {
+      var units = ['micro', 'ms', 's', 'm', 'h'];
+      input = parseFloat(input);
+      if (isNaN(input) || !isFinite(input) || input === 0) {
+        return 'duration-' + units[0];
+      }
+
+      var number = Math.floor(Math.log(input) / Math.log(1000));
+      if (number >= units.length) {
+        return 'duration-' + units[0];
+      }
+      return 'duration-' + units[number];
     };
   });
 })();

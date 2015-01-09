@@ -62,23 +62,23 @@
         <table class="table table-condensed" style="width:50%;">
           <tr>
             <th>Max</th>
-            <td>{{ panel.rt_max|humanDuration }}</td>
+            <td><span ng-class="panel.rt_max|humanDurationClass">{{ panel.rt_max|humanDuration }}</span></td>
           </tr>
           <tr>
             <th>99p</th>
-            <td>{{ panel.rt_99p|humanDuration }}</td>
+            <td><span ng-class="panel.rt_99p|humanDurationClass">{{ panel.rt_99p|humanDuration }}</span></td>
           </tr>
           <tr>
             <th>95p</th>
-            <td>{{ panel.rt_95p|humanDuration }}</td>
+            <td><span ng-class="panel.rt_95p|humanDurationClass">{{ panel.rt_95p|humanDuration }}</span></td>
           </tr>
           <tr>
             <th>50p</th>
-            <td>{{ panel.rt_50p|humanDuration }}</td>
+            <td><span ng-class="panel.rt_50p|humanDurationClass">{{ panel.rt_50p|humanDuration }}</span></td>
           </tr>
           <tr>
             <th>Mean</th>
-            <td>{{ panel.rt_avg|humanDuration }}</td>
+            <td><span ng-class="panel.rt_avg|humanDurationClass">{{ panel.rt_avg|humanDuration }}</span></td>
           </tr>
         </table>
 

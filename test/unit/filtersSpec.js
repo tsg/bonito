@@ -120,4 +120,26 @@
       expect(humanDuration('0', 3)).toBe('0');
     });
   });
+
+  describe('Filter: humanDurationClass', function() {
+    beforeEach(module('bonito-filters'));
+
+    var humanNumberClass;
+    beforeEach(inject(function($filter) {
+      humanNumberClass = $filter('humanDurationClass');
+    }));
+
+    it('should return duration-micro for small numbers', function() {
+      expect(humanNumberClass('42')).toBe('duration-micro');
+    });
+
+    it('should return duration-ms for thousands', function() {
+      expect(humanNumberClass('3425')).toBe('duration-ms');
+    });
+
+    it('should return duraton-m for gigs', function() {
+      expect(humanNumberClass('125813724259')).toBe('duration-m');
+    });
+
+  });
 })();
