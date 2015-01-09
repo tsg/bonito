@@ -83,4 +83,41 @@
       expect(humanNumberClass('garbage')).toBe('number-');
     });
   });
+
+  describe('Filter: humanDuration', function() {
+    beforeEach(module('bonito-filters'));
+
+    var humanDuration;
+    beforeEach(inject(function($filter) {
+      humanDuration = $filter('humanDuration');
+    }));
+
+    it('should return micro for small numbers', function() {
+      expect(humanDuration('999')).toBe('999micro');
+    });
+
+    it('should return ms for above 1k', function() {
+      expect(humanDuration('1234')).toBe('1.2ms');
+    });
+
+    it('should return seconds for above 1M', function() {
+      expect(humanDuration('1234567')).toBe('1.2s');
+    });
+
+    it('should return minutes for above 1G', function() {
+      expect(humanDuration('1234567890')).toBe('1.2m');
+    });
+
+    it('should drop precision when requested', function() {
+      expect(humanDuration('1234567890', 0)).toBe('1m');
+    });
+
+    it('should increase precision when requested', function() {
+      expect(humanDuration('1234567890', 3)).toBe('1.235m');
+    });
+
+    it('should return 0 for 0', function() {
+      expect(humanDuration('0', 3)).toBe('0');
+    });
+  });
 })();

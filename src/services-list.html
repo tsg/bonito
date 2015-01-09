@@ -62,23 +62,23 @@
         <table class="table table-condensed" style="width:50%;">
           <tr>
             <th>Max</th>
-            <td>1.1s</td>
+            <td>{{ panel.rt_max|humanDuration }}</td>
           </tr>
           <tr>
             <th>99p</th>
-            <td>123ms</td>
+            <td>{{ panel.rt_99p|humanDuration }}</td>
           </tr>
           <tr>
             <th>95p</th>
-            <td>10ms</td>
+            <td>{{ panel.rt_95p|humanDuration }}</td>
           </tr>
           <tr>
             <th>50p</th>
-            <td>1ms</td>
+            <td>{{ panel.rt_50p|humanDuration }}</td>
           </tr>
           <tr>
             <th>Mean</th>
-            <td>23ms</td>
+            <td>{{ panel.rt_avg|humanDuration }}</td>
           </tr>
         </table>
 

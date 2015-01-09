@@ -28,11 +28,17 @@
     };
 
     for (var i = 0; i < 81; i++) {
+      var avg = _.random(10, 1500);
       test_data.push({
         name: 'Service' + i,
         size: _.random(100*(1 << i), 100*(1 << (i+1))),
+        values: this.generateData(100*(1 << i), 100*(1 << (i+1))),
         errors: _.random(0, i),
-        values: this.generateData(100*(1 << i), 100*(1 << (i+1)))
+        rt_avg: avg,
+        rt_50p: avg * 1.1,
+        rt_95p: avg * 10.3,
+        rt_99p: avg * 100.12,
+        rt_max: avg * 1000.45
       });
     }
 
