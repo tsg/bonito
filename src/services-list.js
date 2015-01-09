@@ -42,10 +42,20 @@
       });
     }
 
-    return {
-      Data: test_data,
+    var compute_relative_sizes = function(data) {
+        var max_size = _.max(data, 'size').size;
 
+        _.each(data, function(d) {
+          // logarithmic scale
+          d.size_rel = Math.log(d.size) / Math.log(max_size);
+        });
+    };
+
+    return {
       sorted: function(key) {
+        // TODO: move this where we fetch the data
+        compute_relative_sizes(test_data);
+
         switch (key) {
           case 'errors':
             return test_data.sort(function(a, b) {
@@ -119,7 +129,9 @@
      * Loads the next "page" of panels.
      */
     this.loadMore = function() {
-      if (ctrl.loaded > ServicesProxy.Data.length) {
+      if (ctrl.loaded > ServicesProxy
+                          .sorted()
+                          .filter(ctrl.filterServices).length) {
         // that was all
         return false;
       }

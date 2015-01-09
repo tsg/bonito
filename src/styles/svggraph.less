@@ -1,6 +1,9 @@
 
 .svggraph {
   background: @gray-lighter;
+  .planet {
+    fill: lighten(desaturate(@brand-success, 30%), 30%);
+  }
   .axis {
     path, line {
       fill: none;
@@ -14,7 +17,7 @@
   }
   .line {
     fill: none;
-    stroke: @brand-success;
+    stroke: @brand-primary;
     stroke-width: 1.5px;
   }
   .grid {

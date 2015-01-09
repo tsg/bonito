@@ -13,7 +13,8 @@
       scope: {
         data: '=',  // bi-directional data binding
         height: '=',
-        width: '='
+        width: '=',
+        planetSize: '='   // relative planet size to other panels
       },
       link: function(scope, element, attrs) {
 
@@ -62,6 +63,16 @@
             .attr('width', width)
             .attr('height', height)
             .attr('transform', 'translate(' + margin.left +', ' + margin.bottom + ')');
+
+          if (!isNaN(scope.planetSize)) {
+            // add size "planet"
+            chart.append('g')
+              .attr('class', 'planet')
+              .attr('transform',
+                  'translate(' + (width * 3/4) + ',' +  (height/2.4) + ')')
+              .append('circle')
+                .attr('r', (totalHeight/1.8) * scope.planetSize);
+          }
 
           // scales & axes
           var x = d3.time.scale()
@@ -170,7 +181,6 @@
             .on('mouseover', function() { focus.style('display', null); })
             .on('mouseout', function() { focus.style('display', 'none'); })
             .on('mousemove', mousemove);
-
         };
       }
     };
