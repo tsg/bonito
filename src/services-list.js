@@ -27,12 +27,18 @@
       return data;
     };
 
+    var upper = 0, lower = 0;
     for (var i = 0; i < 81; i++) {
       var avg = _.random(10, 1500);
+      // grow exponentially only until 30 to avoid
+      // integer overflows
+      lower = 100 * (1 << (i % 30));
+      upper = 100 * (1 << ((i %30) +1));
+
       test_data.push({
         name: 'Service' + i,
-        size: _.random(100*(1 << i), 100*(1 << (i+1))),
-        values: this.generateData(100*(1 << i), 100*(1 << (i+1))),
+        size: _.random(lower, upper),
+        values: this.generateData(lower, upper),
         errors: _.random(0, i),
         rt_avg: avg,
         rt_50p: avg * 1.1,
