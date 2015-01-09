@@ -58,6 +58,12 @@
             return _.sortBy(test_data, function(d) { return -d.size; });
           case 'alpha':
             return _.sortBy(test_data, 'name');
+          case 'max':
+          case '99p':
+          case '95p':
+          case '50p':
+          case 'avg':
+            return _.sortBy(test_data, function(d) { return -d['rt_' + key]; });
           default:
             return test_data;
         }
