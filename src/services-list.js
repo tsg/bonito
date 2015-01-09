@@ -49,7 +49,7 @@
               return b.errors - a.errors;
             });
           case 'volume':
-            return _.sortBy(test_data, function(d) { return d.size; });
+            return _.sortBy(test_data, function(d) { return -d.size; });
           case 'alpha':
             return _.sortBy(test_data, 'name');
           default:
@@ -140,7 +140,7 @@
       // approximately calculate the ideal width and height of a panel
       var padding = 30;
       this.panelWidth = Math.floor((angular.element(window).width() - padding) / this.perRow) - padding;
-      this.panelHeight = Math.floor(this.panelWidth / this.panelSizeRatio);
+      this.panelHeight = Math.floor(this.panelWidth / this.panelSizeRatio / 1.3 );
 
       this.rowsPerPage = $routeParams.rowsPerPage ||
         (Math.ceil(angular.element(window).height() / (this.panelHeight + padding)));

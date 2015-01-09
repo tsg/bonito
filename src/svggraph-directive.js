@@ -29,11 +29,6 @@
         scope.$watch('data', function(newVals, oldVals) {
           return scope.render(newVals);
         }, true);
-        scope.$watch('height', function(newVal, oldVal) {
-          if (newVal !== oldVal) {
-            console.log('Height changed: ', newVal);
-          }
-        }, true);
 
         // config
         var margin = {
@@ -49,8 +44,6 @@
           // clean
           d3.select(element[0])
             .select('svg').remove();
-
-          console.log('scope.height: ', scope.height);
 
           var totalWidth = scope.width || element.parent().innerWidth();
           var totalHeight = scope.height;

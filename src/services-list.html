@@ -44,7 +44,7 @@
         <table class="table table-condensed" style="width:50%;float:left">
           <tr>
             <th>Volume</th>
-            <td>{{ panel.size|humanNumber:0 }}/s</td>
+            <td><span ng-class="panel.size|humanNumberClass">{{ panel.size|humanNumber }}/s</span></td>
           </tr>
           <tr>
             <th>Hosts</th>
@@ -52,11 +52,11 @@
           </tr>
           <tr>
             <th>Per Host</th>
-            <td>{{ panel.size/42|humanNumber:0 }}</td>
+            <td><span ng-class="panel.size/42|humanNumberClass">{{ panel.size/42|humanNumber:0 }}</span></td>
           </tr>
           <tr>
-            <th>Errors/1000</th>
-            <td>{{ panel.errors|humanNumber:0 }}</td>
+            <th>Errors/1K</th>
+            <td><span ng-class="panel.errors|humanNumberClass">{{ panel.errors|humanNumber:0 }}</span></td>
           </tr>
         </table>
         <table class="table table-condensed" style="width:50%;">

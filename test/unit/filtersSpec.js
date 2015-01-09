@@ -48,5 +48,39 @@
     it('should work for large negative numbers', function() {
       expect(humanNumber('-125813724259')).toBe('-125.8G');
     });
+
+    it('should return 0 for 0', function() {
+      expect(humanNumber('0')).toBe('0');
+    });
+  });
+
+
+  describe('Filter: humanNumberClass', function() {
+    beforeEach(module('bonito-filters'));
+
+    var humanNumberClass;
+    beforeEach(inject(function($filter) {
+      humanNumberClass = $filter('humanNumberClass');
+    }));
+
+    it('should return number- for small numbers', function() {
+      expect(humanNumberClass('42')).toBe('number-');
+    });
+
+    it('should return number-k for thousands', function() {
+      expect(humanNumberClass('3425')).toBe('number-k');
+    });
+
+    it('should return number-G for gigs', function() {
+      expect(humanNumberClass('125813724259')).toBe('number-G');
+    });
+
+    it('should return number- for 0', function() {
+      expect(humanNumberClass('0')).toBe('number-');
+    });
+
+    it('should return number- for NaN', function() {
+      expect(humanNumberClass('garbage')).toBe('number-');
+    });
   });
 })();
