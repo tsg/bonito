@@ -30,6 +30,9 @@
         scope.$watch('data', function(newVals, oldVals) {
           return scope.render(newVals);
         }, true);
+        scope.$watch('planetSize', function(newVals, oldVals) {
+          return scope.render(scope.data);
+        }, true);
 
         // config
         var margin = {

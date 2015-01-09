@@ -42,21 +42,25 @@
       });
     }
 
-    var compute_relative_sizes = function(data) {
+    var compute_relative_sizes = function(data, useLogarithmicPlanetSize) {
         var max_size = _.max(data, 'size').size;
 
         _.each(data, function(d) {
-          // logarithmic scale
-          d.size_rel = Math.log(d.size) / Math.log(max_size);
+          if (useLogarithmicPlanetSize) {
+            // logarithmic scale
+            d.size_rel = Math.log(d.size) / Math.log(max_size);
+          } else {
+            d.size_rel = d.size / max_size;
+          }
         });
     };
 
     return {
-      sorted: function(key) {
+      get: function(sort_key, useLogarithmicPlanetSize) {
         // TODO: move this where we fetch the data
-        compute_relative_sizes(test_data);
+        compute_relative_sizes(test_data, useLogarithmicPlanetSize);
 
-        switch (key) {
+        switch (sort_key) {
           case 'errors':
             return test_data.sort(function(a, b) {
               if (a.errors === b.errors) {
@@ -73,7 +77,7 @@
           case '95p':
           case '50p':
           case 'avg':
-            return _.sortBy(test_data, function(d) { return -d['rt_' + key]; });
+            return _.sortBy(test_data, function(d) { return -d['rt_' + sort_key]; });
           default:
             return test_data;
         }
@@ -94,6 +98,12 @@
     // config
     this.perRow = $routeParams.perRow || 4;
     this.panelSizeRatio = $routeParams.panelSizeRatio || 1.618;
+
+    if ($routeParams.lnSize === "false") {
+      this.useLogarithmicPlanetSize = false;
+    } else {
+      this.useLogarithmicPlanetSize = true;
+    }
 
     if (this.perRow != 1 && this.perRow != 2 && this.perRow != 4 && this.perRow != 6) {
       // only accept 2, 4 ot 6 elements per row
@@ -130,14 +140,15 @@
      */
     this.loadMore = function() {
       if (ctrl.loaded > ServicesProxy
-                          .sorted()
-                          .filter(ctrl.filterServices).length) {
+                          .get()
+                          .filter(ctrl.filterServices)
+                          .length) {
         // that was all
         return false;
       }
 
       var toAdd = ServicesProxy
-        .sorted(ctrl.sortOrder)
+        .get(ctrl.sortOrder)
         .filter(ctrl.filterServices)
         .slice(ctrl.loaded, ctrl.loaded + ctrl.pageSize);
 
@@ -170,10 +181,12 @@
         (Math.ceil(angular.element(window).height() / (this.panelHeight + padding)));
       this.pageSize = $routeParams.pageSize || this.rowsPerPage * this.perRow;
 
+      console.log('lnSize', this.useLogarithmicPlanetSize);
+
       // initial page
       ctrl.panels = [];
       ctrl.panels = ServicesProxy
-        .sorted(ctrl.sortOrder)
+        .get(ctrl.sortOrder, this.useLogarithmicPlanetSize)
         .filter(ctrl.filterServices)
         .slice(0, ctrl.pageSize);
       ctrl.loaded = ctrl.pageSize;
@@ -204,6 +217,11 @@
 
     this.updateSortOrder = function() {
       $location.search('sortOrder', ctrl.sortOrder);
+      ctrl.render();
+    };
+
+    this.updateUseLogarithmicPlanetSize = function() {
+      $location.search('lnSize', ctrl.useLogarithmicPlanetSize.toString());
       ctrl.render();
     };
 

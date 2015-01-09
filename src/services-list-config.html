@@ -17,6 +17,13 @@
               <input type="radio" name="panelsPerRow" ng-model="app.perRow" ng-change="app.updatePerRow()" value="6"> 6
             </label>
         </div>
+        <div class="form-group">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="app.useLogarithmicPlanetSize" ng-change="app.updateUseLogarithmicPlanetSize()"> Use logarithmic scale for "planet" size
+            </label>
+          </div>
+        </div>
       </div>
       <div class="col-md-3">
         <div class="form-group">
