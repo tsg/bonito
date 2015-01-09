@@ -140,7 +140,7 @@
      */
     this.loadMore = function() {
       if (ctrl.loaded > ServicesProxy
-                          .get()
+                          .get(ctrl.sortOrder, ctrl.useLogarithmicPlanetSize)
                           .filter(ctrl.filterServices)
                           .length) {
         // that was all
@@ -148,7 +148,7 @@
       }
 
       var toAdd = ServicesProxy
-        .get(ctrl.sortOrder)
+        .get(ctrl.sortOrder, ctrl.useLogarithmicPlanetSize)
         .filter(ctrl.filterServices)
         .slice(ctrl.loaded, ctrl.loaded + ctrl.pageSize);
 
@@ -180,8 +180,6 @@
       this.rowsPerPage = $routeParams.rowsPerPage ||
         (Math.ceil(angular.element(window).height() / (this.panelHeight + padding)));
       this.pageSize = $routeParams.pageSize || this.rowsPerPage * this.perRow;
-
-      console.log('lnSize', this.useLogarithmicPlanetSize);
 
       // initial page
       ctrl.panels = [];
