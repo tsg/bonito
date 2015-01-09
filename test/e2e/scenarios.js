@@ -163,6 +163,55 @@
 
     });
 
+    describe('Services lnSize setting', function() {
+      beforeEach(function() {
+        browser.get('/index.html#/services/overview?sortOrder=volume');
+      });
+
+      it ('should update the location bar', function() {
+        element(by.css('.fa-cog')).click().then(function() {
+          element(by.xpath('//input[@ng-model="app.useLogarithmicPlanetSize"]')).click().then(function() {
+
+            browser.getLocationAbsUrl().then(function(url) {
+              expect(url.split('#')[1]).toContain('lnSize=false');
+
+              // and once more
+              element(by.xpath('//input[@ng-model="app.useLogarithmicPlanetSize"]')).click().then(function() {
+                browser.getLocationAbsUrl().then(function(url) {
+                  expect(url.split('#')[1]).toContain('lnSize=true');
+                });
+              });
+
+            });
+
+          });
+        });
+      });
+
+      it ('should change the size of the planet in an svg graph', function() {
+        // get the size of the 3rd planet
+        element.all(by.css('.bpanel')).get(2)
+          .element(by.css('.planet circle')).getAttribute('r').then(function(r1) {
+
+          expect(r1).toBeGreaterThan(0);
+
+          // change logarithmic setting
+          element(by.css('.fa-cog')).click().then(function() {
+            element(by.xpath('//input[@ng-model="app.useLogarithmicPlanetSize"]'))
+            .click().then(function() {
+              // get the new size of the 3rd planet
+              element.all(by.css('.bpanel')).get(2)
+                .element(by.css('.planet circle')).getAttribute('r').then(function(r2) {
+
+                  expect(r2).toBeGreaterThan(0);
+                  expect(r2).toBeLessThan(r1);
+              });
+            });
+          });
+        });
+      });
+    });
+
 
   });
 })();
