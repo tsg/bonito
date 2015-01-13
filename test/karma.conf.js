@@ -5,18 +5,18 @@ module.exports = function(config){
 
     files : [
       // bower:js
-      '../src/bower_components/jquery/dist/jquery.js',
-      '../src/bower_components/angular/angular.js',
-      '../src/bower_components/angular-route/angular-route.js',
-      '../src/bower_components/bootstrap/dist/js/bootstrap.js',
-      '../src/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
-      '../src/bower_components/lodash/dist/lodash.compat.js',
-      '../src/bower_components/angular-lodash-module/angular-lodash-module.js',
-      '../src/bower_components/angular-mocks/angular-mocks.js',
-      '../src/bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js',
-      '../src/bower_components/d3/d3.js',
+      '../src/web/bower_components/jquery/dist/jquery.js',
+      '../src/web/bower_components/angular/angular.js',
+      '../src/web/bower_components/angular-route/angular-route.js',
+      '../src/web/bower_components/bootstrap/dist/js/bootstrap.js',
+      '../src/web/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
+      '../src/web/bower_components/lodash/dist/lodash.compat.js',
+      '../src/web/bower_components/angular-lodash-module/angular-lodash-module.js',
+      '../src/web/bower_components/angular-mocks/angular-mocks.js',
+      '../src/web/bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js',
+      '../src/web/bower_components/d3/d3.js',
       // endbower
-      '../src/*.js',
+      '../src/web/*.js',
 
       'unit/**/*.js'
     ],

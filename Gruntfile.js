@@ -5,7 +5,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
       options: {
-        ignores: ['src/bower_components/**/*.js']
+        ignores: ['src/web/bower_components/**/*.js']
       },
       all: [
         'Gruntfile.js',
@@ -33,7 +33,7 @@ module.exports = function(grunt) {
     },
     'http-server': {
       dev: {
-        root: 'src/',
+        root: 'src/web',
         port: 5062,
         ext: 'html',
         showDir: true,
@@ -44,18 +44,18 @@ module.exports = function(grunt) {
     less: {
       dev: {
         options: {
-          paths: ['src/styles'],
+          paths: ['src/web/styles'],
         },
         files: {
-          'src/styles/main.css': 'src/styles/main.less'
+          'src/web/styles/main.css': 'src/web/styles/main.less'
         }
       }
     },
     watch: {
       styles: {
         files: [
-          'src/styles/*.less',
-          'src/styles/theme/*.less'
+          'src/web/styles/*.less',
+          'src/web/styles/theme/*.less'
         ],
         tasks: ['less'],
         options: {

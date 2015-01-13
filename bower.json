@@ -6,7 +6,7 @@
     "Tudor Golubenco <tudor@packetbeat.com>"
   ],
   "description": "A web-UI for the Packetbeat application monitoring system",
-  "main": "src/index.html",
+  "main": "src/web/index.html",
   "keywords": [
     "apm",
     "monitoring",
@@ -20,7 +20,7 @@
     "**/.*",
     "node_modules",
     "bower_components",
-    "src/bower_components",
+    "src/web/bower_components",
     "test",
     "tests"
   ],
