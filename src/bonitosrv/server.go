@@ -1,32 +1,32 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/albrow/negroni-json-recovery"
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	"github.com/unrolled/render"
-	"net/http"
-	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"net/http"
 )
 
 type ByDimensionRequest struct {
-	timerange Timerange
-	Primary_dimension string
+	timerange           Timerange
+	Primary_dimension   string
 	Secondary_dimension string
-	Metrics []MetricDescription
+	Metrics             []MetricDescription
 }
 
 type Timerange struct {
 	From string
-	To string
+	To   string
 }
 
 type MetricDescription struct {
-	Field string
-	Aggs []string
-	Custom_type string
+	Field          string
+	Aggs           []string
+	Custom_type    string
 	Custom_options map[string]interface{}
 }
 
@@ -39,8 +39,8 @@ func newNegroniServer() *negroni.Negroni {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/ping", func(w http.ResponseWriter, req *http.Request) {
 		r.JSON(w, 200, map[string]interface{}{
-			"status": "ok",
-			"message":  "pong",
+			"status":  "ok",
+			"message": "pong",
 		})
 	}).Methods("GET")
 
@@ -54,7 +54,7 @@ func newNegroniServer() *negroni.Negroni {
 			err := json.Unmarshal(body, &request)
 			if err != nil {
 				r.JSON(w, 400, map[string]interface{}{
-					"status": "error",
+					"status":  "error",
 					"message": fmt.Sprintf("Bad parameter: %s", err),
 				})
 				return
@@ -62,7 +62,7 @@ func newNegroniServer() *negroni.Negroni {
 		}
 
 		r.JSON(w, 200, map[string]interface{}{
-			"status": "ok",
+			"status":  "ok",
 			"request": request,
 		})
 

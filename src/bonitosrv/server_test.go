@@ -1,24 +1,24 @@
 package main
 
 import (
-    . "github.com/onsi/ginkgo"
-    . "github.com/onsi/gomega"
 	"github.com/codegangsta/negroni"
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 
-	"testing"
-	"net/http"
-	"net/http/httptest"
 	"encoding/json"
 	"io"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 )
 
 type ResponseMessage struct {
-	Status string
+	Status  string
 	Message string
 }
 
 func BonitosrvQuery(n *negroni.Negroni, method string,
-	url string, data io.Reader) (*httptest.ResponseRecorder) {
+	url string, data io.Reader) *httptest.ResponseRecorder {
 
 	request, _ := http.NewRequest(method, url, data)
 	response := httptest.NewRecorder()

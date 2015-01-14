@@ -96,6 +96,14 @@ module.exports = function(grunt) {
             cwd: 'src/bonitosrv'
           }
         }
+      },
+      gofmt: {
+        command: 'go fmt',
+        options: {
+          execOptions: {
+            cwd: 'src/bonitosrv'
+          }
+        }
       }
     }
   });
@@ -136,7 +144,7 @@ module.exports = function(grunt) {
   grunt.registerTask('test', function() {
     grunt.task.run([
       'karma:once',
-      'gotest'
+      'gotestonce'
     ]);
   });
 
