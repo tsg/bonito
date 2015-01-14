@@ -36,6 +36,7 @@
     "karma-jasmine": "^0.3.2",
     "karma": "^0.12.28",
     "grunt-protractor-runner": "^1.1.4",
-    "protractor": "^1.5.0"
+    "protractor": "^1.5.0",
+    "grunt-shell": "^1.1.1"
   }
 }

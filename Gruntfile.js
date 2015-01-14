@@ -61,6 +61,15 @@ module.exports = function(grunt) {
         options: {
           spawn: false
         }
+      },
+      gotest: {
+        files: [
+          "src/bonitosrv/**/*.go"
+        ],
+        tasks: ['gotestonce'],
+        options: {
+          spawn: false
+        }
       }
     },
     karma: {
@@ -78,6 +87,16 @@ module.exports = function(grunt) {
           configFile: 'test/protractor-conf.js'
         }
       }
+    },
+    shell: {
+      gotest: {
+        command: 'go test',
+        options: {
+          execOptions: {
+            cwd: 'src/bonitosrv'
+          }
+        }
+      }
     }
   });
 
@@ -89,23 +108,35 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-wiredep');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-protractor-runner');
+  grunt.loadNpmTasks('grunt-shell');
 
-  // Custom tasks
-  grunt.registerTask('dev', function() {
+  /** Custom tasks */
+  grunt.registerTask('dev', 'Run sever for JS only development', function() {
     var tasks = [
       'jshint',
       'wiredep',
       'less:dev',
       'http-server',
-      'watch'
+      'watch:styles'
     ];
 
     grunt.task.run(tasks);
   });
 
+  grunt.registerTask('gotest', 'Run Bonitosrv unit tests', function(once) {
+    grunt.task.run('gotestonce');
+    if (once !== 'once') {
+      grunt.task.run('watch:gotest');
+    }
+  });
+
+  grunt.registerTask('gotestonce', 'Run Bonitosrv unit tests once', ['shell:gotest']);
+
+  // Run unit tests
   grunt.registerTask('test', function() {
     grunt.task.run([
-      'karma:once'
+      'karma:once',
+      'gotest'
     ]);
   });
 
