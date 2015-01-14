@@ -37,6 +37,7 @@
     "karma": "^0.12.28",
     "grunt-protractor-runner": "^1.1.4",
     "protractor": "^1.5.0",
-    "grunt-shell": "^1.1.1"
+    "grunt-shell": "^1.1.1",
+    "grunt-githooks": "^0.3.1"
   }
 }

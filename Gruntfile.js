@@ -105,6 +105,11 @@ module.exports = function(grunt) {
           }
         }
       }
+    },
+    githooks: {
+      all: {
+        'pre-commit': 'jshint shell:gofmt test'
+      }
     }
   });
 
@@ -117,6 +122,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-protractor-runner');
   grunt.loadNpmTasks('grunt-shell');
+  grunt.loadNpmTasks('grunt-githooks');
 
   /** Custom tasks */
   grunt.registerTask('dev', 'Run sever for JS only development', function() {
