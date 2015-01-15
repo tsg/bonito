@@ -109,11 +109,19 @@ module.exports = function(grunt) {
             cwd: 'src/bonitosrv'
           }
         }
+      },
+      govet: {
+        command: 'go vet',
+        options: {
+          execOptions: {
+            cwd: 'src/bonitosrv'
+          }
+        }
       }
     },
     githooks: {
       all: {
-        'pre-commit': 'jshint shell:gofmt test'
+        'pre-commit': 'jshint shell:gofmt shell:govet test'
       }
     }
   });
