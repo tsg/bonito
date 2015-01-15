@@ -21,35 +21,35 @@ func NewElasticsearch() *Elasticsearch {
 	}
 }
 
-func (es *Elasticsearch) Insert(index string, doctype string, docjson string) error {
+func (es *Elasticsearch) Insert(index string, doctype string, docjson string) (*http.Response, error) {
 
 	path := fmt.Sprintf("%s/%s/%s", es.Url, index, doctype)
 
 	resp, err := http.Post(path, "application/json", strings.NewReader(docjson))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode > 299 {
-		return fmt.Errorf("ES returned an error: %s", resp.Status)
+		return resp, fmt.Errorf("ES returned an error: %s", resp.Status)
 	}
 
-	return nil
+	return resp, nil
 }
 
-func (es *Elasticsearch) Refresh(index string) error {
+func (es *Elasticsearch) Refresh(index string) (*http.Response, error) {
 	path := fmt.Sprintf("%s/%s/_refresh", es.Url, index)
 
 	resp, err := http.Post(path, "", nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode > 299 {
-		return fmt.Errorf("ES returned an error: %s", resp.Status)
+		return resp, fmt.Errorf("ES returned an error: %s", resp.Status)
 	}
 
-	return nil
+	return resp, nil
 }
