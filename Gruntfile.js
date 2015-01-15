@@ -79,6 +79,11 @@ module.exports = function(grunt) {
       once: {
         configFile: 'test/karma.conf.js',
         singleRun: true
+      },
+      phantom: {
+        configFile: 'test/karma.conf.js',
+        browsers: ['PhantomJS'],
+        singleRun: true
       }
     },
     protractor: {
