@@ -29,7 +29,7 @@
     }
 
     if (this.perRow != 1 && this.perRow != 2 && this.perRow != 4 && this.perRow != 6) {
-      // only accept 2, 4 ot 6 elements per row
+      // don't accept any number for the perRow value
       this.perRow = 4;
     }
     if (angular.element(window).width() < 768) {

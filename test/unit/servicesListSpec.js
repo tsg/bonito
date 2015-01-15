@@ -25,8 +25,12 @@
       expect(Pages.activePage.activeSubpage.path).toBe('overview');
     }));
 
-    it('should have 4 per row by default', function() {
-      expect(ctrl.perRow).toBe(4);
+    it('should have 4 or 1 per row by default', function() {
+      if (angular.element(window).width() < 768) {
+        expect(ctrl.perRow).toBe(1);
+      } else {
+        expect(ctrl.perRow).toBe(4);
+      }
     });
 
     it('should have a pageSize of 16', function() {
