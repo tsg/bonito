@@ -154,7 +154,7 @@ module.exports = function(grunt) {
   // Run unit tests
   grunt.registerTask('test', function() {
     grunt.task.run([
-      'karma:once',
+      'karma:phantom',
       'gotestonce'
     ]);
   });
