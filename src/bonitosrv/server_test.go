@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/codegangsta/negroni"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
 	"encoding/json"
+	"github.com/codegangsta/negroni"
 	"io"
 	"net/http"
 	"net/http/httptest"
