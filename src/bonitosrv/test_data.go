@@ -77,9 +77,16 @@ func (gen *TestTransactionsGenerator) insertInto(es *Elasticsearch, index string
 		} `json:"index"`
 	}
 	insOp.Index.Type = "trans"
-	for _, trans := range transactions {
+	for i, trans := range transactions {
 		enc.Encode(insOp)
 		enc.Encode(trans)
+
+		if i%1000 == 0 {
+			_, err := es.Bulk(index, &buf)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	_, err := es.Bulk(index, &buf)
