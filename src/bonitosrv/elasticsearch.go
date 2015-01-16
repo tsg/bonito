@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -9,6 +10,8 @@ import (
 
 type Elasticsearch struct {
 	Url string
+
+	client *http.Client
 }
 
 func NewElasticsearch() *Elasticsearch {
@@ -17,19 +20,23 @@ func NewElasticsearch() *Elasticsearch {
 		url = "http://localhost:9200"
 	}
 	return &Elasticsearch{
-		Url: url,
+		Url:    url,
+		client: &http.Client{},
 	}
 }
 
-func (es *Elasticsearch) Insert(index string, doctype string, docjson string) (*http.Response, error) {
+func (es *Elasticsearch) Insert(index string, doctype string, docjson string, refresh bool) (*http.Response, error) {
 
 	path := fmt.Sprintf("%s/%s/%s", es.Url, index, doctype)
 
-	resp, err := http.Post(path, "application/json", strings.NewReader(docjson))
+	if refresh {
+		path = fmt.Sprintf("%s?refresh=true", path)
+	}
+
+	resp, err := es.client.Post(path, "application/json", strings.NewReader(docjson))
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 
 	if resp.StatusCode > 299 {
 		return resp, fmt.Errorf("ES returned an error: %s", resp.Status)
@@ -41,11 +48,58 @@ func (es *Elasticsearch) Insert(index string, doctype string, docjson string) (*
 func (es *Elasticsearch) Refresh(index string) (*http.Response, error) {
 	path := fmt.Sprintf("%s/%s/_refresh", es.Url, index)
 
-	resp, err := http.Post(path, "", nil)
+	resp, err := es.client.Post(path, "", nil)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+
+	if resp.StatusCode > 299 {
+		return resp, fmt.Errorf("ES returned an error: %s", resp.Status)
+	}
+
+	return resp, nil
+}
+
+func (es *Elasticsearch) DeleteIndex(index string) (*http.Response, error) {
+	path := fmt.Sprintf("%s/%s", es.Url, index)
+
+	req, err := http.NewRequest("DELETE", path, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := es.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+type EsSearchResults struct {
+	Took   int             `json:"took"`
+	Shards json.RawMessage `json:"_shards"`
+	Hits   EsHits          `json:"hits"`
+}
+
+type EsHits struct {
+	Total int
+	Hits  []json.RawMessage `json:"hits"`
+}
+
+func (es *Elasticsearch) Search(index string, reqjson string) (*http.Response, error) {
+
+	path := fmt.Sprintf("%s/%s/_search", es.Url, index)
+
+	req, err := http.NewRequest("GET", path, strings.NewReader(reqjson))
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := es.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
 
 	if resp.StatusCode > 299 {
 		return resp, fmt.Errorf("ES returned an error: %s", resp.Status)
