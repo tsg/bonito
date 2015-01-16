@@ -77,9 +77,10 @@ func (es *Elasticsearch) DeleteIndex(index string) (*http.Response, error) {
 }
 
 type EsSearchResults struct {
-	Took   int             `json:"took"`
-	Shards json.RawMessage `json:"_shards"`
-	Hits   EsHits          `json:"hits"`
+	Took   int                        `json:"took"`
+	Shards json.RawMessage            `json:"_shards"`
+	Hits   EsHits                     `json:"hits"`
+	Aggs   map[string]json.RawMessage `json:"aggregations"`
 }
 
 type EsHits struct {
@@ -87,9 +88,9 @@ type EsHits struct {
 	Hits  []json.RawMessage `json:"hits"`
 }
 
-func (es *Elasticsearch) Search(index string, reqjson string) (*http.Response, error) {
+func (es *Elasticsearch) Search(index string, params string, reqjson string) (*http.Response, error) {
 
-	path := fmt.Sprintf("%s/%s/_search", es.Url, index)
+	path := fmt.Sprintf("%s/%s/_search%s", es.Url, index, params)
 
 	req, err := http.NewRequest("GET", path, strings.NewReader(reqjson))
 	if err != nil {
