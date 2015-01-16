@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
@@ -49,6 +50,21 @@ func (es *Elasticsearch) Refresh(index string) (*http.Response, error) {
 	path := fmt.Sprintf("%s/%s/_refresh", es.Url, index)
 
 	resp, err := es.client.Post(path, "", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode > 299 {
+		return resp, fmt.Errorf("ES returned an error: %s", resp.Status)
+	}
+
+	return resp, nil
+}
+
+func (es *Elasticsearch) Bulk(index string, data io.Reader) (*http.Response, error) {
+	path := fmt.Sprintf("%s/%s/_bulk", es.Url, index)
+
+	resp, err := es.client.Post(path, "", data)
 	if err != nil {
 		return nil, err
 	}

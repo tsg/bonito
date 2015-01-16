@@ -1,6 +1,11 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -34,4 +39,50 @@ var _ = Describe("Test data generation", func() {
 		})
 	})
 
+	Context("generate data in Elasticsearch", func() {
+		var es *Elasticsearch
+		index_name := fmt.Sprintf("packetbeat-test-%d", os.Getpid())
+		BeforeEach(func() {
+			es = NewElasticsearch()
+
+			_, err := es.DeleteIndex(index_name)
+			Expect(err).To(BeNil())
+			es.Refresh(index_name)
+
+		})
+		AfterEach(func() {
+			_, err := es.DeleteIndex(index_name)
+			Expect(err).To(BeNil())
+			es.Refresh(index_name)
+		})
+
+		It("Should be possible to insert them in ES", func() {
+
+			gen := TestTransactionsGenerator{
+				From:       time.Now().Add(-500 * time.Millisecond),
+				To:         time.Now().Add(-1 * time.Microsecond),
+				NrServices: 60,
+				NrHosts:    10,
+				RtMin:      0,
+				RtMax:      1000,
+				CountMin:   1,
+				CountMax:   10,
+				ErrorProb:  0.1,
+			}
+			transactions := gen.generateTestTransactions()
+
+			err := gen.insertInto(es, index_name, transactions)
+			Expect(err).To(BeNil())
+
+			resp, err := es.Search(index_name, "", "{}")
+			Expect(resp).NotTo(BeNil())
+			defer resp.Body.Close()
+			objresp, err := ioutil.ReadAll(resp.Body)
+			Expect(err).To(BeNil())
+			var esResult EsSearchResults
+			err = json.Unmarshal(objresp, &esResult)
+			Expect(err).To(BeNil())
+			Expect(esResult.Hits.Total).To(Equal(500))
+		})
+	})
 })

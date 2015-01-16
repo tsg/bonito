@@ -6,18 +6,20 @@ package main
  */
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"time"
 )
 
 type TestTransaction struct {
-	Timestamp    string
-	Service      string
-	Host         string
-	Count        int
-	Responsetime int
-	Status       string
+	Timestamp    string `json:"timestamp"`
+	Service      string `json:"service"`
+	Host         string `json:"host"`
+	Count        int    `json:"count"`
+	Responsetime int    `json:"responsetime"`
+	Status       string `json:"status"`
 }
 
 const TsLayout = "2006-01-02T15:04:05.000000"
@@ -60,4 +62,30 @@ func (gen *TestTransactionsGenerator) generateTestTransactions() []TestTransacti
 	}
 
 	return transactions
+}
+
+func (gen *TestTransactionsGenerator) insertInto(es *Elasticsearch, index string,
+	transactions []TestTransaction) error {
+
+	var buf bytes.Buffer
+
+	enc := json.NewEncoder(&buf)
+
+	var insOp struct {
+		Index struct {
+			Type string `json:"_type"`
+		} `json:"index"`
+	}
+	insOp.Index.Type = "trans"
+	for _, trans := range transactions {
+		enc.Encode(insOp)
+		enc.Encode(trans)
+	}
+
+	_, err := es.Bulk(index, &buf)
+	if err != nil {
+		return err
+	}
+	es.Refresh(index)
+	return nil
 }
