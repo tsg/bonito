@@ -10,6 +10,6 @@ Unlike Kibana, Bonito relies on a given structure for the data and  has a focus
 on visualisations for performance management. Like Kibana, it is very
 configurable with regards to the specifics of the data, like the field names.
 
-## Screenshots
+## Screenshot
 
   ![Screenshot](/screenshots/services.png?raw=true)
