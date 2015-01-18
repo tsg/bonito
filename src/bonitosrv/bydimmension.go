@@ -6,10 +6,23 @@ import (
 	"io/ioutil"
 )
 
+// Type grouping the methods of this API end point
+type ByDimensionApi struct {
+	es    *Elasticsearch
+	Index string
+}
+
+func NewByDimensionApi(index string) *ByDimensionApi {
+	return &ByDimensionApi{
+		es:    NewElasticsearch(),
+		Index: index,
+	}
+}
+
 type ByDimensionRequest struct {
-	timerange Timerange
-	Metrics   []string
-	Config    struct {
+	Timerange
+	Metrics []string
+	Config  struct {
 		Primary_dimension   string
 		Secondary_dimension string
 		Responsetime_field  string
@@ -19,7 +32,7 @@ type ByDimensionRequest struct {
 	}
 }
 
-func setByDimensionConfigDefaults(req *ByDimensionRequest) {
+func (api *ByDimensionApi) setConfigDefaults(req *ByDimensionRequest) {
 	c := &req.Config
 
 	if len(c.Primary_dimension) == 0 {
@@ -63,15 +76,15 @@ type EsByDimensionReq struct {
 	} `json:"aggs"`
 }
 
-func byDimensionQuery(req *ByDimensionRequest) (*ByDimensionResponse, error) {
+func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse, error) {
 
 	var esreq EsByDimensionReq
 	es := NewElasticsearch()
 
+	api.setConfigDefaults(req)
+
 	primary := &esreq.Aggs.Primary
 	primary.Terms.Field = req.Config.Primary_dimension
-
-	setByDimensionConfigDefaults(req)
 
 	// set the aggregations
 	primary.Aggs = MapStr{}
@@ -113,7 +126,9 @@ func byDimensionQuery(req *ByDimensionRequest) (*ByDimensionResponse, error) {
 		return nil, err
 	}
 
-	resp, err := es.Search(es.IndexPattern, "?search_type=count",
+	fmt.Println("Objreq=", string(objreq))
+
+	resp, err := es.Search(api.Index, "?search_type=count",
 		string(objreq))
 	if err != nil {
 		return nil, err

@@ -56,6 +56,13 @@ var _ = Describe("Public Bonitosrv Api", func() {
 	})
 
 	Context("Bydimension API", func() {
+		BeforeEach(func() {
+			err := InsertTestData("packetbeat-test")
+			Expect(err).To(BeNil())
+		})
+		AfterEach(func() {
+			DeleteTestData("packetbeat-test")
+		})
 		It("Should return success for empty body", func() {
 			response := BonitosrvQuery(bonitosrv,
 				"GET", "/api/bydimension", strings.NewReader(""))

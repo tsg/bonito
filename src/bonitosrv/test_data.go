@@ -96,3 +96,41 @@ func (gen *TestTransactionsGenerator) insertInto(es *Elasticsearch, index string
 	es.Refresh(index)
 	return nil
 }
+
+func InsertTestData(index string) error {
+
+	es := NewElasticsearch()
+
+	gen := TestTransactionsGenerator{
+		From:       time.Now().Add(-10 * time.Millisecond),
+		To:         time.Now().Add(-1 * time.Microsecond),
+		NrServices: 60,
+		NrHosts:    10,
+		RtMin:      0,
+		RtMax:      1000,
+		CountMin:   1,
+		CountMax:   10,
+		ErrorProb:  0.1,
+	}
+	transactions := gen.generateTestTransactions()
+
+	// make sure we start fresh
+	_, err := es.DeleteIndex(index)
+	if err != nil {
+		return err
+	}
+	es.Refresh(index)
+
+	err = gen.insertInto(es, index, transactions)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteTestData(index string) error {
+	es := NewElasticsearch()
+	_, err := es.DeleteIndex(index)
+	es.Refresh(index)
+	return err
+}

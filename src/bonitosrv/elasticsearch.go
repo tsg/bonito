@@ -10,8 +10,7 @@ import (
 )
 
 type Elasticsearch struct {
-	Url          string
-	IndexPattern string
+	Url string
 
 	client *http.Client
 }

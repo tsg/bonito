@@ -23,6 +23,8 @@ func newNegroniServer() *negroni.Negroni {
 		IndentJSON: true,
 	})
 
+	api := NewByDimensionApi("packetbeat-test") // TODO: make this configurable
+
 	router := mux.NewRouter()
 	router.HandleFunc("/api/ping", func(w http.ResponseWriter, req *http.Request) {
 		r.JSON(w, 200, map[string]interface{}{
@@ -48,8 +50,9 @@ func newNegroniServer() *negroni.Negroni {
 			}
 		}
 
-		resp, err := byDimensionQuery(&request)
+		resp, err := api.Query(&request)
 		if err != nil {
+			fmt.Printf("Error: %s\n", err)
 			// TODO: separate client errors from server errors
 			r.JSON(w, 500, MapStr{
 				"status":  "error",

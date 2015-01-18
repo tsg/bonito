@@ -14,19 +14,21 @@ import (
 var _ = Describe("Test data generation", func() {
 
 	Context("generateData", func() {
-
-		gen := TestTransactionsGenerator{
-			From:       time.Now().Add(-1 * time.Second),
-			To:         time.Now().Add(-1 * time.Microsecond),
-			NrServices: 60,
-			NrHosts:    10,
-			RtMin:      0,
-			RtMax:      1000,
-			CountMin:   1,
-			CountMax:   10,
-			ErrorProb:  0.1,
-		}
-		transactions := gen.generateTestTransactions()
+		var transactions []TestTransaction
+		BeforeEach(func() {
+			gen := TestTransactionsGenerator{
+				From:       time.Now().Add(-1 * time.Second),
+				To:         time.Now().Add(-2 * time.Microsecond),
+				NrServices: 60,
+				NrHosts:    10,
+				RtMin:      0,
+				RtMax:      1000,
+				CountMin:   1,
+				CountMax:   10,
+				ErrorProb:  0.1,
+			}
+			transactions = gen.generateTestTransactions()
+		})
 
 		It("Should generate 1000 points for a second of data", func() {
 			Expect(len(transactions)).To(Equal(1000))
@@ -50,8 +52,8 @@ var _ = Describe("Test data generation", func() {
 
 		})
 		AfterEach(func() {
-			//_, err := es.DeleteIndex(index_name)
-			//Expect(err).To(BeNil())
+			_, err := es.DeleteIndex(index_name)
+			Expect(err).To(BeNil())
 			es.Refresh(index_name)
 		})
 
