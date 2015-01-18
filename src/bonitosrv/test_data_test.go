@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -41,7 +40,7 @@ var _ = Describe("Test data generation", func() {
 
 	Context("generate data in Elasticsearch", func() {
 		var es *Elasticsearch
-		index_name := fmt.Sprintf("packetbeat-test-%d", os.Getpid())
+		index_name := fmt.Sprintf("packetbeat-test")
 		BeforeEach(func() {
 			es = NewElasticsearch()
 
@@ -51,8 +50,8 @@ var _ = Describe("Test data generation", func() {
 
 		})
 		AfterEach(func() {
-			_, err := es.DeleteIndex(index_name)
-			Expect(err).To(BeNil())
+			//_, err := es.DeleteIndex(index_name)
+			//Expect(err).To(BeNil())
 			es.Refresh(index_name)
 		})
 

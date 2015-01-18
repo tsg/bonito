@@ -10,10 +10,14 @@ import (
 )
 
 type Elasticsearch struct {
-	Url string
+	Url          string
+	IndexPattern string
 
 	client *http.Client
 }
+
+// General purpose shortcut
+type MapStr map[string]interface{}
 
 func NewElasticsearch() *Elasticsearch {
 	url := os.Getenv("ELASTICSEARCH_URL")

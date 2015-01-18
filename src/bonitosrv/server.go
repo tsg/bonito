@@ -12,23 +12,9 @@ import (
 	"github.com/unrolled/render"
 )
 
-type ByDimensionRequest struct {
-	timerange           Timerange
-	Primary_dimension   string
-	Secondary_dimension string
-	Metrics             []MetricDescription
-}
-
 type Timerange struct {
 	From string
 	To   string
-}
-
-type MetricDescription struct {
-	Field          string
-	Aggs           []string
-	Custom_type    string
-	Custom_options map[string]interface{}
 }
 
 func newNegroniServer() *negroni.Negroni {
@@ -62,10 +48,16 @@ func newNegroniServer() *negroni.Negroni {
 			}
 		}
 
-		r.JSON(w, 200, map[string]interface{}{
-			"status":  "ok",
-			"request": request,
-		})
+		resp, err := byDimensionQuery(&request)
+		if err != nil {
+			// TODO: separate client errors from server errors
+			r.JSON(w, 500, MapStr{
+				"status":  "error",
+				"message": fmt.Sprintf("Error: %s", err),
+			})
+		}
+
+		r.JSON(w, 200, resp)
 
 	}).Methods("GET", "POST")
 

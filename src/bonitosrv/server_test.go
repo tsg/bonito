@@ -5,12 +5,13 @@ import (
 	. "github.com/onsi/gomega"
 
 	"encoding/json"
-	"github.com/codegangsta/negroni"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/codegangsta/negroni"
 )
 
 type ResponseMessage struct {
@@ -78,26 +79,10 @@ var _ = Describe("Public Bonitosrv Api", func() {
 		It("Should return success for a valid JSON", func() {
 			data := `{
 			  "timerange": {
-				"from": "2015-14-12T12:12:12.000",
-				"to": "2015-14-12T12:12:12.000"
+				"from": "now-1h",
+				"to": "now"
 			  },
-			  "primary_dimension": "service",
-			  "secondary_dimension": "host",
-			  "metrics": [{
-				"field": "responsetime",
-				"aggs": ["max", "avg", "99p", "95p", "50p"]
-			  }, {
-				"field": "count",
-				"aggs": ["sum"]
-			  }, {
-				"field": "@custom_rate",
-				"custom_type": "errors_1k",
-				"custom_options": {
-				  "status_field": "status",
-				  "status_ok_value": "OK",
-				  "count_field": "count"
-				}
-			  }]
+			  "metrics": ["volume"]
 			}`
 			response := BonitosrvQuery(bonitosrv,
 				"GET", "/api/bydimension", strings.NewReader(data))
