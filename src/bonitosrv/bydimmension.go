@@ -86,6 +86,8 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 	primary := &esreq.Aggs.Primary
 	primary.Terms.Field = req.Config.Primary_dimension
 
+	// TODO: set filters
+
 	// set the aggregations
 	primary.Aggs = MapStr{}
 	for _, metric := range req.Metrics {
@@ -180,6 +182,19 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 				}
 
 				primary.Metrics["volume"] = volume.Value
+			case "rt_max":
+			case "rt_avg":
+				var stats struct {
+					Max float32
+					Avg float32
+				}
+				err = json.Unmarshal(bucket["rt_stats"], &stats)
+				if err != nil {
+					return nil, err
+				}
+
+				primary.Metrics["rt_max"] = stats.Max
+				primary.Metrics["rt_avg"] = stats.Avg
 			}
 		}
 

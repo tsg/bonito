@@ -64,7 +64,7 @@ func (gen *TestTransactionsGenerator) generateTestTransactions() []TestTransacti
 	return transactions
 }
 
-func (gen *TestTransactionsGenerator) insertInto(es *Elasticsearch, index string,
+func transactionsInsertInto(es *Elasticsearch, index string,
 	transactions []TestTransaction) error {
 
 	var buf bytes.Buffer
@@ -121,7 +121,7 @@ func InsertTestData(index string) error {
 	}
 	es.Refresh(index)
 
-	err = gen.insertInto(es, index, transactions)
+	err = transactionsInsertInto(es, index, transactions)
 	if err != nil {
 		return err
 	}

@@ -72,7 +72,7 @@ var _ = Describe("Test data generation", func() {
 			}
 			transactions := gen.generateTestTransactions()
 
-			err := gen.insertInto(es, index_name, transactions)
+			err := transactionsInsertInto(es, index_name, transactions)
 			Expect(err).To(BeNil())
 
 			resp, err := es.Search(index_name, "", "{}")
