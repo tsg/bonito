@@ -80,50 +80,38 @@ type EsByDimensionReq struct {
 	} `json:"aggs"`
 }
 
-func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse, error) {
-
-	var esreq EsByDimensionReq
-	es := NewElasticsearch()
-
-	api.setConfigDefaults(req)
-
-	primary := &esreq.Aggs.Primary
-	primary.Terms.Field = req.Config.Primary_dimension
-
-	// TODO: set filters
-
-	// set the aggregations
-	primary.Aggs = MapStr{}
+func (api *ByDimensionApi) buildRequestAggs(req *ByDimensionRequest) (*MapStr, error) {
+	aggs := MapStr{}
 	for _, metric := range req.Metrics {
 		switch metric {
 		case "volume":
-			primary.Aggs["volume"] = MapStr{
+			aggs["volume"] = MapStr{
 				"sum": MapStr{
 					"field": req.Config.Count_field,
 				},
 			}
 		case "rt_max":
 		case "rt_avg":
-			primary.Aggs["rt_stats"] = MapStr{
+			aggs["rt_stats"] = MapStr{
 				"stats": MapStr{
 					"field": req.Config.Responsetime_field,
 				},
 			}
 		case "rt_percentiles":
-			primary.Aggs["rt_percentiles"] = MapStr{
+			aggs["rt_percentiles"] = MapStr{
 				"percentiles": MapStr{
 					"field":    req.Config.Responsetime_field,
 					"percents": req.Config.Percentiles,
 				},
 			}
 		case "secondary_count":
-			primary.Aggs["secondary_card"] = MapStr{
+			aggs["secondary_card"] = MapStr{
 				"cardinality": MapStr{
 					"field": req.Config.Secondary_dimension,
 				},
 			}
 		case "errors_rate":
-			primary.Aggs["errors_count"] = MapStr{
+			aggs["errors_count"] = MapStr{
 				"filter": MapStr{
 					"not": MapStr{
 						"term": MapStr{
@@ -140,7 +128,7 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 				},
 			}
 			// make sure the volume is there
-			primary.Aggs["volume"] = MapStr{
+			aggs["volume"] = MapStr{
 				"sum": MapStr{
 					"field": req.Config.Count_field,
 				},
@@ -149,6 +137,114 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 			return nil, fmt.Errorf("Unknown metric name '%s'", metric)
 		}
 	}
+
+	return &aggs, nil
+}
+
+func (api *ByDimensionApi) bucketToPrimary(req *ByDimensionRequest,
+	bucket map[string]json.RawMessage) (*PrimaryDimension, error) {
+
+	var primary PrimaryDimension
+
+	err := json.Unmarshal(bucket["key"], &primary.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	primary.Metrics = map[string]float32{}
+
+	// transform metrics
+	for _, metric := range req.Metrics {
+		switch metric {
+		case "volume":
+			var volume struct {
+				Value float32
+			}
+
+			err = json.Unmarshal(bucket["volume"], &volume)
+			if err != nil {
+				return nil, err
+			}
+
+			primary.Metrics["volume"] = volume.Value
+		case "rt_max":
+		case "rt_avg":
+			var stats struct {
+				Max float32
+				Avg float32
+			}
+			err = json.Unmarshal(bucket["rt_stats"], &stats)
+			if err != nil {
+				return nil, err
+			}
+
+			primary.Metrics["rt_max"] = stats.Max
+			primary.Metrics["rt_avg"] = stats.Avg
+
+		case "rt_percentiles":
+			var percentiles struct {
+				Values map[string]float32
+			}
+			err = json.Unmarshal(bucket["rt_percentiles"], &percentiles)
+			for key, value := range percentiles.Values {
+				primary.Metrics[fmt.Sprintf("rt_%sp", key)] = value
+			}
+
+		case "secondary_count":
+			var secondary struct {
+				Value float32
+			}
+
+			err = json.Unmarshal(bucket["secondary_card"], &secondary)
+			if err != nil {
+				return nil, err
+			}
+
+			primary.Metrics["secondary_count"] = secondary.Value
+		case "errors_rate":
+			var errors_count struct {
+				Count struct {
+					Value float32
+				}
+			}
+			var volume1 struct {
+				Value float32
+			}
+
+			err = json.Unmarshal(bucket["errors_count"], &errors_count)
+			if err != nil {
+				return nil, err
+			}
+			err = json.Unmarshal(bucket["volume"], &volume1)
+			if err != nil {
+				return nil, err
+			}
+
+			primary.Metrics["errors_rate"] = errors_count.Count.Value /
+				volume1.Value
+		}
+	}
+
+	return &primary, nil
+}
+
+func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse, error) {
+
+	var esreq EsByDimensionReq
+	es := NewElasticsearch()
+
+	api.setConfigDefaults(req)
+
+	primary := &esreq.Aggs.Primary
+	primary.Terms.Field = req.Config.Primary_dimension
+
+	// TODO: set filters
+
+	aggs, err := api.buildRequestAggs(req)
+	if err != nil {
+		return nil, err
+	}
+	primary.Aggs = *aggs
 
 	objreq, err := json.Marshal(&esreq)
 	if err != nil {
@@ -186,88 +282,13 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 	response.Primary = []PrimaryDimension{}
 
 	for _, bucket := range answ.Aggregations.Primary.Buckets {
-		var primary PrimaryDimension
 
-		err := json.Unmarshal(bucket["key"], &primary.Name)
+		primary, err := api.bucketToPrimary(req, bucket)
 		if err != nil {
 			return nil, err
 		}
 
-		primary.Metrics = map[string]float32{}
-
-		// transform metrics
-		for _, metric := range req.Metrics {
-			switch metric {
-			case "volume":
-				var volume struct {
-					Value float32
-				}
-
-				err = json.Unmarshal(bucket["volume"], &volume)
-				if err != nil {
-					return nil, err
-				}
-
-				primary.Metrics["volume"] = volume.Value
-			case "rt_max":
-			case "rt_avg":
-				var stats struct {
-					Max float32
-					Avg float32
-				}
-				err = json.Unmarshal(bucket["rt_stats"], &stats)
-				if err != nil {
-					return nil, err
-				}
-
-				primary.Metrics["rt_max"] = stats.Max
-				primary.Metrics["rt_avg"] = stats.Avg
-
-			case "rt_percentiles":
-				var percentiles struct {
-					Values map[string]float32
-				}
-				err = json.Unmarshal(bucket["rt_percentiles"], &percentiles)
-				for key, value := range percentiles.Values {
-					primary.Metrics[fmt.Sprintf("rt_%sp", key)] = value
-				}
-
-			case "secondary_count":
-				var secondary struct {
-					Value float32
-				}
-
-				err = json.Unmarshal(bucket["secondary_card"], &secondary)
-				if err != nil {
-					return nil, err
-				}
-
-				primary.Metrics["secondary_count"] = secondary.Value
-			case "errors_rate":
-				var errors_count struct {
-					Count struct {
-						Value float32
-					}
-				}
-				var volume1 struct {
-					Value float32
-				}
-
-				err = json.Unmarshal(bucket["errors_count"], &errors_count)
-				if err != nil {
-					return nil, err
-				}
-				err = json.Unmarshal(bucket["volume"], &volume1)
-				if err != nil {
-					return nil, err
-				}
-
-				primary.Metrics["errors_rate"] = errors_count.Count.Value /
-					volume1.Value
-			}
-		}
-
-		response.Primary = append(response.Primary, primary)
+		response.Primary = append(response.Primary, *primary)
 	}
 
 	// if we got so far, we're successful
