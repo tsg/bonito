@@ -202,8 +202,20 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 				}
 				err = json.Unmarshal(bucket["rt_percentiles"], &percentiles)
 				for key, value := range percentiles.Values {
-					primary.Metrics[fmt.Sprintf("rt_%s", key)] = value
+					primary.Metrics[fmt.Sprintf("rt_%sp", key)] = value
 				}
+
+			case "secondary_count":
+				var secondary struct {
+					Value float32
+				}
+
+				err = json.Unmarshal(bucket["secondary_card"], &secondary)
+				if err != nil {
+					return nil, err
+				}
+
+				primary.Metrics["secondary_count"] = secondary.Value
 			}
 		}
 

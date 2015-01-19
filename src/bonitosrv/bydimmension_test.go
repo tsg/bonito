@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("ByDimension API", func() {
+var _ = FDescribe("ByDimension API", func() {
 	Context("Simple requests with 2 services", func() {
 		var es *Elasticsearch
 		var index_name string
@@ -64,7 +64,7 @@ var _ = Describe("ByDimension API", func() {
 			req.Timerange.From = "now-1d"
 			req.Timerange.To = "now"
 			req.Metrics = []string{"volume", "rt_avg", "rt_max",
-				"rt_percentiles"}
+				"rt_percentiles", "secondary_count"}
 			req.Config.Percentiles = []float32{50, 99.995}
 
 			resp, err := api.Query(&req)
@@ -88,10 +88,14 @@ var _ = Describe("ByDimension API", func() {
 			Expect(services["service1"].Metrics["rt_avg"]).To(Equal(float32(2050)))
 			Expect(services["service2"].Metrics["rt_avg"]).To(Equal(float32(2000)))
 
-			By("Correct percentiles")
-			Expect(services["service1"].Metrics["rt_50.0"]).To(Equal(float32(2050)))
-			Expect(services["service2"].Metrics["rt_50.0"]).To(Equal(float32(2000)))
-			Expect(services["service2"].Metrics["rt_99.995"]).To(Equal(float32(2000)))
+			By("correct percentiles")
+			Expect(services["service1"].Metrics["rt_50.0p"]).To(Equal(float32(2050)))
+			Expect(services["service2"].Metrics["rt_50.0p"]).To(Equal(float32(2000)))
+			Expect(services["service2"].Metrics["rt_99.995p"]).To(Equal(float32(2000)))
+
+			By("correct hosts values")
+			Expect(services["service1"].Metrics["secondary_count"]).To(Equal(float32(2)))
+			Expect(services["service2"].Metrics["secondary_count"]).To(Equal(float32(1)))
 		})
 	})
 })
