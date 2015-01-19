@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -71,8 +69,6 @@ var _ = Describe("ByDimension API", func() {
 			Expect(err).To(BeNil())
 			Expect(len(resp.Primary)).To(Equal(2))
 
-			fmt.Println("response: ", resp)
-
 			services := map[string]PrimaryDimension{}
 			for _, primary := range resp.Primary {
 				services[primary.Name] = primary
@@ -102,5 +98,51 @@ var _ = Describe("ByDimension API", func() {
 				0.6, 1e-6))
 			Expect(services["service2"].Metrics["errors_rate"]).To(BeNumerically("~", 0))
 		})
+
+		It("should get error rate if only that is requested", func() {
+			var req ByDimensionRequest
+			req.Metrics = []string{"errors_rate"}
+
+			resp, err := api.Query(&req)
+			Expect(err).To(BeNil())
+			Expect(len(resp.Primary)).To(Equal(2))
+
+			services := map[string]PrimaryDimension{}
+			for _, primary := range resp.Primary {
+				services[primary.Name] = primary
+			}
+
+			Expect(services["service1"].Metrics["errors_rate"]).To(BeNumerically("~",
+				0.6, 1e-6))
+			Expect(services["service2"].Metrics["errors_rate"]).To(BeNumerically("~", 0))
+		})
+
+		It("should get 1.0 error rates when nothing is successful", func() {
+			var req ByDimensionRequest
+			req.Metrics = []string{"errors_rate"}
+			req.Config.Status_value_ok = "nothing"
+
+			resp, err := api.Query(&req)
+			Expect(err).To(BeNil())
+			Expect(len(resp.Primary)).To(Equal(2))
+
+			services := map[string]PrimaryDimension{}
+			for _, primary := range resp.Primary {
+				services[primary.Name] = primary
+			}
+
+			Expect(services["service1"].Metrics["errors_rate"]).To(BeNumerically("~",
+				1.0, 1e-6))
+			Expect(services["service2"].Metrics["errors_rate"]).To(BeNumerically("~",
+				1.0))
+		})
+
+		It("should return error when the metric is not defined", func() {
+			var req ByDimensionRequest
+			req.Metrics = []string{"something"}
+			_, err := api.Query(&req)
+			Expect(err).NotTo(BeNil())
+		})
+
 	})
 })
