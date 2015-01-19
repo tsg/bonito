@@ -50,17 +50,16 @@ func newNegroniServer() *negroni.Negroni {
 			}
 		}
 
-		resp, err := api.Query(&request)
+		resp, code, err := api.Query(&request)
 		if err != nil {
 			fmt.Printf("Error: %s\n", err)
-			// TODO: separate client errors from server errors
-			r.JSON(w, 500, MapStr{
+			r.JSON(w, code, MapStr{
 				"status":  "error",
 				"message": fmt.Sprintf("Error: %s", err),
 			})
 		}
 
-		r.JSON(w, 200, resp)
+		r.JSON(w, code, resp)
 
 	}).Methods("GET", "POST")
 

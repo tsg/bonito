@@ -65,8 +65,9 @@ var _ = Describe("ByDimension API", func() {
 				"rt_percentiles", "secondary_count", "errors_rate"}
 			req.Config.Percentiles = []float32{50, 99.995}
 
-			resp, err := api.Query(&req)
+			resp, code, err := api.Query(&req)
 			Expect(err).To(BeNil())
+			Expect(code).To(Equal(200))
 			Expect(len(resp.Primary)).To(Equal(2))
 
 			services := map[string]PrimaryDimension{}
@@ -103,7 +104,7 @@ var _ = Describe("ByDimension API", func() {
 			var req ByDimensionRequest
 			req.Metrics = []string{"errors_rate"}
 
-			resp, err := api.Query(&req)
+			resp, _, err := api.Query(&req)
 			Expect(err).To(BeNil())
 			Expect(len(resp.Primary)).To(Equal(2))
 
@@ -122,7 +123,7 @@ var _ = Describe("ByDimension API", func() {
 			req.Metrics = []string{"errors_rate"}
 			req.Config.Status_value_ok = "nothing"
 
-			resp, err := api.Query(&req)
+			resp, _, err := api.Query(&req)
 			Expect(err).To(BeNil())
 			Expect(len(resp.Primary)).To(Equal(2))
 
@@ -140,9 +141,21 @@ var _ = Describe("ByDimension API", func() {
 		It("should return error when the metric is not defined", func() {
 			var req ByDimensionRequest
 			req.Metrics = []string{"something"}
-			_, err := api.Query(&req)
+			_, code, err := api.Query(&req)
 			Expect(err).NotTo(BeNil())
+			Expect(code).To(Equal(400))
 		})
+	})
 
+	Context("On an inexisting index", func() {
+		It("should return an error", func() {
+			api := NewByDimensionApi("no-such-index")
+			var req ByDimensionRequest
+			req.Metrics = []string{"volume"}
+
+			_, code, err := api.Query(&req)
+			Expect(err).NotTo(BeNil())
+			Expect(code).To(Equal(500))
+		})
 	})
 })

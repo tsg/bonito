@@ -228,7 +228,7 @@ func (api *ByDimensionApi) bucketToPrimary(req *ByDimensionRequest,
 	return &primary, nil
 }
 
-func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse, error) {
+func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse, int, error) {
 
 	var esreq EsByDimensionReq
 	es := NewElasticsearch()
@@ -242,13 +242,16 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 
 	aggs, err := api.buildRequestAggs(req)
 	if err != nil {
-		return nil, err
+		return nil, 400, err
 	}
 	primary.Aggs = *aggs
 
+	// up to here we assume there are client errors, from here on
+	// it's on us.
+
 	objreq, err := json.Marshal(&esreq)
 	if err != nil {
-		return nil, err
+		return nil, 500, err
 	}
 
 	fmt.Println("Objreq=", string(objreq))
@@ -256,13 +259,13 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 	resp, err := es.Search(api.Index, "?search_type=count",
 		string(objreq))
 	if err != nil {
-		return nil, err
+		return nil, 500, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, 500, err
 	}
 
 	var answ struct {
@@ -275,7 +278,7 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 
 	err = json.Unmarshal(body, &answ)
 	if err != nil {
-		return nil, err
+		return nil, 500, err
 	}
 
 	var response ByDimensionResponse
@@ -285,7 +288,7 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 
 		primary, err := api.bucketToPrimary(req, bucket)
 		if err != nil {
-			return nil, err
+			return nil, 500, err
 		}
 
 		response.Primary = append(response.Primary, *primary)
@@ -294,5 +297,5 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 	// if we got so far, we're successful
 	response.Status = "ok"
 
-	return &response, nil
+	return &response, 200, nil
 }
