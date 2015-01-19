@@ -23,7 +23,7 @@ var _ = Describe("ByDimension API", func() {
 			transactions := []TestTransaction{
 				TestTransaction{
 					Timestamp:    "2006-01-02T15:04:05.000000",
-					Service:      "Service1",
+					Service:      "service1",
 					Host:         "Host0",
 					Count:        2,
 					Responsetime: 2000,
@@ -31,7 +31,7 @@ var _ = Describe("ByDimension API", func() {
 				},
 				TestTransaction{
 					Timestamp:    "2006-01-02T15:04:05.001000",
-					Service:      "Service2",
+					Service:      "service2",
 					Host:         "Host3",
 					Count:        4,
 					Responsetime: 2000,
@@ -39,8 +39,8 @@ var _ = Describe("ByDimension API", func() {
 				},
 				TestTransaction{
 					Timestamp:    "2006-01-02T15:04:05.001000",
-					Service:      "Service1",
-					Host:         "Host2",
+					Service:      "service1",
+					Host:         "host2",
 					Count:        3,
 					Responsetime: 2100,
 					Status:       "Error",
@@ -63,7 +63,9 @@ var _ = Describe("ByDimension API", func() {
 			var req ByDimensionRequest
 			req.Timerange.From = "now-1d"
 			req.Timerange.To = "now"
-			req.Metrics = []string{"volume", "rt_avg", "rt_max"}
+			req.Metrics = []string{"volume", "rt_avg", "rt_max",
+				"rt_percentiles"}
+			req.Config.Percentiles = []float32{50, 99.995}
 
 			resp, err := api.Query(&req)
 			Expect(err).To(BeNil())
@@ -85,6 +87,11 @@ var _ = Describe("ByDimension API", func() {
 			Expect(services["service2"].Metrics["rt_max"]).To(Equal(float32(2000)))
 			Expect(services["service1"].Metrics["rt_avg"]).To(Equal(float32(2050)))
 			Expect(services["service2"].Metrics["rt_avg"]).To(Equal(float32(2000)))
+
+			By("Correct percentiles")
+			Expect(services["service1"].Metrics["rt_50.0"]).To(Equal(float32(2050)))
+			Expect(services["service2"].Metrics["rt_50.0"]).To(Equal(float32(2000)))
+			Expect(services["service2"].Metrics["rt_99.995"]).To(Equal(float32(2000)))
 		})
 	})
 })

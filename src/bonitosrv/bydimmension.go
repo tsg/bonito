@@ -107,9 +107,9 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 			}
 		case "rt_percentiles":
 			primary.Aggs["rt_percentiles"] = MapStr{
-				"percentile_ranks": MapStr{
-					"field":  req.Config.Responsetime_field,
-					"values": req.Config.Percentiles,
+				"percentiles": MapStr{
+					"field":    req.Config.Responsetime_field,
+					"percents": req.Config.Percentiles,
 				},
 			}
 		case "secondary_count":
@@ -195,6 +195,15 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 
 				primary.Metrics["rt_max"] = stats.Max
 				primary.Metrics["rt_avg"] = stats.Avg
+
+			case "rt_percentiles":
+				var percentiles struct {
+					Values map[string]float32
+				}
+				err = json.Unmarshal(bucket["rt_percentiles"], &percentiles)
+				for key, value := range percentiles.Values {
+					primary.Metrics[fmt.Sprintf("rt_%s", key)] = value
+				}
 			}
 		}
 
