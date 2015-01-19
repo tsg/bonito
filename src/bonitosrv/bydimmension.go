@@ -27,6 +27,7 @@ type ByDimensionRequest struct {
 		Secondary_dimension string
 		Responsetime_field  string
 		Status_field        string
+		Status_value_ok     string
 		Count_field         string
 		Percentiles         []float32
 	}
@@ -46,6 +47,9 @@ func (api *ByDimensionApi) setConfigDefaults(req *ByDimensionRequest) {
 	}
 	if len(c.Status_field) == 0 {
 		c.Status_field = "status"
+	}
+	if len(c.Status_value_ok) == 0 {
+		c.Status_value_ok = "ok"
 	}
 	if len(c.Count_field) == 0 {
 		c.Count_field = "count"
@@ -116,6 +120,29 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 			primary.Aggs["secondary_card"] = MapStr{
 				"cardinality": MapStr{
 					"field": req.Config.Secondary_dimension,
+				},
+			}
+		case "errors_rate":
+			primary.Aggs["errors_count"] = MapStr{
+				"filter": MapStr{
+					"not": MapStr{
+						"term": MapStr{
+							req.Config.Status_field: req.Config.Status_value_ok,
+						},
+					},
+				},
+				"aggs": MapStr{
+					"count": MapStr{
+						"sum": MapStr{
+							"field": "count",
+						},
+					},
+				},
+			}
+			// make sure the volume is there
+			primary.Aggs["volume"] = MapStr{
+				"sum": MapStr{
+					"field": req.Config.Count_field,
 				},
 			}
 		default:
@@ -216,6 +243,27 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 				}
 
 				primary.Metrics["secondary_count"] = secondary.Value
+			case "errors_rate":
+				var errors_count struct {
+					Count struct {
+						Value float32
+					}
+				}
+				var volume1 struct {
+					Value float32
+				}
+
+				err = json.Unmarshal(bucket["errors_count"], &errors_count)
+				if err != nil {
+					return nil, err
+				}
+				err = json.Unmarshal(bucket["volume"], &volume1)
+				if err != nil {
+					return nil, err
+				}
+
+				primary.Metrics["errors_rate"] = errors_count.Count.Value /
+					volume1.Value
 			}
 		}
 
