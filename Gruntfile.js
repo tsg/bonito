@@ -117,6 +117,9 @@ module.exports = function(grunt) {
             cwd: 'src/bonitosrv'
           }
         }
+      },
+      gendata: {
+        command: 'go run src/bonitosrv/gentestdata/gen.go'
       }
     },
     githooks: {
@@ -158,6 +161,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('gotestonce', 'Run Bonitosrv unit tests once', ['shell:gotest']);
+  grunt.registerTask('gentestdata', 'Generate test data in ES', ['shell:gendata']);
 
   // Run unit tests
   grunt.registerTask('test', function() {
