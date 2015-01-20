@@ -38,9 +38,7 @@ type TestTransactionsGenerator struct {
 	ErrorProb  float32
 }
 
-func (gen *TestTransactionsGenerator) Generate() []TestTransaction {
-
-	transactions := []TestTransaction{}
+func (gen *TestTransactionsGenerator) GenerateInChan(transactions chan TestTransaction) {
 
 	i := 0
 	for ts := gen.From; ts.Before(gen.To); ts = ts.Add(time.Millisecond) {
@@ -58,16 +56,45 @@ func (gen *TestTransactionsGenerator) Generate() []TestTransaction {
 			trans.Status = "OK"
 		}
 
-		transactions = append(transactions, trans)
-
+		transactions <- trans
 		i++
 	}
 
+	close(transactions)
+}
+
+func (gen *TestTransactionsGenerator) Generate() []TestTransaction {
+	transChan := make(chan TestTransaction, 100)
+
+	go gen.GenerateInChan(transChan)
+
+	transactions := []TestTransaction{}
+	for trans := range transChan {
+		transactions = append(transactions, trans)
+	}
 	return transactions
 }
 
+// Inserts the given test transactions in an Elasticsearch index.
 func InsertInto(es *elasticsearch.Elasticsearch, index string,
 	transactions []TestTransaction) error {
+
+	transChan := make(chan TestTransaction, 100)
+	go func() {
+		for _, trans := range transactions {
+			transChan <- trans
+		}
+		close(transChan)
+	}()
+
+	_, err := InsertInEsFromChan(es, index, transChan)
+	return err
+}
+
+// Inserts into Elasticsearch the transactions from the channel
+// Uses batches and the bulk API.
+func InsertInEsFromChan(es *elasticsearch.Elasticsearch, index string,
+	transactions chan TestTransaction) (int, error) {
 
 	var buf bytes.Buffer
 
@@ -79,24 +106,41 @@ func InsertInto(es *elasticsearch.Elasticsearch, index string,
 		} `json:"index"`
 	}
 	insOp.Index.Type = "trans"
-	for i, trans := range transactions {
+
+	flush := func() error {
+		_, err := es.Bulk(index, &buf)
+		if err != nil {
+			return err
+		}
+
+		buf.Reset()
+		enc = json.NewEncoder(&buf)
+		return nil
+	}
+
+	i := 0
+	for trans := range transactions {
 		enc.Encode(insOp)
 		enc.Encode(trans)
 
 		if i%1000 == 0 {
-			_, err := es.Bulk(index, &buf)
-			if err != nil {
-				return err
+			if err := flush(); err != nil {
+				return i, err
 			}
 		}
+		i++
 	}
 
-	_, err := es.Bulk(index, &buf)
-	if err != nil {
-		return err
+	if err := flush(); err != nil {
+		return i, err
 	}
-	es.Refresh(index)
-	return nil
+
+	_, err := es.Refresh(index)
+	if err != nil {
+		return i, err
+	}
+
+	return i, nil
 }
 
 func InsertTestData(index string) error {

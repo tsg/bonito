@@ -20,7 +20,7 @@ func main() {
 		ErrorProb:  0.1,
 	}
 
-	transactions := gen.Generate()
+	transChan := make(chan testdata.TestTransaction, 100)
 
 	index_name := "packetbeat-test"
 	es := elasticsearch.NewElasticsearch()
@@ -29,7 +29,11 @@ func main() {
 		fmt.Println("Error: ", err)
 	}
 
-	testdata.InsertInto(es, index_name, transactions)
+	go gen.GenerateInChan(transChan)
+	inserted, err := testdata.InsertInEsFromChan(es, index_name, transChan)
+	if err != nil {
+		fmt.Println("Error", err)
+	}
 
-	fmt.Printf("%d transactions inserted into %s\n", len(transactions), index_name)
+	fmt.Printf("%d transactions inserted into %s\n", inserted, index_name)
 }
