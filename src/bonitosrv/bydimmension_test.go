@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -14,7 +17,7 @@ var _ = Describe("ByDimension API", func() {
 		var index_name string
 		var api *ByDimensionApi
 		BeforeEach(func() {
-			index_name = "packetbeat-test"
+			index_name = fmt.Sprintf("packetbeat-unittest-%v", os.Getpid())
 			es = elasticsearch.NewElasticsearch()
 
 			_, err := es.DeleteIndex(index_name)

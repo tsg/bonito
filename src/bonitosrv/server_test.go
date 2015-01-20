@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -31,9 +34,10 @@ func BonitosrvQuery(n *negroni.Negroni, method string,
 
 var _ = Describe("Public Bonitosrv Api", func() {
 	var bonitosrv *negroni.Negroni
+	var index_name = fmt.Sprintf("packetbeat-unitttest-%v", os.Getpid())
 
 	BeforeEach(func() {
-		bonitosrv = newNegroniServer()
+		bonitosrv = newNegroniServer(index_name)
 	})
 
 	Context("Ping API", func() {
@@ -58,11 +62,11 @@ var _ = Describe("Public Bonitosrv Api", func() {
 
 	Context("Bydimension API", func() {
 		BeforeEach(func() {
-			err := testdata.InsertTestData("packetbeat-test")
+			err := testdata.InsertTestData(index_name)
 			Expect(err).To(BeNil())
 		})
 		AfterEach(func() {
-			testdata.DeleteTestData("packetbeat-test")
+			testdata.DeleteTestData(index_name)
 		})
 		It("Should return success for empty body", func() {
 			response := BonitosrvQuery(bonitosrv,

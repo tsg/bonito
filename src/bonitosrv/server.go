@@ -20,13 +20,13 @@ type Timerange struct {
 // General purpose shortcut
 type MapStr map[string]interface{}
 
-func newNegroniServer() *negroni.Negroni {
+func newNegroniServer(index_name string) *negroni.Negroni {
 
 	r := render.New(render.Options{
 		IndentJSON: true,
 	})
 
-	api := NewByDimensionApi("packetbeat-test") // TODO: make this configurable
+	api := NewByDimensionApi(index_name)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/api/ping", func(w http.ResponseWriter, req *http.Request) {
@@ -75,6 +75,6 @@ func newNegroniServer() *negroni.Negroni {
 }
 
 func main() {
-	n := newNegroniServer()
+	n := newNegroniServer("packetbeat-test")
 	n.Run(":3001")
 }

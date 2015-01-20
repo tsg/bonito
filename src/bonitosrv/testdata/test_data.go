@@ -38,7 +38,7 @@ type TestTransactionsGenerator struct {
 	ErrorProb  float32
 }
 
-func (gen *TestTransactionsGenerator) generateTestTransactions() []TestTransaction {
+func (gen *TestTransactionsGenerator) Generate() []TestTransaction {
 
 	transactions := []TestTransaction{}
 
@@ -114,7 +114,7 @@ func InsertTestData(index string) error {
 		CountMax:   10,
 		ErrorProb:  0.1,
 	}
-	transactions := gen.generateTestTransactions()
+	transactions := gen.Generate()
 
 	// make sure we start fresh
 	_, err := es.DeleteIndex(index)

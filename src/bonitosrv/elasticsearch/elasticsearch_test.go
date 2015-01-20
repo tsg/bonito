@@ -13,7 +13,7 @@ import (
 
 var _ = Describe("Elasticsearch proxy", func() {
 	var es *Elasticsearch
-	index_name := fmt.Sprintf("packetbeat-test-%d", os.Getpid())
+	index_name := fmt.Sprintf("packetbeat-unittest-%d", os.Getpid())
 	BeforeEach(func() {
 		es = NewElasticsearch()
 

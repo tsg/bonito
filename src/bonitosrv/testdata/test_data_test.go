@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -30,7 +31,7 @@ var _ = Describe("Test data generation", func() {
 				CountMax:   10,
 				ErrorProb:  0.1,
 			}
-			transactions = gen.generateTestTransactions()
+			transactions = gen.Generate()
 		})
 
 		It("Should generate 1000 points for a second of data", func() {
@@ -45,7 +46,7 @@ var _ = Describe("Test data generation", func() {
 
 	Context("generate data in Elasticsearch", func() {
 		var es *elasticsearch.Elasticsearch
-		index_name := fmt.Sprintf("packetbeat-test")
+		index_name := fmt.Sprintf("packetbeat-unittest-%v", os.Getpid())
 		BeforeEach(func() {
 			es = elasticsearch.NewElasticsearch()
 
@@ -73,7 +74,7 @@ var _ = Describe("Test data generation", func() {
 				CountMax:   10,
 				ErrorProb:  0.1,
 			}
-			transactions := gen.generateTestTransactions()
+			transactions := gen.Generate()
 
 			err := InsertInto(es, index_name, transactions)
 			Expect(err).To(BeNil())
