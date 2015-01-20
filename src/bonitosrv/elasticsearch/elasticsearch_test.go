@@ -1,10 +1,11 @@
-package main
+package elasticsearch
 
 import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"testing"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -116,3 +117,8 @@ var _ = Describe("Elasticsearch proxy", func() {
 		})
 	})
 })
+
+func TestElasticsearch(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Bonitosrv Elasticsearch suite")
+}

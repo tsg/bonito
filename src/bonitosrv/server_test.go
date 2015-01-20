@@ -4,6 +4,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	"bonitosrv/testdata"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -57,11 +58,11 @@ var _ = Describe("Public Bonitosrv Api", func() {
 
 	Context("Bydimension API", func() {
 		BeforeEach(func() {
-			err := InsertTestData("packetbeat-test")
+			err := testdata.InsertTestData("packetbeat-test")
 			Expect(err).To(BeNil())
 		})
 		AfterEach(func() {
-			DeleteTestData("packetbeat-test")
+			testdata.DeleteTestData("packetbeat-test")
 		})
 		It("Should return success for empty body", func() {
 			response := BonitosrvQuery(bonitosrv,

@@ -1,4 +1,4 @@
-package main
+package testdata
 
 /**
  * Utility functions to generate test transactions data.
@@ -11,6 +11,8 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+
+	"bonitosrv/elasticsearch"
 )
 
 type TestTransaction struct {
@@ -64,7 +66,7 @@ func (gen *TestTransactionsGenerator) generateTestTransactions() []TestTransacti
 	return transactions
 }
 
-func transactionsInsertInto(es *Elasticsearch, index string,
+func InsertInto(es *elasticsearch.Elasticsearch, index string,
 	transactions []TestTransaction) error {
 
 	var buf bytes.Buffer
@@ -99,7 +101,7 @@ func transactionsInsertInto(es *Elasticsearch, index string,
 
 func InsertTestData(index string) error {
 
-	es := NewElasticsearch()
+	es := elasticsearch.NewElasticsearch()
 
 	gen := TestTransactionsGenerator{
 		From:       time.Now().Add(-10 * time.Millisecond),
@@ -121,7 +123,7 @@ func InsertTestData(index string) error {
 	}
 	es.Refresh(index)
 
-	err = transactionsInsertInto(es, index, transactions)
+	err = InsertInto(es, index, transactions)
 	if err != nil {
 		return err
 	}
@@ -129,7 +131,7 @@ func InsertTestData(index string) error {
 }
 
 func DeleteTestData(index string) error {
-	es := NewElasticsearch()
+	es := elasticsearch.NewElasticsearch()
 	_, err := es.DeleteIndex(index)
 	es.Refresh(index)
 	return err

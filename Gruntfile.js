@@ -95,7 +95,7 @@ module.exports = function(grunt) {
     },
     shell: {
       gotest: {
-        command: 'go test',
+        command: 'ginkgo -r',
         options: {
           execOptions: {
             cwd: 'src/bonitosrv'
@@ -103,7 +103,7 @@ module.exports = function(grunt) {
         }
       },
       gofmt: {
-        command: 'go fmt',
+        command: 'go fmt ./...',
         options: {
           execOptions: {
             cwd: 'src/bonitosrv'
@@ -111,7 +111,7 @@ module.exports = function(grunt) {
         }
       },
       govet: {
-        command: 'go vet',
+        command: 'go vet ./...',
         options: {
           execOptions: {
             cwd: 'src/bonitosrv'

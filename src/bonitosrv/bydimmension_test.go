@@ -3,23 +3,26 @@ package main
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"bonitosrv/elasticsearch"
+	"bonitosrv/testdata"
 )
 
 var _ = Describe("ByDimension API", func() {
 	Context("Simple requests with 2 services", func() {
-		var es *Elasticsearch
+		var es *elasticsearch.Elasticsearch
 		var index_name string
 		var api *ByDimensionApi
 		BeforeEach(func() {
 			index_name = "packetbeat-test"
-			es = NewElasticsearch()
+			es = elasticsearch.NewElasticsearch()
 
 			_, err := es.DeleteIndex(index_name)
 			Expect(err).To(BeNil())
 			es.Refresh(index_name)
 
-			transactions := []TestTransaction{
-				TestTransaction{
+			transactions := []testdata.TestTransaction{
+				testdata.TestTransaction{
 					Timestamp:    "2006-01-02T15:04:05.000000",
 					Service:      "service1",
 					Host:         "Host0",
@@ -27,7 +30,7 @@ var _ = Describe("ByDimension API", func() {
 					Responsetime: 2000,
 					Status:       "ok",
 				},
-				TestTransaction{
+				testdata.TestTransaction{
 					Timestamp:    "2006-01-02T15:04:05.001000",
 					Service:      "service2",
 					Host:         "Host3",
@@ -35,7 +38,7 @@ var _ = Describe("ByDimension API", func() {
 					Responsetime: 2000,
 					Status:       "ok",
 				},
-				TestTransaction{
+				testdata.TestTransaction{
 					Timestamp:    "2006-01-02T15:04:05.001000",
 					Service:      "service1",
 					Host:         "host2",
@@ -45,7 +48,7 @@ var _ = Describe("ByDimension API", func() {
 				},
 			}
 
-			err = transactionsInsertInto(es, index_name, transactions)
+			err = testdata.InsertInto(es, index_name, transactions)
 			Expect(err).To(BeNil())
 
 			api = NewByDimensionApi(index_name)

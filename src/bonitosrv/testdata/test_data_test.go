@@ -1,4 +1,4 @@
-package main
+package testdata
 
 import (
 	"encoding/json"
@@ -8,7 +8,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	"testing"
 	"time"
+
+	"bonitosrv/elasticsearch"
 )
 
 var _ = Describe("Test data generation", func() {
@@ -41,10 +44,10 @@ var _ = Describe("Test data generation", func() {
 	})
 
 	Context("generate data in Elasticsearch", func() {
-		var es *Elasticsearch
+		var es *elasticsearch.Elasticsearch
 		index_name := fmt.Sprintf("packetbeat-test")
 		BeforeEach(func() {
-			es = NewElasticsearch()
+			es = elasticsearch.NewElasticsearch()
 
 			_, err := es.DeleteIndex(index_name)
 			Expect(err).To(BeNil())
@@ -72,7 +75,7 @@ var _ = Describe("Test data generation", func() {
 			}
 			transactions := gen.generateTestTransactions()
 
-			err := transactionsInsertInto(es, index_name, transactions)
+			err := InsertInto(es, index_name, transactions)
 			Expect(err).To(BeNil())
 
 			resp, err := es.Search(index_name, "", "{}")
@@ -80,10 +83,15 @@ var _ = Describe("Test data generation", func() {
 			defer resp.Body.Close()
 			objresp, err := ioutil.ReadAll(resp.Body)
 			Expect(err).To(BeNil())
-			var esResult EsSearchResults
+			var esResult elasticsearch.EsSearchResults
 			err = json.Unmarshal(objresp, &esResult)
 			Expect(err).To(BeNil())
 			Expect(esResult.Hits.Total).To(Equal(500))
 		})
 	})
 })
+
+func TestDataGenerator(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Bonitosrv TestData suite")
+}

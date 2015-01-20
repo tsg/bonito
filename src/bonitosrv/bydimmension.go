@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bonitosrv/elasticsearch"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -8,13 +9,13 @@ import (
 
 // Type grouping the methods of this API end point
 type ByDimensionApi struct {
-	es    *Elasticsearch
+	es    *elasticsearch.Elasticsearch
 	Index string
 }
 
 func NewByDimensionApi(index string) *ByDimensionApi {
 	return &ByDimensionApi{
-		es:    NewElasticsearch(),
+		es:    elasticsearch.NewElasticsearch(),
 		Index: index,
 	}
 }
@@ -231,7 +232,7 @@ func (api *ByDimensionApi) bucketToPrimary(req *ByDimensionRequest,
 func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse, int, error) {
 
 	var esreq EsByDimensionReq
-	es := NewElasticsearch()
+	es := elasticsearch.NewElasticsearch()
 
 	api.setConfigDefaults(req)
 

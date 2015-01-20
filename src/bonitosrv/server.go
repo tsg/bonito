@@ -17,6 +17,9 @@ type Timerange struct {
 	To   string
 }
 
+// General purpose shortcut
+type MapStr map[string]interface{}
+
 func newNegroniServer() *negroni.Negroni {
 
 	r := render.New(render.Options{
