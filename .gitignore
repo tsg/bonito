@@ -6,3 +6,4 @@ src/web/styles/main.css
 src/bonitosrv/bonitosrv
 src/bonitosrv/bonitosrv.test
 src/bonitosrv/gin-bin
+pkg
