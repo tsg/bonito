@@ -27,7 +27,7 @@
       "rt_avg",
       "rt_percentiles",
       "secondary_count",
-      "error_rate"
+      "errros_rate"
     ];
 
     var service = this;
@@ -72,21 +72,15 @@
         switch (sort_key) {
           case 'errors':
             return service.data.sort(function(a, b) {
-              if (a.metrics.error_rate === b.metrics.error_rate) {
+              if (a.metrics.errros_rate === b.metrics.errros_rate) {
                 return a.metrics.volume - b.metrics.volume;
               }
-              return b.metrics.error_rate - a.metrics.error_rate;
+              return b.metrics.errros_rate - a.metrics.errros_rate;
             });
           case 'volume':
             return _.sortBy(service.data, function(d) { return -d.size; });
           case 'alpha':
             return _.sortBy(service.data, 'name');
-          case 'max':
-          case '99p':
-          case '95p':
-          case '50p':
-          case 'avg':
-            return _.sortBy(service.data, function(d) { return -d['rt_' + sort_key]; });
           default:
             return service.data;
         }
