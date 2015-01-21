@@ -20,7 +20,7 @@ type Timerange struct {
 // General purpose shortcut
 type MapStr map[string]interface{}
 
-func newNegroniServer(index_name string) *negroni.Negroni {
+func newNegroniServer(index_name string, enableLogging bool) *negroni.Negroni {
 
 	r := render.New(render.Options{
 		IndentJSON: true,
@@ -66,7 +66,10 @@ func newNegroniServer(index_name string) *negroni.Negroni {
 
 	}).Methods("GET", "POST")
 
-	n := negroni.New(negroni.NewLogger())
+	n := negroni.New()
+	if enableLogging {
+		n.Use(negroni.NewLogger())
+	}
 	n.Use(recovery.JSONRecovery(true))
 	n.Use(negroni.NewStatic(http.Dir("../web")))
 	n.UseHandler(router)
@@ -75,6 +78,6 @@ func newNegroniServer(index_name string) *negroni.Negroni {
 }
 
 func main() {
-	n := newNegroniServer("packetbeat-test")
+	n := newNegroniServer("packetbeat-test", true)
 	n.Run(":3001")
 }

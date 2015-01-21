@@ -255,7 +255,7 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 		return nil, 500, err
 	}
 
-	fmt.Println("Objreq=", string(objreq))
+	//fmt.Println("Objreq=", string(objreq))
 
 	resp, err := es.Search(api.Index, "?search_type=count",
 		string(objreq))

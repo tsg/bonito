@@ -75,6 +75,8 @@ func (es *Elasticsearch) Request(method string, index string, path string,
 	return resp, nil
 }
 
+// Refresh an index. Call this after doing inserts or creating/deleting
+// indexes in unit tests.
 func (es *Elasticsearch) Refresh(index string) (*http.Response, error) {
 	return es.Request("POST", index, "_refresh", nil)
 }

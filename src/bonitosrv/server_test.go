@@ -37,7 +37,7 @@ var _ = Describe("Public Bonitosrv Api", func() {
 	var index_name = fmt.Sprintf("packetbeat-unitttest-%v", os.Getpid())
 
 	BeforeEach(func() {
-		bonitosrv = newNegroniServer(index_name)
+		bonitosrv = newNegroniServer(index_name, false)
 	})
 
 	Context("Ping API", func() {
