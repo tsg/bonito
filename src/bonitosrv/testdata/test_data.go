@@ -27,6 +27,7 @@ type TestTransaction struct {
 const TsLayout = "2006-01-02T15:04:05.000000"
 
 type TestTransactionsGenerator struct {
+	Increment  time.Duration
 	From       time.Time
 	To         time.Time
 	NrServices int
@@ -40,8 +41,12 @@ type TestTransactionsGenerator struct {
 
 func (gen *TestTransactionsGenerator) GenerateInChan(transactions chan TestTransaction) {
 
+	if gen.Increment == 0 {
+		gen.Increment = time.Millisecond
+	}
+
 	i := 0
-	for ts := gen.From; ts.Before(gen.To); ts = ts.Add(time.Millisecond) {
+	for ts := gen.From; ts.Before(gen.To); ts = ts.Add(gen.Increment) {
 		var trans TestTransaction
 
 		trans.Timestamp = ts.UTC().Format(TsLayout)
