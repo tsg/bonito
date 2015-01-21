@@ -1,6 +1,7 @@
 package elasticsearch
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -114,6 +115,19 @@ var _ = Describe("Elasticsearch proxy", func() {
 			err = json.Unmarshal(esResult.Aggs["value_sum"], &val)
 			Expect(err).To(BeNil())
 			Expect(int(val.Value)).To(Equal(5))
+		})
+	})
+
+	Context("Bulk API", func() {
+		It("Should work to do a simple bulk insert", func() {
+			objrequest := `{ "index" : { "_type": "test1" } }
+				{ "field1" : "value1" }
+`
+
+			resp, err := es.Bulk(index_name, bytes.NewBufferString(objrequest))
+			Expect(err).To(BeNil())
+			Expect(resp).NotTo(BeNil())
+
 		})
 	})
 })

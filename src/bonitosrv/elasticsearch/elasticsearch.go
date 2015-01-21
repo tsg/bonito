@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -49,10 +50,20 @@ func (es *Elasticsearch) Insert(index string, doctype string, docjson string, re
 	return resp, nil
 }
 
-func (es *Elasticsearch) Refresh(index string) (*http.Response, error) {
-	path := fmt.Sprintf("%s/%s/_refresh", es.Url, index)
+// Generic request method. Returns the HTTP response that we get from ES.
+// If ES returns an error HTTP code (>299), the error is non-nil and the
+// response is also non-nil.
+func (es *Elasticsearch) Request(method string, index string, path string,
+	data io.Reader) (*http.Response, error) {
 
-	resp, err := es.client.Post(path, "", nil)
+	url := fmt.Sprintf("%s/%s/%s", es.Url, index, path)
+
+	req, err := http.NewRequest(method, url, data)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := es.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -64,19 +75,26 @@ func (es *Elasticsearch) Refresh(index string) (*http.Response, error) {
 	return resp, nil
 }
 
+func (es *Elasticsearch) Refresh(index string) (*http.Response, error) {
+	return es.Request("POST", index, "_refresh", nil)
+}
+
+// Execute a bulk request via the ES _bulk API.
 func (es *Elasticsearch) Bulk(index string, data io.Reader) (*http.Response, error) {
-	path := fmt.Sprintf("%s/%s/_bulk", es.Url, index)
+	return es.Request("POST", index, "_bulk", data)
+}
 
-	resp, err := es.client.Post(path, "", data)
+// Utility function to read the full body of an HTTP response
+// into a string.
+func ResponseBody(resp *http.Response) string {
+	if resp.Body == nil {
+		return ""
+	}
+	respbytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return fmt.Sprintf("Error reading response body: %v", err)
 	}
-
-	if resp.StatusCode > 299 {
-		return resp, fmt.Errorf("ES returned an error: %s", resp.Status)
-	}
-
-	return resp, nil
+	return string(respbytes)
 }
 
 func (es *Elasticsearch) DeleteIndex(index string) (*http.Response, error) {
