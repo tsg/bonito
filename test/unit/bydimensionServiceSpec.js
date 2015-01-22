@@ -10,7 +10,7 @@
       service = byDimensionProxy;
       $httpBackend = _$httpBackend_;
 
-      $httpBackend.whenGET('/api/bydimension').respond({
+      $httpBackend.whenPOST('/api/bydimension').respond({
         "status": "ok",
         "primary": [
           {
