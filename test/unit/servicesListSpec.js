@@ -231,6 +231,15 @@
         'service10', 'service11']);
     });
 
+    it('all panels should have a size_rel value', function() {
+      expect(_.every(ctrl.panels, 'size_rel')).toBe(true);
+    });
+
+    it('all panels should have a volumne value', function() {
+      expect(_.every(ctrl.panels, function(d) { return _.isNumber(d.metrics.volume);}))
+        .toBe(true);
+    });
+
   });
 
 })();

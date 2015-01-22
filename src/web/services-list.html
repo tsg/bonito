@@ -44,15 +44,15 @@
         <table class="table table-condensed" style="width:50%;float:left">
           <tr>
             <th>Volume</th>
-            <td><span ng-class="panel.size|humanNumberClass">{{ panel.size|humanNumber }}/s</span></td>
+            <td><span ng-class="panel.metrics.volume|humanNumberClass">{{ panel.metrics.volume|humanNumber }}/s</span></td>
           </tr>
           <tr>
             <th>Hosts</th>
-            <td>42</td>
+            <td><span ng-class="panel.metrics.secondary_count|humanNumberClass">{{ panel.metrics.secondary_count|humanNumber }}</span></td>
           </tr>
           <tr>
             <th>Per Host</th>
-            <td><span ng-class="panel.size/42|humanNumberClass">{{ panel.size/42|humanNumber:0 }}</span></td>
+            <td><span ng-class="panel.metrics.volume/panel.metrics.secondary_count|humanNumberClass">{{ panel.metrics.volume/panel.metrics.secondary_count|humanNumber:0 }}</span></td>
           </tr>
           <tr>
             <th>Errors/1K</th>

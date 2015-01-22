@@ -1,12 +1,14 @@
 (function() {
   'use strict';
 
-  var app = angular.module('bydimension-service', []);
+  var app = angular.module('bydimension-service', [
+    'lodash'
+  ]);
 
   /**
    * A proxy service to the ByDimension API.
    */
-  app.factory('byDimensionProxy', ['$http', function($http) {
+  app.factory('byDimensionProxy', ['_', '$http', function(_, $http) {
 
     this.data = [];
 
@@ -27,7 +29,7 @@
       "rt_avg",
       "rt_percentiles",
       "secondary_count",
-      "errros_rate"
+      "errors_rate"
     ];
 
     var service = this;
@@ -38,29 +40,47 @@
         metrics: service.metrics,
         config: service.config
       };
-      return $http.get('/api/bydimension', request)
+
+      return $http.post('/api/bydimension', request)
         .success(function(data) {
           service.data = data.primary;
-
-          service.compute_relative_sizes(service.data,
-            service.config.use_logarithmic_planet_size);
+          service.afterLoad(service.data);
         })
         .error(function(data, status, headers, config) {
           console.log("Error: ", status);
         });
     };
 
-    this.compute_relative_sizes = function(data, useLogarithmicPlanetSize) {
-        var max_size = _.max(data, 'size').size;
+    // process data after it's loaded
+    this.afterLoad = function(data) {
+      _.each(data, function(d) {
+        // make sure we have a values array
+        if (_.isUndefined(d.values)) {
+          d.values = [];
+        }
+      });
 
-        _.each(data, function(d) {
-          if (useLogarithmicPlanetSize) {
-            // logarithmic scale
-            d.size_rel = Math.log(d.size) / Math.log(max_size);
-          } else {
-            d.size_rel = d.size / max_size;
-          }
-        });
+      service.compute_relative_sizes(data,
+        service.config.use_logarithmic_planet_size);
+    };
+
+    // compute the size of the relative planets
+    this.compute_relative_sizes = function(data, useLogarithmicPlanetSize) {
+      if (_.isEmpty(data)) {
+        return;
+      }
+
+      var max_size = _.max(data, function(d) { return d.metrics.volume; })
+        .metrics.volume;
+
+      _.each(data, function(d) {
+        if (useLogarithmicPlanetSize) {
+          // logarithmic scale
+          d.size_rel = Math.log(d.metrics.volume) / Math.log(max_size);
+        } else {
+          d.size_rel = d.metrics.volume / max_size;
+        }
+      });
     };
 
 
@@ -72,7 +92,7 @@
         switch (sort_key) {
           case 'errors':
             return service.data.sort(function(a, b) {
-              if (Math.abs(a.metrics.errros_rate - b.metrics.errros_rate) < 1e-6) {
+              if (Math.abs(a.metrics.errors_rate - b.metrics.errors_rate) < 1e-6) {
                 return b.metrics.volume - a.metrics.volume;
               }
               return b.metrics.errors_rate - a.metrics.errors_rate;
