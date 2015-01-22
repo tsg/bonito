@@ -56,7 +56,7 @@ func (api *ByDimensionApi) setConfigDefaults(req *ByDimensionRequest) {
 		c.Count_field = "count"
 	}
 	if len(c.Percentiles) == 0 {
-		c.Percentiles = []float32{50, 95, 99, 99.5}
+		c.Percentiles = []float32{50, 90, 99, 99.5}
 	}
 }
 

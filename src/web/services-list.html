@@ -56,29 +56,29 @@
           </tr>
           <tr>
             <th>Errors/1K</th>
-            <td><span ng-class="panel.errors|humanNumberClass">{{ panel.errors|humanNumber:0 }}</span></td>
+            <td><span ng-class="panel.metrics.errors_rate|humanNumberClass">{{ panel.metrics.errors_rate*1000|humanNumber:0 }}</span></td>
           </tr>
         </table>
         <table class="table table-condensed" style="width:50%;">
           <tr>
             <th>Max</th>
-            <td><span ng-class="panel.rt_max|humanDurationClass">{{ panel.rt_max|humanDuration }}</span></td>
+            <td><span ng-class="panel.metrics.rt_max|humanDurationClass">{{ panel.metrics.rt_max|humanDuration }}</span></td>
           </tr>
           <tr>
             <th>99p</th>
-            <td><span ng-class="panel.rt_99p|humanDurationClass">{{ panel.rt_99p|humanDuration }}</span></td>
+            <td><span ng-class="panel.metrics['rt_99.0p']|humanDurationClass">{{ panel.metrics['rt_99.0p']|humanDuration }}</span></td>
           </tr>
           <tr>
-            <th>95p</th>
-            <td><span ng-class="panel.rt_95p|humanDurationClass">{{ panel.rt_95p|humanDuration }}</span></td>
+            <th>90p</th>
+            <td><span ng-class="panel.metrics['rt_90.0p']|humanDurationClass">{{ panel.metrics['rt_90.0p']|humanDuration }}</span></td>
           </tr>
           <tr>
             <th>50p</th>
-            <td><span ng-class="panel.rt_50p|humanDurationClass">{{ panel.rt_50p|humanDuration }}</span></td>
+            <td><span ng-class="panel.metrics['rt_50.0p']|humanDurationClass">{{ panel.metrics['rt_50.0p']|humanDuration }}</span></td>
           </tr>
           <tr>
             <th>Mean</th>
-            <td><span ng-class="panel.rt_avg|humanDurationClass">{{ panel.rt_avg|humanDuration }}</span></td>
+            <td><span ng-class="panel.metrics.rt_avg|humanDurationClass">{{ panel.metrics.rt_avg|humanDuration }}</span></td>
           </tr>
         </table>
 
