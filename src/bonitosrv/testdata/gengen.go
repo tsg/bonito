@@ -57,7 +57,7 @@ type generator interface {
 type GenGen struct {
 	GenGenOptions
 
-	generators map[string]generator
+	generators []map[string]generator
 }
 
 type MapStr map[string]interface{}
@@ -71,14 +71,15 @@ func NewGenGen(options GenGenOptions) (*GenGen, error) {
 		return nil, fmt.Errorf("No specs given")
 	}
 
-	generators := map[string]generator{}
-
 	gen := &GenGen{
 		GenGenOptions: options,
 	}
 
+	gen.generators = []map[string]generator{}
+
 	// initialize generators
 	for _, specMap := range options.Specs {
+		generators := map[string]generator{}
 		for key, spec := range specMap {
 			if spec.Timerange != nil {
 				generators[key] = gen.NewTimerange(*spec.Timerange)
@@ -88,27 +89,29 @@ func NewGenGen(options GenGenOptions) (*GenGen, error) {
 				return nil, fmt.Errorf("Not implemented generator for: %s", key)
 			}
 		}
+		gen.generators = append(gen.generators, generators)
 	}
-
-	gen.generators = generators
 
 	return gen, nil
 }
 
-func (gen *GenGen) Generate(step int) MapStr {
-	m := MapStr{}
-
-	for key, generator := range gen.generators {
-		m[key] = generator.Generate(step)
+func (gen *GenGen) Generate(step int) []MapStr {
+	var res []MapStr
+	for _, arr := range gen.generators {
+		m := MapStr{}
+		for key, generator := range arr {
+			m[key] = generator.Generate(step)
+		}
+		res = append(res, m)
 	}
 
-	return m
+	return res
 }
 
 func (gen *GenGen) GenerateList() []MapStr {
 	lst := []MapStr{}
 	for i := 0; i < gen.GenGenOptions.Samples; i++ {
-		lst = append(lst, gen.Generate(i))
+		lst = append(lst, gen.Generate(i)...)
 	}
 	return lst
 }

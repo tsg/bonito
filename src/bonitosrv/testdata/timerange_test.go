@@ -46,7 +46,7 @@ var _ = Describe("GenGen Timerange", func() {
 		})
 
 		It("should genereate time.Time elements", func() {
-			ts, ok := gen.Generate(0)["ts"].(time.Time)
+			ts, ok := gen.Generate(0)[0]["ts"].(time.Time)
 			Expect(ok).To(BeTrue())
 			Expect(ts).To(Equal(from))
 		})
