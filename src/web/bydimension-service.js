@@ -15,7 +15,8 @@
     this.config = {
       primary_dimension: 'service',
       secondary_dimension: 'host',
-      use_logarithmic_planet_size: true
+      use_logarithmic_planet_size: true,
+      percentiles: [50, 90, 99, 99.5]
     };
 
     this.timerange = {
