@@ -144,6 +144,7 @@
 
     this.updateUseLogarithmicPlanetSize = function() {
       $location.search('lnSize', ctrl.useLogarithmicPlanetSize.toString());
+      Proxy.recomputePlanetSizes(ctrl.useLogarithmicPlanetSize);
       ctrl.render();
     };
 

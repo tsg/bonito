@@ -104,6 +104,9 @@
           default:
             return service.data;
         }
+      },
+      recomputePlanetSizes: function(useLogScale) {
+        service.compute_relative_sizes(service.data, useLogScale);
       }
     };
   }]);
