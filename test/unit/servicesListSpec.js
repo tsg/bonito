@@ -2,13 +2,14 @@
   'use strict';
 
   beforeEach(module('bonitoApp'));
+  beforeEach(module('services-test'));
 
   describe('ServicesListCtrl', function() {
     var ctrl,
       $controller,
       $rootScope;
 
-    beforeEach(inject(function(_$controller_, _$rootScope_) {
+    beforeEach(inject(function(_$controller_, _$rootScope_, byDimensionProxyMock) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       ctrl = $controller("ServicesListCtrl as app", {
@@ -16,7 +17,8 @@
         $routeParams: {
           pageSize: 16,
           rowsPerPage: 4
-        }
+        },
+        byDimensionProxy: byDimensionProxyMock
       });
     }));
 
@@ -57,23 +59,25 @@
       expect(ctrl.panels.length).toBe(81);
     });
 
-    it('should load only one panel when called with a filter', function() {
+    it('should load only one panel when called with a filter', inject(function(byDimensionProxyMock) {
       ctrl = $controller("ServicesListCtrl as app", {
         $scope: $rootScope,
+        byDimensionProxy: byDimensionProxyMock,
         $routeParams: {
           pageSize: 16,
           rowsPerPage: 4,
-          filter: 'Service31'
+          filter: 'Service31',
         }
       });
 
       expect(ctrl.panels.length).toBe(1);
-    });
+    }));
 
 
-    it('should accept a regexp', function() {
+    it('should accept a regexp', inject(function(byDimensionProxyMock) {
       ctrl = $controller("ServicesListCtrl as app", {
         $scope: $rootScope,
+        byDimensionProxy: byDimensionProxyMock,
         $routeParams: {
           pageSize: 16,
           rowsPerPage: 4,
@@ -82,7 +86,7 @@
       });
 
       expect(ctrl.panels.length).toBe(2);
-    });
+    }));
 
     it('should filter panels when entering something in the search box', function() {
       $rootScope.app.filter = 'Hello';

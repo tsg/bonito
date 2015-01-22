@@ -7,7 +7,6 @@
     'lodash',
     'd3',
 
-    'services-test',
     'services-list',
     'navbar-directive',
     'svggraph-directive',

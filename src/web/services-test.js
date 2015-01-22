@@ -6,7 +6,7 @@
   /**
    * Test service for the services list.
    */
-  app.factory('ServicesProxy', function() {
+  app.factory('byDimensionProxyMock', function() {
     var test_data = [];
 
     this.generateData = function(lower, upper, curve) {
@@ -113,6 +113,14 @@
     };
 
     return {
+      load: function() {
+        // returns a dummy promise that resolves immediately.
+        return {
+          then: function(f) {
+            f();
+          }
+        };
+      },
       get: function(sort_key, useLogarithmicPlanetSize) {
         // TODO: move this where we fetch the data
         compute_relative_sizes(test_data, useLogarithmicPlanetSize);

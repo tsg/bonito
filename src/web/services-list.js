@@ -5,6 +5,7 @@
   var app = angular.module('services-list', [
     'infinite-scroll',
 
+    'bydimension-service',
     'config-directive'
   ]);
 
@@ -12,8 +13,8 @@
    * Controller for the Services Grid page.
    */
   app.controller('ServicesListCtrl',
-       ['_', 'Pages', 'ServicesProxy', '$routeParams', '$location', '$scope',
-    function(_, Pages, ServicesProxy, $routeParams, $location, $scope) {
+       ['_', 'Pages', 'byDimensionProxy', '$routeParams', '$location', '$scope',
+    function(_, Pages, Proxy, $routeParams, $location, $scope) {
 
     _.assign(Pages.activePage, Pages.getPageById('services'));
     Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'overview');
@@ -62,7 +63,7 @@
      * Loads the next "page" of panels.
      */
     this.loadMore = function() {
-      if (ctrl.loaded > ServicesProxy
+      if (ctrl.loaded > Proxy
                           .get(ctrl.sortOrder, ctrl.useLogarithmicPlanetSize)
                           .filter(ctrl.filterServices)
                           .length) {
@@ -70,7 +71,7 @@
         return false;
       }
 
-      var toAdd = ServicesProxy
+      var toAdd = Proxy
         .get(ctrl.sortOrder, ctrl.useLogarithmicPlanetSize)
         .filter(ctrl.filterServices)
         .slice(ctrl.loaded, ctrl.loaded + ctrl.pageSize);
@@ -106,7 +107,7 @@
 
       // initial page
       ctrl.panels = [];
-      ctrl.panels = ServicesProxy
+      ctrl.panels = Proxy
         .get(ctrl.sortOrder, this.useLogarithmicPlanetSize)
         .filter(ctrl.filterServices)
         .slice(0, ctrl.pageSize);
@@ -146,8 +147,10 @@
       ctrl.render();
     };
 
-    // first rendering
-    ctrl.render();
+    // initial service load
+    Proxy.load().then(function() {
+      ctrl.render();
+    });
 
   }]);
 })();

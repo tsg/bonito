@@ -3,7 +3,7 @@
 
   beforeEach(module('bydimension-service'));
 
-  ddescribe('byDimensionProxy test with two services', function() {
+  describe('byDimensionProxy test with two services', function() {
     var service, $httpBackend;
 
     beforeEach(inject(function(byDimensionProxy, _$httpBackend_) {
