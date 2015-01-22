@@ -128,7 +128,7 @@
             "metrics": {
               "errors_rate": 0.094059736,
               "rt_50.0p": 504.65,
-              "rt_95.0p": 955.9,
+              "rt_90.0p": 955.9,
               "rt_99.0p": 991,
               "rt_99.5p": 995,
               "rt_avg": 505.20667,
@@ -142,7 +142,7 @@
             "metrics": {
               "errors_rate": 0.098547995,
               "rt_50.0p": 510.74854,
-              "rt_95.0p": 954.105,
+              "rt_90.0p": 954.105,
               "rt_99.0p": 991.01,
               "rt_99.5p": 994.005,
               "rt_avg": 508.77567,
@@ -156,7 +156,7 @@
             "metrics": {
               "errors_rate": 0.098547996,
               "rt_50.0p": 518.1325,
-              "rt_95.0p": 952.1719,
+              "rt_90.0p": 952.1719,
               "rt_99.0p": 991,
               "rt_99.5p": 997,
               "rt_avg": 509.529,
@@ -170,7 +170,7 @@
             "metrics": {
               "errors_rate": 0.09087876,
               "rt_50.0p": 521.67975,
-              "rt_95.0p": 958.1375,
+              "rt_90.0p": 958.1375,
               "rt_99.0p": 988.01,
               "rt_99.5p": 993,
               "rt_avg": 510.22534,
@@ -238,6 +238,24 @@
     it('all panels should have a volumne value', function() {
       expect(_.every(ctrl.panels, function(d) { return _.isNumber(d.metrics.volume);}))
         .toBe(true);
+    });
+
+    it('all panels should have the rest of the metrics', function() {
+      _.each(['volume',
+            'secondary_count',
+            'errors_rate',
+            'rt_max',
+            'rt_avg',
+            'rt_50.0p',
+            'rt_90.0p',
+            'rt_99.0p',
+            'rt_99.5p'
+            ], function(metric) {
+
+        expect(_.every(ctrl.panels, function(d) {
+          return _.isNumber(d.metrics[metric]);
+        })).toBe(true);
+      });
     });
 
   });
