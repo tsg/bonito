@@ -72,13 +72,13 @@
         switch (sort_key) {
           case 'errors':
             return service.data.sort(function(a, b) {
-              if (a.metrics.errros_rate === b.metrics.errros_rate) {
-                return a.metrics.volume - b.metrics.volume;
+              if (Math.abs(a.metrics.errros_rate - b.metrics.errros_rate) < 1e-6) {
+                return b.metrics.volume - a.metrics.volume;
               }
-              return b.metrics.errros_rate - a.metrics.errros_rate;
+              return b.metrics.errors_rate - a.metrics.errors_rate;
             });
           case 'volume':
-            return _.sortBy(service.data, function(d) { return -d.size; });
+            return _.sortBy(service.data, function(d) { return -d.metrics.volume; });
           case 'alpha':
             return _.sortBy(service.data, 'name');
           default:
