@@ -17,13 +17,13 @@ type GenGenOptions struct {
 }
 
 type GenGenSpec struct {
+	// Timestamp value. The timestamps are generated
+	// monotonically within the given range.
 	Timerange *TimerangeOptions
 
 	// Fixed value. If not nil, all generated samples will have
 	// the same value.
-	Fixed *struct {
-		Value string
-	}
+	Fixed *FixedOptions
 
 	// Random Choice. If not nil, the generated samples
 	// will have the field set to one the Choices, randomly.
@@ -82,6 +82,8 @@ func NewGenGen(options GenGenOptions) (*GenGen, error) {
 		for key, spec := range specMap {
 			if spec.Timerange != nil {
 				generators[key] = gen.NewTimerange(*spec.Timerange)
+			} else if spec.Fixed != nil {
+				generators[key] = gen.NewFixed(*spec.Fixed)
 			} else {
 				return nil, fmt.Errorf("Not implemented generator for: %s", key)
 			}

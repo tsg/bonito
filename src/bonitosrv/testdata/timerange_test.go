@@ -9,7 +9,7 @@ import (
 	"bonitosrv/testdata"
 )
 
-var _ = Describe("GenGen", func() {
+var _ = Describe("GenGen Timerange", func() {
 	Context("Simple timestamps generation", func() {
 		var gen *testdata.GenGen
 		to := time.Now()
