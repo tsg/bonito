@@ -25,11 +25,9 @@ type GenGenSpec struct {
 	// the same value.
 	Fixed *FixedOptions
 
-	// Random Choice. If not nil, the generated samples
-	// will have the field set to one the Choices, randomly.
-	Choice_rand *struct {
-		Choices []string
-	}
+	// Choice. If not nil, the generated samples
+	// will have the field set to one the values from the Values array.
+	Choice *ChoiceOptions
 
 	// Distribution. If not nil, generate values between Lower
 	// and Upper bounds, respecting the type of the
@@ -38,14 +36,6 @@ type GenGenSpec struct {
 		Type  string
 		Lower float64
 		Upper float64
-	}
-
-	// Weighted choice. If not nil, the generated samples
-	// will have the field set to one of the Choices, with the
-	// give probability of each. The probability is given as
-	// a float between 0 and 1.
-	Choice_weighted *struct {
-		Choices map[string]float32
 	}
 }
 
@@ -63,6 +53,8 @@ type GenGen struct {
 type MapStr map[string]interface{}
 
 func NewGenGen(options GenGenOptions) (*GenGen, error) {
+	var err error
+
 	if options.Samples == 0 {
 		options.Samples = 100
 	}
@@ -85,6 +77,11 @@ func NewGenGen(options GenGenOptions) (*GenGen, error) {
 				generators[key] = gen.NewTimerange(*spec.Timerange)
 			} else if spec.Fixed != nil {
 				generators[key] = gen.NewFixed(*spec.Fixed)
+			} else if spec.Choice != nil {
+				generators[key], err = gen.NewChoice(*spec.Choice)
+				if err != nil {
+					return nil, fmt.Errorf("ChoiceOptions error: %v", err)
+				}
 			} else {
 				return nil, fmt.Errorf("Not implemented generator for: %s", key)
 			}
