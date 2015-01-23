@@ -75,6 +75,7 @@ type EsByDimensionReq struct {
 		Primary struct {
 			Terms struct {
 				Field string `json:"field"`
+				Size  int    `json:"size"`
 			} `json:"terms"`
 			Aggs map[string]interface{} `json:"aggs"`
 		} `json:"primary"`
