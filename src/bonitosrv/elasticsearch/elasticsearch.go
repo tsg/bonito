@@ -8,12 +8,26 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 )
 
 type Elasticsearch struct {
 	Url string
 
 	client *http.Client
+}
+
+type Time time.Time
+
+const TsLayout = "2006-01-02T15:04:05.000Z"
+
+func (t Time) MarshalJSON() ([]byte, error) {
+	return json.Marshal(time.Time(t).UTC().Format(TsLayout))
+}
+
+func TimeParse(str string) (Time, error) {
+	ts, err := time.Parse(TsLayout, str)
+	return Time(ts), err
 }
 
 // General purpose shortcut

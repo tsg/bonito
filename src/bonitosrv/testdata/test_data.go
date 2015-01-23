@@ -16,15 +16,13 @@ import (
 )
 
 type TestTransaction struct {
-	Timestamp    string `json:"timestamp"`
-	Service      string `json:"service"`
-	Host         string `json:"host"`
-	Count        int    `json:"count"`
-	Responsetime int    `json:"responsetime"`
-	Status       string `json:"status"`
+	Timestamp    elasticsearch.Time `json:"timestamp"`
+	Service      string             `json:"service"`
+	Host         string             `json:"host"`
+	Count        int                `json:"count"`
+	Responsetime int                `json:"responsetime"`
+	Status       string             `json:"status"`
 }
-
-const TsLayout = "2006-01-02T15:04:05.000000"
 
 type TestTransactionsGenerator struct {
 	Increment  time.Duration
@@ -49,7 +47,7 @@ func (gen *TestTransactionsGenerator) GenerateInChan(transactions chan TestTrans
 	for ts := gen.From; ts.Before(gen.To); ts = ts.Add(gen.Increment) {
 		var trans TestTransaction
 
-		trans.Timestamp = ts.UTC().Format(TsLayout)
+		trans.Timestamp = elasticsearch.Time(ts)
 		trans.Service = fmt.Sprintf("Service%d", i%gen.NrServices)
 		trans.Host = fmt.Sprintf("Service%d-Host%d",
 			i%gen.NrServices, i%gen.NrHosts)

@@ -24,9 +24,12 @@ var _ = Describe("ByDimension API", func() {
 			Expect(err).To(BeNil())
 			es.Refresh(index_name)
 
+			ts1, _ := elasticsearch.TimeParse("2015-01-02T15:04:05.000Z")
+			ts2, _ := elasticsearch.TimeParse("2015-01-02T15:04:05.001Z")
+
 			transactions := []testdata.TestTransaction{
 				testdata.TestTransaction{
-					Timestamp:    "2006-01-02T15:04:05.000000",
+					Timestamp:    ts1,
 					Service:      "service1",
 					Host:         "Host0",
 					Count:        2,
@@ -34,7 +37,7 @@ var _ = Describe("ByDimension API", func() {
 					Status:       "ok",
 				},
 				testdata.TestTransaction{
-					Timestamp:    "2006-01-02T15:04:05.001000",
+					Timestamp:    ts2,
 					Service:      "service2",
 					Host:         "Host3",
 					Count:        4,
@@ -42,7 +45,7 @@ var _ = Describe("ByDimension API", func() {
 					Status:       "ok",
 				},
 				testdata.TestTransaction{
-					Timestamp:    "2006-01-02T15:04:05.001000",
+					Timestamp:    ts2,
 					Service:      "service1",
 					Host:         "host2",
 					Count:        3,

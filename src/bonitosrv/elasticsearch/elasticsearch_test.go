@@ -130,6 +130,23 @@ var _ = Describe("Elasticsearch proxy", func() {
 
 		})
 	})
+
+	Context("Jsonifying", func() {
+		var s struct {
+			Ts Time
+		}
+
+		It("should correctly transform a timestamp", func() {
+			var err error
+			s.Ts, err = TimeParse("2015-01-23T16:49:17.889Z")
+			Expect(err).NotTo(HaveOccurred())
+
+			marshaled, err := json.Marshal(&s)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(marshaled).To(Equal([]byte(`{"Ts":"2015-01-23T16:49:17.889Z"}`)))
+		})
+	})
 })
 
 func TestElasticsearch(t *testing.T) {
