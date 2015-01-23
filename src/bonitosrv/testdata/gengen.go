@@ -29,14 +29,10 @@ type GenGenSpec struct {
 	// will have the field set to one the values from the Values array.
 	Choice *ChoiceOptions
 
-	// Distribution. If not nil, generate values between Lower
-	// and Upper bounds, respecting the type of the
-	// distribution.
-	Distribute *struct {
-		Type  string
-		Lower float64
-		Upper float64
-	}
+	// Eventful. If not nil, generate values around the given
+	// value but also add an "event", which can be a peak or a
+	// jump.
+	Eventful *EventfulOptions
 }
 
 // All generator types implement this interface.
@@ -81,6 +77,11 @@ func NewGenGen(options GenGenOptions) (*GenGen, error) {
 				generators[key], err = gen.NewChoice(*spec.Choice)
 				if err != nil {
 					return nil, fmt.Errorf("ChoiceOptions error: %v", err)
+				}
+			} else if spec.Eventful != nil {
+				generators[key], err = gen.NewEventful(*spec.Eventful)
+				if err != nil {
+					return nil, fmt.Errorf("EventfulOptions error: %v", err)
 				}
 			} else {
 				return nil, fmt.Errorf("Not implemented generator for: %s", key)
