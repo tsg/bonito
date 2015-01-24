@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -145,6 +146,12 @@ var _ = Describe("Elasticsearch proxy", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(marshaled).To(Equal([]byte(`{"Ts":"2015-01-23T16:49:17.889Z"}`)))
+		})
+
+		It("should correctly unmarshal a timestamp", func() {
+			Expect(json.Unmarshal([]byte(`{"Ts":"2015-01-23T16:49:17.889Z"}`), &s)).To(Succeed())
+			Expect(time.Time(s.Ts)).To(BeTemporally("~",
+				time.Date(2015, time.January, 23, 16, 49, 17, 889*1e6, time.UTC)))
 		})
 	})
 })

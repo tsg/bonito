@@ -21,8 +21,16 @@ type Time time.Time
 
 const TsLayout = "2006-01-02T15:04:05.000Z"
 
+// MarshalJSON implements json.Marshaler interface.
 func (t Time) MarshalJSON() ([]byte, error) {
 	return json.Marshal(time.Time(t).UTC().Format(TsLayout))
+}
+
+// UnmarshalJSON implements js.Unmarshaler interface.
+func (t *Time) UnmarshalJSON(data []byte) (err error) {
+	tt, err := time.Parse(`"`+TsLayout+`"`, string(data))
+	*t = Time(tt)
+	return
 }
 
 func TimeParse(str string) (Time, error) {
