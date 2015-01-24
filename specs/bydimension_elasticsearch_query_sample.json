@@ -1,0 +1,56 @@
+{
+  "query": {
+    "filtered": {
+      "filter": {
+        "range": {
+          "timestamp": {
+            "lte": "now"
+          }
+        }
+      }
+    }
+  },
+  "aggs" : {
+    "primary": {
+      "terms": {
+        "field": "service",
+        "size": 0
+      },
+      "aggs": {
+        "volume": {
+          "sum": { "field": "count" }
+        },
+        "rt_stats": {
+          "stats": { "field": "responsetime" }
+        },
+        "rt_percentiles": {
+          "percentile_ranks": {
+            "field": "responsetime",
+            "values": [50, 95, 99, 99.5]
+          }
+        },
+        "secondary_card": {
+          "cardinality": {
+            "field": "host"
+          }
+        },
+        "errors_count": {
+          "filter": {
+            "not": {
+              "term": {
+                "status": "ok"
+              }
+            }
+          },
+          "aggs": {
+            "count": {
+              "sum": {
+                "field": "count"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

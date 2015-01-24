@@ -1,0 +1,22 @@
+{
+  "timerange": {
+    "from": "2015-14-12T12:12:12.000",
+    "to": "2015-14-12T12:12:12.000"
+  },
+  "metrics": [
+    "volume",
+    "rt_max",
+    "rt_avg",
+    "rt_percentiles",
+    "secondary_count",
+    "errors_rate"
+  ],
+  "config": {
+    "primary_dimension": "service",
+    "secondary_dimension": "host",
+    "responsetime_field": "responsetime",
+    "count_field": "count",
+    "status_field": "status",
+    "percentiles": [50, 95, 99, 99.5]
+  }
+}

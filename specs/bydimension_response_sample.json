@@ -1,0 +1,27 @@
+{
+	"status": "ok",
+	"primary": [{
+		"name": "Service1",
+		"metrics": {
+			"volume": 923,
+			"rt_max": 11111,
+			"rt_avg": 1111,
+			"rt_50p": 11,
+			"rt_90p": 111,
+			"rt_99p": 1111,
+			"rt_99.5p": 11111,
+			"secondary_count": 12,
+			"errors_rate": 23
+		}
+	}, {
+		"name": "Service2",
+		"metrics": {
+			"volume": 923,
+			"rt_max": 11111,
+			"rt_avg": 1111,
+			"rt_percentiles": [11, 1122, 1122, 11222],
+			"secondary_count": 12,
+			"errors_rate": 23
+		}
+	}]
+}
