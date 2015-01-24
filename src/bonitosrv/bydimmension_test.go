@@ -64,12 +64,13 @@ var _ = Describe("ByDimension API", func() {
 			_, err := es.DeleteIndex(index_name)
 			Expect(err).To(BeNil())
 			es.Refresh(index_name)
+			//fmt.Println("index name", index_name)
 		})
 
 		It("should get", func() {
 			var req ByDimensionRequest
-			req.Timerange.From = "now-1d"
-			req.Timerange.To = "now"
+			req.Timerange.From = MustParseJsTime("now-1d")
+			req.Timerange.To = MustParseJsTime("now")
 			req.Metrics = []string{"volume", "rt_avg", "rt_max",
 				"rt_percentiles", "secondary_count", "errors_rate"}
 			req.Config.Percentiles = []float32{50, 99.995}
@@ -133,7 +134,7 @@ var _ = Describe("ByDimension API", func() {
 			req.Config.Status_value_ok = "nothing"
 
 			resp, _, err := api.Query(&req)
-			Expect(err).To(BeNil())
+			Expect(err).NotTo(HaveOccurred())
 			Expect(len(resp.Primary)).To(Equal(2))
 
 			services := map[string]PrimaryDimension{}
@@ -151,8 +152,30 @@ var _ = Describe("ByDimension API", func() {
 			var req ByDimensionRequest
 			req.Metrics = []string{"something"}
 			_, code, err := api.Query(&req)
-			Expect(err).NotTo(BeNil())
+			Expect(err).To(HaveOccurred())
 			Expect(code).To(Equal(400))
+		})
+
+		It("should return the histogram values for volume", func() {
+			var req ByDimensionRequest
+
+			// request a two minutes interval, a point for each minute
+			req.Timerange.From = MustParseJsTime("2015-01-02T15:03:00.000Z")
+			req.Timerange.To = MustParseJsTime("2015-01-02T15:05:00.000Z")
+			req.Config.Histogram_points = 2
+			req.HistogramMetrics = []string{"volume"}
+
+			resp, _, err := api.Query(&req)
+			Expect(err).NotTo(HaveOccurred())
+
+			services := map[string]PrimaryDimension{}
+			for _, primary := range resp.Primary {
+				services[primary.Name] = primary
+			}
+
+			histMetrics1 := services["service1"].Hist_metrics["volume"]
+			Expect(histMetrics1).To(HaveLen(1)) // one non-zero value
+			Expect(histMetrics1[0].Value).To(BeNumerically("~", 5))
 		})
 	})
 
@@ -163,8 +186,26 @@ var _ = Describe("ByDimension API", func() {
 			req.Metrics = []string{"volume"}
 
 			_, code, err := api.Query(&req)
-			Expect(err).NotTo(BeNil())
+			Expect(err).To(HaveOccurred())
 			Expect(code).To(Equal(500))
+		})
+	})
+
+	Context("computeHistogramInterval", func() {
+		It("should return 15m for a 1 hour interval and 4 points", func() {
+			tr := Timerange{
+				From: MustParseJsTime("now-1h"),
+				To:   MustParseJsTime("now"),
+			}
+			Expect(computeHistogramInterval(&tr, 4)).To(Equal("900.000s"))
+		})
+
+		It("should return 1m for a 1 hour interval and 60 points", func() {
+			tr := Timerange{
+				From: MustParseJsTime("now-1h"),
+				To:   MustParseJsTime("now"),
+			}
+			Expect(computeHistogramInterval(&tr, 60)).To(Equal("60.000s"))
 		})
 	})
 })

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"time"
 )
 
 // Type grouping the methods of this API end point
@@ -22,8 +23,9 @@ func NewByDimensionApi(index string) *ByDimensionApi {
 
 type ByDimensionRequest struct {
 	Timerange
-	Metrics []string
-	Config  struct {
+	Metrics          []string
+	HistogramMetrics []string `json:"histogram_metrics"`
+	Config           struct {
 		Primary_dimension   string
 		Secondary_dimension string
 		Responsetime_field  string
@@ -31,10 +33,13 @@ type ByDimensionRequest struct {
 		Status_value_ok     string
 		Count_field         string
 		Percentiles         []float32
+		Histogram_points    int
 	}
 }
 
-func (api *ByDimensionApi) setConfigDefaults(req *ByDimensionRequest) {
+// Fills in the request with an omitted configuration options that
+// have defaults.
+func (api *ByDimensionApi) setRequestDefaults(req *ByDimensionRequest) {
 	c := &req.Config
 
 	if len(c.Primary_dimension) == 0 {
@@ -58,18 +63,36 @@ func (api *ByDimensionApi) setConfigDefaults(req *ByDimensionRequest) {
 	if len(c.Percentiles) == 0 {
 		c.Percentiles = []float32{50, 90, 99, 99.5}
 	}
+	if c.Histogram_points == 0 {
+		c.Histogram_points = 10
+	}
+
+	if req.Timerange.IsZero() {
+		req.Timerange.From = JsTime(time.Now().Add(-1 * time.Hour))
+		req.Timerange.To = JsTime(time.Now())
+	}
 }
 
+// ByDimensionResponse is the structure that gets marshaled to JSON
+// and sent to the client in response to a bydimension query.
 type ByDimensionResponse struct {
 	Status  string             `json:"status"`
 	Primary []PrimaryDimension `json:"primary"`
 }
 
 type PrimaryDimension struct {
-	Name    string             `json:"name"`
-	Metrics map[string]float32 `json:"metrics"`
+	Name         string                      `json:"name"`
+	Metrics      map[string]float32          `json:"metrics"`
+	Hist_metrics map[string][]HistogramValue `json:"hist_metrics"`
 }
 
+type HistogramValue struct {
+	Ts    JsTime  `json:"ts"`
+	Value float32 `json:"value"`
+}
+
+// EsByDimensionReq is the structure that gets marshaled to JSON
+// and is sent to Elasticsearch.
 type EsByDimensionReq struct {
 	Aggs struct {
 		Primary struct {
@@ -92,8 +115,7 @@ func (api *ByDimensionApi) buildRequestAggs(req *ByDimensionRequest) (*MapStr, e
 					"field": req.Config.Count_field,
 				},
 			}
-		case "rt_max":
-		case "rt_avg":
+		case "rt_max", "rt_avg":
 			aggs["rt_stats"] = MapStr{
 				"stats": MapStr{
 					"field": req.Config.Responsetime_field,
@@ -143,6 +165,47 @@ func (api *ByDimensionApi) buildRequestAggs(req *ByDimensionRequest) (*MapStr, e
 	return &aggs, nil
 }
 
+// Returns the Timerange interval as string that can be passed to the
+// Elasticseach date_histogram field. For example, 613.234s is a valid
+// interval. The interval is computed in such a way so that there will
+// be approximately the given number of points in the histogram.
+func computeHistogramInterval(tr *Timerange, points int) string {
+
+	// the bucket interval in seconds (can be a float)
+	total_interval := time.Time(tr.To).Sub(time.Time(tr.From))
+	interval_secs := float32(int64(total_interval)/int64(points)/int64(1e6)) / 1000
+	return fmt.Sprintf("%.3fs", interval_secs)
+}
+
+func (api *ByDimensionApi) buildRequestHistogramAggs(req *ByDimensionRequest) (*MapStr, error) {
+
+	interval := computeHistogramInterval(&req.Timerange, req.Config.Histogram_points)
+
+	aggs := MapStr{}
+	for _, metric := range req.HistogramMetrics {
+		switch metric {
+		case "volume":
+			aggs["volume_hist"] = MapStr{
+				"date_histogram": MapStr{
+					"field":    "timestamp",
+					"interval": interval,
+				},
+				"aggs": MapStr{
+					"volume": MapStr{
+						"sum": MapStr{
+							"field": req.Config.Count_field,
+						},
+					},
+				},
+			}
+		default:
+			return nil, fmt.Errorf("Unknown histogram metric name '%s'", metric)
+		}
+
+	}
+	return &aggs, nil
+}
+
 func (api *ByDimensionApi) bucketToPrimary(req *ByDimensionRequest,
 	bucket map[string]json.RawMessage) (*PrimaryDimension, error) {
 
@@ -153,9 +216,8 @@ func (api *ByDimensionApi) bucketToPrimary(req *ByDimensionRequest,
 		return nil, err
 	}
 
-	primary.Metrics = map[string]float32{}
-
 	// transform metrics
+	primary.Metrics = map[string]float32{}
 	for _, metric := range req.Metrics {
 		switch metric {
 		case "volume":
@@ -227,6 +289,38 @@ func (api *ByDimensionApi) bucketToPrimary(req *ByDimensionRequest,
 		}
 	}
 
+	// transform histogram metrics
+	primary.Hist_metrics = map[string][]HistogramValue{}
+	for _, metric := range req.HistogramMetrics {
+		switch metric {
+		case "volume":
+			var volume_hist struct {
+				Buckets []struct {
+					Key_as_string elasticsearch.Time
+					Volume        struct {
+						Value float32
+					}
+				}
+			}
+
+			err = json.Unmarshal(bucket["volume_hist"], &volume_hist)
+			if err != nil {
+				return nil, err
+			}
+
+			values := []HistogramValue{}
+
+			for _, bucket := range volume_hist.Buckets {
+				values = append(values, HistogramValue{
+					Ts:    JsTime(bucket.Key_as_string),
+					Value: bucket.Volume.Value,
+				})
+			}
+
+			primary.Hist_metrics["volume"] = values
+		}
+	}
+
 	return &primary, nil
 }
 
@@ -235,7 +329,7 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 	var esreq EsByDimensionReq
 	es := elasticsearch.NewElasticsearch()
 
-	api.setConfigDefaults(req)
+	api.setRequestDefaults(req)
 
 	primary := &esreq.Aggs.Primary
 	primary.Terms.Field = req.Config.Primary_dimension
@@ -247,6 +341,14 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 		return nil, 400, err
 	}
 	primary.Aggs = *aggs
+
+	aggs, err = api.buildRequestHistogramAggs(req)
+	if err != nil {
+		return nil, 400, err
+	}
+	for k, v := range *aggs {
+		primary.Aggs[k] = v
+	}
 
 	// up to here we assume there are client errors, from here on
 	// it's on us.

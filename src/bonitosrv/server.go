@@ -12,11 +12,6 @@ import (
 	"github.com/unrolled/render"
 )
 
-type Timerange struct {
-	From string
-	To   string
-}
-
 // General purpose shortcut
 type MapStr map[string]interface{}
 
