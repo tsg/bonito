@@ -14,31 +14,31 @@ var _ = Describe("Datetime functions", func() {
 		})
 
 		It("should work for hours", func() {
-			Expect(ParseTime("now-1h")).To(BeTemporally("~", time.Now().Add(-1*time.Hour)))
+			Expect(ParseTime("now-1h")).To(BeTemporally("~", time.Now().Add(-1*time.Hour), time.Second))
 		})
 
 		It("should work for seconds", func() {
-			Expect(ParseTime("now-4s")).To(BeTemporally("~", time.Now().Add(-4*time.Second)))
+			Expect(ParseTime("now-4s")).To(BeTemporally("~", time.Now().Add(-4*time.Second), time.Second))
 		})
 
 		It("should work for minutes", func() {
-			Expect(ParseTime("now+6m")).To(BeTemporally("~", time.Now().Add(6*time.Minute)))
+			Expect(ParseTime("now+6m")).To(BeTemporally("~", time.Now().Add(6*time.Minute), time.Second))
 		})
 
 		It("should work for days", func() {
-			Expect(ParseTime("now-16d")).To(BeTemporally("~", time.Now().AddDate(0, 0, -16)))
+			Expect(ParseTime("now-16d")).To(BeTemporally("~", time.Now().AddDate(0, 0, -16), time.Second))
 		})
 
 		It("should work for weeks", func() {
-			Expect(ParseTime("now+2w")).To(BeTemporally("~", time.Now().AddDate(0, 0, 14)))
+			Expect(ParseTime("now+2w")).To(BeTemporally("~", time.Now().AddDate(0, 0, 14), time.Second))
 		})
 
 		It("should work for months", func() {
-			Expect(ParseTime("now-2M")).To(BeTemporally("~", time.Now().AddDate(0, -2, 0)))
+			Expect(ParseTime("now-2M")).To(BeTemporally("~", time.Now().AddDate(0, -2, 0), time.Second))
 		})
 
 		It("should work for years", func() {
-			Expect(ParseTime("now-1y")).To(BeTemporally("~", time.Now().AddDate(-1, 0, 0)))
+			Expect(ParseTime("now-1y")).To(BeTemporally("~", time.Now().AddDate(-1, 0, 0), time.Second))
 		})
 
 		It("should work for absolute date", func() {
