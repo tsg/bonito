@@ -49,6 +49,17 @@
               }
             }
           }
+        },
+        "volume_hist": {
+          "date_histogram": {
+            "field": "timestamp",
+            "interval": "900.0s"
+          },
+          "aggs": {
+            "volume": {
+              "sum": { "field": "count" }
+            }
+          }
         }
       }
     }

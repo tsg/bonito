@@ -1,7 +1,7 @@
 {
   "timerange": {
-    "from": "2015-14-12T12:12:12.000",
-    "to": "2015-14-12T12:12:12.000"
+    "from": "2015-14-12T12:12:12.000Z",
+    "to": "2015-14-12T13:12:12.000Z"
   },
   "metrics": [
     "volume",
@@ -11,12 +11,16 @@
     "secondary_count",
     "errors_rate"
   ],
+  "histogram_metrics": [
+    "volume"
+  ],
   "config": {
     "primary_dimension": "service",
     "secondary_dimension": "host",
     "responsetime_field": "responsetime",
     "count_field": "count",
     "status_field": "status",
-    "percentiles": [50, 95, 99, 99.5]
+    "percentiles": [50, 95, 99, 99.5],
+    "histogram_points": 10
   }
 }
