@@ -1,0 +1,10 @@
+sum:
+  description: >
+    Adds up the values of the specified field.
+  parameters:
+    - name: field
+      description: The field to add up.
+    - name: resolution
+  returns:
+    - name: value
+      description: The sum value.

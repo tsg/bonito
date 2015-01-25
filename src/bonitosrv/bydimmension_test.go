@@ -69,8 +69,8 @@ var _ = Describe("ByDimension API", func() {
 
 		It("should get", func() {
 			var req ByDimensionRequest
-			req.Timerange.From = MustParseJsTime("now-1d")
-			req.Timerange.To = MustParseJsTime("now")
+			req.Timerange.From = MustParseJsTime("2015-01-02T15:04:05.000Z")
+			req.Timerange.To = MustParseJsTime("2015-01-02T15:04:06.000Z")
 			req.Metrics = []string{"volume", "rt_avg", "rt_max",
 				"rt_percentiles", "secondary_count", "errors_rate"}
 			req.Config.Percentiles = []float32{50, 99.995}

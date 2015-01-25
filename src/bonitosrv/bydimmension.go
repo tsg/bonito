@@ -35,6 +35,8 @@ type ByDimensionRequest struct {
 		Percentiles         []float32
 		Histogram_points    int
 	}
+
+	interval_seconds float32
 }
 
 // Fills in the request with an omitted configuration options that
@@ -230,7 +232,7 @@ func (api *ByDimensionApi) bucketToPrimary(req *ByDimensionRequest,
 				return nil, err
 			}
 
-			primary.Metrics["volume"] = volume.Value
+			primary.Metrics["volume"] = volume.Value / req.interval_seconds
 		case "rt_max":
 		case "rt_avg":
 			var stats struct {
@@ -330,6 +332,8 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 	es := elasticsearch.NewElasticsearch()
 
 	api.setRequestDefaults(req)
+
+	req.interval_seconds = float32(time.Time(req.Timerange.To).Sub(time.Time(req.Timerange.From))) / 1e9
 
 	primary := &esreq.Aggs.Primary
 	primary.Terms.Field = req.Config.Primary_dimension
