@@ -16,11 +16,12 @@
       primary_dimension: 'service',
       secondary_dimension: 'host',
       use_logarithmic_planet_size: true,
-      percentiles: [50, 90, 99, 99.5]
+      percentiles: [50, 90, 99, 99.5],
+      histogram_points: 50
     };
 
     this.timerange = {
-      from: "now-1d",
+      from: "now-1h",
       to: "now"
     };
 
@@ -33,12 +34,17 @@
       "errors_rate"
     ];
 
+    this.hist_metrics = [
+      "volume"
+    ];
+
     var service = this;
 
     this.load = function() {
       var request = {
         timerange: service.timerange,
         metrics: service.metrics,
+        histogram_metrics: service.hist_metrics,
         config: service.config
       };
 
@@ -55,10 +61,17 @@
     // process data after it's loaded
     this.afterLoad = function(data) {
       _.each(data, function(d) {
-        // make sure we have a values array
-        if (_.isUndefined(d.values)) {
+        // values come from the volume
+        if (_.isObject(d.hist_metrics) && _.isArray(d.hist_metrics.volume)) {
+          d.values = d.hist_metrics.volume;
+        } else {
           d.values = [];
         }
+
+        // parse timestamps
+        _.each(d.values, function(v) {
+          v.ts = new Date(Date.parse(v.ts));
+        });
       });
 
       service.compute_relative_sizes(data,
