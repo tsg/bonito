@@ -38,6 +38,11 @@ type Timerange struct {
 	To   JsTime `json:"to"`
 }
 
+// Implement the Stringer interface.
+func (t Timerange) String() string {
+	return fmt.Sprintf("{from: %v, to: %v}", time.Time(t.From).UTC(), time.Time(t.To).UTC())
+}
+
 // IsZero() returns true if either From or To are zero according
 // to time.Time.IsZero().
 func (tr Timerange) IsZero() bool {
@@ -86,6 +91,16 @@ func ParseTime(timespec string) (time.Time, error) {
 	}
 }
 
+// MustParseTime is a convenience equivalent of the ParseTime function
+// that panics in case of errors.
+func MustParseTime(timespec string) time.Time {
+	ts, err := ParseTime(timespec)
+	if err != nil {
+		panic(err)
+	}
+	return ts
+}
+
 // ParseJsTime is equivalent to ParseTime but returns a JsTime instead
 // of a time.Time.
 func ParseJsTime(timespec string) (jsts JsTime, err error) {
@@ -94,8 +109,8 @@ func ParseJsTime(timespec string) (jsts JsTime, err error) {
 	return
 }
 
-// MustParseJsTime is a convenience equivalent of ParseJsTime function that
-// panics in case of errors.
+// MustParseJsTime is a convenience equivalent of ParseJsTime function
+// that panics in case of errors.
 func MustParseJsTime(timespec string) JsTime {
 	jsts, err := ParseJsTime(timespec)
 	if err != nil {

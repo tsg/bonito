@@ -175,7 +175,7 @@ var _ = Describe("ByDimension API", func() {
 
 			histMetrics1 := services["service1"].Hist_metrics["volume"]
 			Expect(histMetrics1).To(HaveLen(1)) // one non-zero value
-			Expect(histMetrics1[0].Value).To(BeNumerically("~", 5))
+			Expect(histMetrics1[0].Value).To(BeNumerically("~", 5.0/60.0))
 		})
 	})
 
@@ -197,7 +197,9 @@ var _ = Describe("ByDimension API", func() {
 				From: MustParseJsTime("now-1h"),
 				To:   MustParseJsTime("now"),
 			}
-			Expect(computeHistogramInterval(&tr, 4)).To(Equal("900.000s"))
+			interval, str := computeHistogramInterval(&tr, 4)
+			Expect(str).To(Equal("900.000s"))
+			Expect(interval).To(BeNumerically("~", 900.0))
 		})
 
 		It("should return 1m for a 1 hour interval and 60 points", func() {
@@ -205,7 +207,32 @@ var _ = Describe("ByDimension API", func() {
 				From: MustParseJsTime("now-1h"),
 				To:   MustParseJsTime("now"),
 			}
-			Expect(computeHistogramInterval(&tr, 60)).To(Equal("60.000s"))
+			interval, str := computeHistogramInterval(&tr, 60)
+			Expect(str).To(Equal("60.000s"))
+			Expect(interval).To(BeNumerically("~", 60.0))
+		})
+	})
+
+	Context("computeRealSecondsInInterval on a two minutes time window, 1 minute interval", func() {
+		var tr Timerange
+		BeforeEach(func() {
+			tr.From = MustParseJsTime("2015-01-02T15:03:10.000Z")
+			tr.To = MustParseJsTime("2015-01-02T15:04:30.000Z")
+		})
+
+		It("should get smaller than 1 minute interval at the start", func() {
+			secs := computeRealSecondsInInterval(60, MustParseTime("2015-01-02T15:03:00.000Z"), &tr)
+			Expect(secs).To(BeNumerically("~", 50.0))
+		})
+
+		It("should get smaller than 1 minute interval at the end", func() {
+			secs := computeRealSecondsInInterval(60, MustParseTime("2015-01-02T15:04:00.000Z"), &tr)
+			Expect(secs).To(BeNumerically("~", 30.0))
+		})
+
+		It("should get exactly 1 minute in the middle", func() {
+			secs := computeRealSecondsInInterval(60, MustParseTime("2015-01-02T15:03:20.000Z"), &tr)
+			Expect(secs).To(BeNumerically("~", 60.0))
 		})
 	})
 })

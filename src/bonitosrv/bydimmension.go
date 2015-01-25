@@ -36,7 +36,9 @@ type ByDimensionRequest struct {
 		Histogram_points    int
 	}
 
-	interval_seconds float32
+	// Calculated values
+	interval_seconds  float32
+	histogram_seconds float32
 }
 
 // Fills in the request with an omitted configuration options that
@@ -167,21 +169,46 @@ func (api *ByDimensionApi) buildRequestAggs(req *ByDimensionRequest) (*MapStr, e
 	return &aggs, nil
 }
 
-// Returns the Timerange interval as string that can be passed to the
-// Elasticseach date_histogram field. For example, 613.234s is a valid
-// interval. The interval is computed in such a way so that there will
-// be approximately the given number of points in the histogram.
-func computeHistogramInterval(tr *Timerange, points int) string {
+// Returns the Timerange interval as both float32 and string that can be passed
+// to the Elasticseach date_histogram field. For example, 613.234s is a valid
+// interval. The interval is computed in such a way so that there will be
+// approximately the given number of points in the histogram.
+func computeHistogramInterval(tr *Timerange, points int) (float32, string) {
 
 	// the bucket interval in seconds (can be a float)
 	total_interval := time.Time(tr.To).Sub(time.Time(tr.From))
 	interval_secs := float32(int64(total_interval)/int64(points)/int64(1e6)) / 1000
-	return fmt.Sprintf("%.3fs", interval_secs)
+	return interval_secs, fmt.Sprintf("%.3fs", interval_secs)
+}
+
+// Returns the real number of seconds in a bucket returned by Elasticsearch.
+// This can be different from interval_secs for the first and last buckets,
+// which can be smaller.
+func computeRealSecondsInInterval(interval_secs float32, start_interval time.Time, tr *Timerange) float32 {
+	// When dividing by the seconds, we have to be careful with
+	// the first and the last interval which can be shorter.
+	var from, to time.Time
+	if start_interval.Before(time.Time(tr.From)) {
+		from = time.Time(tr.From)
+	} else {
+		from = start_interval
+	}
+
+	end_interval := start_interval.Add(time.Duration(interval_secs*1e3) * time.Millisecond)
+	if end_interval.After(time.Time(tr.To)) {
+		to = time.Time(tr.To)
+	} else {
+		to = end_interval
+	}
+
+	return float32(int64(to.Sub(from))/1e6) / 1000.0
 }
 
 func (api *ByDimensionApi) buildRequestHistogramAggs(req *ByDimensionRequest) (*MapStr, error) {
 
-	interval := computeHistogramInterval(&req.Timerange, req.Config.Histogram_points)
+	var interval string
+	req.histogram_seconds, interval = computeHistogramInterval(&req.Timerange,
+		req.Config.Histogram_points)
 
 	aggs := MapStr{}
 	for _, metric := range req.HistogramMetrics {
@@ -313,9 +340,16 @@ func (api *ByDimensionApi) bucketToPrimary(req *ByDimensionRequest,
 			values := []HistogramValue{}
 
 			for _, bucket := range volume_hist.Buckets {
+				bucket_secs := computeRealSecondsInInterval(req.histogram_seconds,
+					time.Time(bucket.Key_as_string), &req.Timerange)
+
+				fmt.Println("bucket_secs", bucket_secs, "histogram_seconds", req.histogram_seconds)
+				fmt.Println(time.Time(bucket.Key_as_string))
+				fmt.Println(req.Timerange)
+
 				values = append(values, HistogramValue{
 					Ts:    JsTime(bucket.Key_as_string),
-					Value: bucket.Volume.Value,
+					Value: bucket.Volume.Value / bucket_secs,
 				})
 			}
 
