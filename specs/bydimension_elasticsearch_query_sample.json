@@ -4,7 +4,8 @@
       "filter": {
         "range": {
           "timestamp": {
-            "lte": "now"
+            "lte": "now",
+            "gte": "now-1h"
           }
         }
       }

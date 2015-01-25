@@ -30,6 +30,7 @@ type ByDimensionRequest struct {
 		Secondary_dimension string
 		Responsetime_field  string
 		Status_field        string
+		Timestamp_field     string
 		Status_value_ok     string
 		Count_field         string
 		Percentiles         []float32
@@ -63,6 +64,9 @@ func (api *ByDimensionApi) setRequestDefaults(req *ByDimensionRequest) {
 	}
 	if len(c.Count_field) == 0 {
 		c.Count_field = "count"
+	}
+	if len(c.Timestamp_field) == 0 {
+		c.Timestamp_field = "timestamp"
 	}
 	if len(c.Percentiles) == 0 {
 		c.Percentiles = []float32{50, 90, 99, 99.5}
@@ -98,15 +102,29 @@ type HistogramValue struct {
 // EsByDimensionReq is the structure that gets marshaled to JSON
 // and is sent to Elasticsearch.
 type EsByDimensionReq struct {
+	Query struct {
+		Filtered MapStr `json:"filtered"`
+	} `json:"query"`
 	Aggs struct {
 		Primary struct {
 			Terms struct {
 				Field string `json:"field"`
 				Size  int    `json:"size"`
 			} `json:"terms"`
-			Aggs map[string]interface{} `json:"aggs"`
+			Aggs MapStr `json:"aggs"`
 		} `json:"primary"`
 	} `json:"aggs"`
+}
+
+func (api *ByDimensionApi) buildTimeFilter(req *ByDimensionRequest) *MapStr {
+	return &MapStr{
+		"range": MapStr{
+			req.Config.Timestamp_field: MapStr{
+				"lte": elasticsearch.Time(req.Timerange.To),
+				"gte": elasticsearch.Time(req.Timerange.From),
+			},
+		},
+	}
 }
 
 func (api *ByDimensionApi) buildRequestAggs(req *ByDimensionRequest) (*MapStr, error) {
@@ -372,7 +390,9 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 	primary := &esreq.Aggs.Primary
 	primary.Terms.Field = req.Config.Primary_dimension
 
-	// TODO: set filters
+	// set timestamp filter
+	esreq.Query.Filtered = MapStr{}
+	esreq.Query.Filtered["filter"] = *api.buildTimeFilter(req)
 
 	aggs, err := api.buildRequestAggs(req)
 	if err != nil {

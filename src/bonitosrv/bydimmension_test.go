@@ -69,7 +69,7 @@ var _ = Describe("ByDimension API", func() {
 
 		It("should get", func() {
 			var req ByDimensionRequest
-			req.Timerange.From = MustParseJsTime("2015-01-02T15:04:05.000Z")
+			req.Timerange.From = MustParseJsTime("2015-01-02T15:04:04.000Z")
 			req.Timerange.To = MustParseJsTime("2015-01-02T15:04:06.000Z")
 			req.Metrics = []string{"volume", "rt_avg", "rt_max",
 				"rt_percentiles", "secondary_count", "errors_rate"}
@@ -86,8 +86,8 @@ var _ = Describe("ByDimension API", func() {
 			}
 
 			By("correct volumes")
-			Expect(services["service1"].Metrics["volume"]).To(BeNumerically("~", 5))
-			Expect(services["service2"].Metrics["volume"]).To(BeNumerically("~", 4))
+			Expect(services["service1"].Metrics["volume"]).To(BeNumerically("~", 2.5))
+			Expect(services["service2"].Metrics["volume"]).To(BeNumerically("~", 2))
 
 			By("correct response times max and avg")
 			Expect(services["service1"].Metrics["rt_max"]).To(BeNumerically("~", 2100))
@@ -112,6 +112,8 @@ var _ = Describe("ByDimension API", func() {
 
 		It("should get error rate if only that is requested", func() {
 			var req ByDimensionRequest
+			req.Timerange.From = MustParseJsTime("2015-01-02T15:04:04.000Z")
+			req.Timerange.To = MustParseJsTime("2015-01-02T15:04:06.000Z")
 			req.Metrics = []string{"errors_rate"}
 
 			resp, _, err := api.Query(&req)
@@ -130,6 +132,8 @@ var _ = Describe("ByDimension API", func() {
 
 		It("should get 1.0 error rates when nothing is successful", func() {
 			var req ByDimensionRequest
+			req.Timerange.From = MustParseJsTime("2015-01-02T15:04:04.000Z")
+			req.Timerange.To = MustParseJsTime("2015-01-02T15:04:06.000Z")
 			req.Metrics = []string{"errors_rate"}
 			req.Config.Status_value_ok = "nothing"
 
