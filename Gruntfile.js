@@ -31,16 +31,6 @@ module.exports = function(grunt) {
         }
       }
     },
-    'http-server': {
-      dev: {
-        root: 'src/web',
-        port: 5062,
-        ext: 'html',
-        showDir: true,
-        autoIndex: true,
-        runInBackground: true
-      },
-    },
     less: {
       dev: {
         options: {
@@ -59,17 +49,14 @@ module.exports = function(grunt) {
         ],
         tasks: ['less'],
         options: {
-          spawn: false
+          async: true
         }
       },
       gotest: {
         files: [
           "src/bonitosrv/**/*.go"
         ],
-        tasks: ['gotestonce'],
-        options: {
-          spawn: false
-        }
+        tasks: ['gotestonce']
       }
     },
     karma: {
@@ -120,11 +107,30 @@ module.exports = function(grunt) {
       },
       gendata: {
         command: 'go run src/bonitosrv/gentestdata/gen.go'
+      },
+      gin : {
+        command: 'gin --port 5063',
+        options: {
+          execOptions: {
+            cwd: 'src/bonitosrv'
+          }
+        }
       }
     },
     githooks: {
       all: {
         'pre-commit': 'jshint shell:gofmt shell:govet test'
+      }
+    },
+    concurrent: {
+      devserver: {
+        tasks: [
+          'watch:styles',
+          'shell:gin'
+        ],
+        options: {
+          logConcurrentOutput: true
+        }
       }
     }
   });
@@ -133,21 +139,21 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-http-server');
   grunt.loadNpmTasks('grunt-wiredep');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-protractor-runner');
   grunt.loadNpmTasks('grunt-shell');
   grunt.loadNpmTasks('grunt-githooks');
+  grunt.loadNpmTasks('grunt-concurrent');
 
   /** Custom tasks */
-  grunt.registerTask('dev', 'Run sever for JS only development', function() {
+  grunt.registerTask('dev', 'Run development server', function() {
     var tasks = [
       'jshint',
       'wiredep',
       'less:dev',
-      'http-server',
-      'watch:styles'
+      'gentestdata',
+      'concurrent:devserver'
     ];
 
     grunt.task.run(tasks);
@@ -170,6 +176,11 @@ module.exports = function(grunt) {
       'gotestonce'
     ]);
   });
+
+  grunt.registerTask('e2e', 'Run end-to-end tests', [
+    'gentestdata',
+    'protractor:dev'
+  ]);
 
   // Default task(s)
   grunt.registerTask('default', ['dev']);
