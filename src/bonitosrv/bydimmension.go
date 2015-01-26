@@ -361,10 +361,6 @@ func (api *ByDimensionApi) bucketToPrimary(req *ByDimensionRequest,
 				bucket_secs := computeRealSecondsInInterval(req.histogram_seconds,
 					time.Time(bucket.Key_as_string), &req.Timerange)
 
-				fmt.Println("bucket_secs", bucket_secs, "histogram_seconds", req.histogram_seconds)
-				fmt.Println(time.Time(bucket.Key_as_string))
-				fmt.Println(req.Timerange)
-
 				values = append(values, HistogramValue{
 					Ts:    JsTime(bucket.Key_as_string),
 					Value: bucket.Volume.Value / bucket_secs,
