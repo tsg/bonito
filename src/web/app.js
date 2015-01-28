@@ -10,7 +10,9 @@
     'services-list',
     'navbar-directive',
     'svggraph-directive',
-    'bonito-filters'
+    'bonito-filters',
+    'bonitoTimepicker',
+    'bonitoTimefilter'
   ]);
 
   app.factory('Pages', ['_', function(_) {

@@ -21,7 +21,15 @@
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
-          <!-- TODO: settings and time picker -->
+        <li>
+          <div class="right-buttons">
+            <button type="button" class="btn btn-link"
+                ng-click="navbar.toggleTimepicker()">
+              <i class="fa fa-clock-o"></i>
+              Last hour
+            </button>
+          </div>
+        </li>
       </ul>
     </div>
     <!-- /Full navbar -->
@@ -29,6 +37,11 @@
 
   </div>
 </nav>
+
+<!-- timepicker -->
+<config visible="navbar.timepickerVisible">
+  <bonito-timepicker></bonito-timepicker>
+</config>
 
 <!-- Sub navbar -->
 <nav ng-show="navbar.activePage.subPages.length > 0" class="navbar navbar-inverse navbar-static-top" id="bonito-subnav">
