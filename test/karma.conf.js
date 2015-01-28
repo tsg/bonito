@@ -17,7 +17,8 @@ module.exports = function(config){
       '../src/web/bower_components/d3/d3.js',
       // endbower
       '../src/web/*.js',
-      '../src/web/timepicker/*.js',
+      '../src/web/timepicker/timepicker.js',
+      '../src/web/timepicker/quick_ranges.js',
 
       'unit/**/*.js'
     ],
