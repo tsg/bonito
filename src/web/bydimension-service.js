@@ -8,7 +8,7 @@
   /**
    * A proxy service to the ByDimension API.
    */
-  app.factory('byDimensionProxy', ['_', '$http', function(_, $http) {
+  app.factory('byDimensionProxy', ['_', '$http', 'timefilter', function(_, $http, timefilter) {
 
     this.data = [];
 
@@ -20,10 +20,6 @@
       histogram_points: 50
     };
 
-    this.timerange = {
-      from: "now-1h",
-      to: "now"
-    };
 
     this.metrics = [
       "volume",
@@ -42,7 +38,10 @@
 
     this.load = function() {
       var request = {
-        timerange: service.timerange,
+        timerange: {
+          from: timefilter.time.from,
+          to: timefilter.time.to
+        },
         metrics: service.metrics,
         histogram_metrics: service.hist_metrics,
         config: service.config

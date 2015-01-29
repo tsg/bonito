@@ -13,8 +13,9 @@
    * Controller for the Services Grid page.
    */
   app.controller('ServicesListCtrl',
-       ['_', 'Pages', 'byDimensionProxy', '$routeParams', '$location', '$scope',
-    function(_, Pages, Proxy, $routeParams, $location, $scope) {
+       ['_', 'Pages', 'byDimensionProxy', '$routeParams',
+       '$location', '$scope', 'timefilter',
+    function(_, Pages, Proxy, $routeParams, $location, $scope, timefilter) {
 
     _.assign(Pages.activePage, Pages.getPageById('services'));
     Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'overview');
@@ -152,6 +153,18 @@
     Proxy.load().then(function() {
       ctrl.render();
     });
+
+    // watch for time filter changes
+    $scope.$watch(function() {
+      return timefilter.time;
+    }, function(newVals, oldVals) {
+      if (newVals !== oldVals) {
+        console.log('timefilter changed, reloading store');
+        Proxy.load().then(function() {
+          ctrl.render();
+        });
+      }
+    }, true);
 
   }]);
 })();

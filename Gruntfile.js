@@ -112,7 +112,8 @@ module.exports = function(grunt) {
         command: 'gin --port 5063',
         options: {
           execOptions: {
-            cwd: 'src/bonitosrv'
+            cwd: 'src/bonitosrv',
+            maxBuffer: Infinity
           }
         }
       }

@@ -46,7 +46,7 @@ func (t Timerange) String() string {
 // IsZero() returns true if either From or To are zero according
 // to time.Time.IsZero().
 func (tr Timerange) IsZero() bool {
-	return time.Time(tr.From).IsZero() || time.Time(tr.From).IsZero()
+	return time.Time(tr.From).IsZero() || time.Time(tr.To).IsZero()
 }
 
 // ParseTime accepts both absolute times respecting the JsTsLayout

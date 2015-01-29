@@ -165,7 +165,7 @@ var _ = Describe("ByDimension API", func() {
 
 			// request a two minutes interval, a point for each minute
 			req.Timerange.From = MustParseJsTime("2015-01-02T15:03:00.000Z")
-			req.Timerange.To = MustParseJsTime("2015-01-02T15:05:00.000Z")
+			req.Timerange.To = MustParseJsTime("2015-01-02T15:04:59.999Z")
 			req.Config.Histogram_points = 2
 			req.HistogramMetrics = []string{"volume"}
 
@@ -178,8 +178,8 @@ var _ = Describe("ByDimension API", func() {
 			}
 
 			histMetrics1 := services["service1"].Hist_metrics["volume"]
-			Expect(histMetrics1).To(HaveLen(1)) // one non-zero value
-			Expect(histMetrics1[0].Value).To(BeNumerically("~", 5.0/60.0))
+			Expect(histMetrics1).To(HaveLen(3))
+			Expect(histMetrics1[1].Value).To(BeNumerically("~", 5.0/60.0, 1e-3))
 		})
 	})
 

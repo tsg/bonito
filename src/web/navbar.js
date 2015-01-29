@@ -8,10 +8,11 @@
       restrict: 'E',
       templateUrl: 'navbar.html',
       transclude: true,
-      controller: ["Pages", function(Pages) {
-        self = this;
+      controller: ['Pages', 'timefilter', '$scope', function(Pages, timefilter, $scope) {
+        var self = this;
 
         self.pages = Pages.getPages();
+        self.timefilter = timefilter.time;
 
         // the activePage reference is shared between controllers
         self.activePage = Pages.activePage;

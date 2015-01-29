@@ -34,7 +34,7 @@
               <div ng-repeat="list in timepicker.quickLists" class="timepicker-section">
                 <ul class="list-unstyled">
                   <li ng-repeat="option in list">
-                    <a href ng-click="timepicker.setQuick(option.from, option.to)">{{ option.display }}</a>
+                    <a href ng-click="timepicker.setQuick(option)">{{ option.display }}</a>
                   </li>
                 </ul>
               </div>

@@ -3,23 +3,25 @@
 
   var module = angular.module('bonitoTimefilter', []);
 
+  /**
+   * Singleton service that holds the current time filter.
+   */
   module.factory('timefilter', ['_', function(_) {
     var timeDefaults = {
       from: 'now-1h',
-      to: 'now'
+      to: 'now',
+      mode: 'quick',
+      display: 'Last hour'
     };
 
-    var service = this;
+    var self = this;
 
-    service.time = timeDefaults;
+    self.time = timeDefaults;
 
     return {
-      get: function() {
-        return service.time;
-      },
-
-      set: function(time) {
-        service.time = time;
+      time: self.time,
+      set: function(options) {
+        _.assign(self.time, options);
       }
     };
   }]);

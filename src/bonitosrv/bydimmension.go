@@ -22,7 +22,7 @@ func NewByDimensionApi(index string) *ByDimensionApi {
 }
 
 type ByDimensionRequest struct {
-	Timerange
+	Timerange        Timerange
 	Metrics          []string
 	HistogramMetrics []string `json:"histogram_metrics"`
 	Config           struct {
@@ -76,6 +76,7 @@ func (api *ByDimensionApi) setRequestDefaults(req *ByDimensionRequest) {
 	}
 
 	if req.Timerange.IsZero() {
+		fmt.Println("Timerange is zero")
 		req.Timerange.From = JsTime(time.Now().Add(-1 * time.Hour))
 		req.Timerange.To = JsTime(time.Now())
 	}
@@ -234,8 +235,13 @@ func (api *ByDimensionApi) buildRequestHistogramAggs(req *ByDimensionRequest) (*
 		case "volume":
 			aggs["volume_hist"] = MapStr{
 				"date_histogram": MapStr{
-					"field":    "timestamp",
-					"interval": interval,
+					"field":         "timestamp",
+					"interval":      interval,
+					"min_doc_count": 0,
+					"extended_bounds": MapStr{
+						"min": elasticsearch.Time(req.Timerange.From),
+						"max": elasticsearch.Time(req.Timerange.To),
+					},
 				},
 				"aggs": MapStr{
 					"volume": MapStr{
