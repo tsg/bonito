@@ -159,7 +159,6 @@
       return timefilter.time;
     }, function(newVals, oldVals) {
       if (newVals !== oldVals) {
-        console.log('timefilter changed, reloading store');
         Proxy.load().then(function() {
           ctrl.render();
         });
