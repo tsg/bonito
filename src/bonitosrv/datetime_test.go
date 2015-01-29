@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -57,9 +58,49 @@ var _ = Describe("Datetime functions", func() {
 			Expect(err).To(HaveOccurred())
 		})
 
+		It("should fail when the unit is not specified", func() {
+			_, err := ParseTime("now-1")
+			Expect(err).To(HaveOccurred())
+
+			_, err = ParseTime("now-1/d")
+			Expect(err).To(HaveOccurred())
+		})
+
 		It("should fail when microseconds are given", func() {
 			_, err := ParseTime("2015-01-24T14:06:05.071000Z")
 			Expect(err).To(HaveOccurred())
+		})
+
+		It("should work to truncate by hours", func() {
+			Expect(ParseTime("now/h")).To(BeTemporally("~", time.Now().Truncate(time.Hour), time.Second))
+		})
+
+		It("should work to truncate by minutes", func() {
+			Expect(ParseTime("now-12m/m")).To(BeTemporally("~", time.Now().Add(-12*time.Minute).Truncate(time.Minute), time.Second))
+		})
+
+		Context("Truncation functions", func() {
+			var dt time.Time
+			BeforeEach(func() {
+				dt = MustParseTime("2015-01-24T14:06:05.071Z")
+			})
+
+			It("should work to truncate by date", func() {
+				Expect(truncateTime(dt, "/d")).To(Equal(MustParseTime("2015-01-24T00:00:00.000Z")))
+			})
+
+			It("should work to truncate by week", func() {
+				Expect(truncateTime(dt, "/w")).To(Equal(MustParseTime("2015-01-19T00:00:00.000Z")))
+			})
+
+			It("should work to truncate by month", func() {
+				fmt.Println(truncateTime(dt, "/M"))
+				Expect(truncateTime(dt, "/M")).To(Equal(MustParseTime("2015-01-01T00:00:00.000Z")))
+			})
+
+			It("should work to truncate by year", func() {
+				Expect(truncateTime(dt, "/y")).To(Equal(MustParseTime("2015-01-01T00:00:00.000Z")))
+			})
 		})
 	})
 

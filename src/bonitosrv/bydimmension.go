@@ -76,7 +76,6 @@ func (api *ByDimensionApi) setRequestDefaults(req *ByDimensionRequest) {
 	}
 
 	if req.Timerange.IsZero() {
-		fmt.Println("Timerange is zero")
 		req.Timerange.From = JsTime(time.Now().Add(-1 * time.Hour))
 		req.Timerange.To = JsTime(time.Now())
 	}

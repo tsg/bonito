@@ -49,6 +49,52 @@ func (tr Timerange) IsZero() bool {
 	return time.Time(tr.From).IsZero() || time.Time(tr.To).IsZero()
 }
 
+// Round down the given time to the second, minute, hour, day, week, etc.
+func truncateTime(dt time.Time, spec string) time.Time {
+	switch spec {
+	case "/s":
+		return dt.Truncate(time.Second)
+	case "/m":
+		return dt.Truncate(time.Minute)
+	case "/h":
+		return dt.Truncate(time.Hour)
+	case "/d":
+		return time.Date(dt.Year(), dt.Month(), dt.Day(), 0, 0, 0, 0, dt.Location())
+	case "/w":
+		return dt.UTC().Truncate(7 * 24 * time.Hour).In(dt.Location())
+	case "/M":
+		return time.Date(dt.Year(), dt.Month(), 1, 0, 0, 0, 0, dt.Location())
+	case "/y":
+		return time.Date(dt.Year(), time.January, 1, 0, 0, 0, 0, dt.Location())
+	default:
+		panic(fmt.Errorf("Unknwon spec %s", spec))
+	}
+}
+
+// Time arithmetic helper function.
+func timeAdd(dt time.Time, value int, spec string) time.Time {
+	switch spec {
+	case "":
+		return dt
+	case "s":
+		return dt.Add(time.Duration(value) * time.Second)
+	case "m":
+		return dt.Add(time.Duration(value) * time.Minute)
+	case "h":
+		return dt.Add(time.Duration(value) * time.Hour)
+	case "d":
+		return dt.AddDate(0, 0, value)
+	case "w":
+		return dt.AddDate(0, 0, 7*value)
+	case "M":
+		return dt.AddDate(0, value, 0)
+	case "y":
+		return dt.AddDate(value, 0, 0)
+	default:
+		panic(errors.New("Unexpected time specifier"))
+	}
+}
+
 // ParseTime accepts both absolute times respecting the JsTsLayout
 // and relative times to the current server time. Examples:
 //
@@ -56,37 +102,31 @@ func (tr Timerange) IsZero() bool {
 //  * now+1h
 //  * now-12m
 func ParseTime(timespec string) (time.Time, error) {
-	var re = regexp.MustCompile("^now([-+][0-9]+)([smhdwMy])$")
-	switch {
-	case timespec == "now":
-		return time.Now(), nil
-	case re.MatchString(timespec):
+	var re = regexp.MustCompile("^now([-+][0-9]+)?([smhdwMy])?(/[smhdwMy])?$")
+	if re.MatchString(timespec) {
 		matches := re.FindStringSubmatch(timespec)
 
-		value, err := strconv.Atoi(matches[1])
-		if err != nil {
-			return time.Time{}, fmt.Errorf("Failed to parse spec: %v", err)
+		var value int
+		if matches[1] == "" && matches[2] != "" || matches[1] != "" && matches[2] == "" {
+			return time.Time{}, fmt.Errorf("Failed to parse spec")
 		}
 
-		switch matches[2] {
-		case "s":
-			return time.Now().Add(time.Duration(value) * time.Second), nil
-		case "m":
-			return time.Now().Add(time.Duration(value) * time.Minute), nil
-		case "h":
-			return time.Now().Add(time.Duration(value) * time.Hour), nil
-		case "d":
-			return time.Now().AddDate(0, 0, value), nil
-		case "w":
-			return time.Now().AddDate(0, 0, 7*value), nil
-		case "M":
-			return time.Now().AddDate(0, value, 0), nil
-		case "y":
-			return time.Now().AddDate(value, 0, 0), nil
-		default:
-			panic("Unexpected time specifier")
+		if matches[1] != "" {
+			var err error
+			value, err = strconv.Atoi(matches[1])
+			if err != nil {
+				return time.Time{}, fmt.Errorf("Failed to parse spec: %v", err)
+			}
 		}
-	default:
+
+		dt := timeAdd(time.Now(), value, matches[2])
+
+		if matches[3] != "" {
+			dt = truncateTime(dt, matches[3])
+		}
+
+		return dt, nil
+	} else {
 		return time.Parse(JsTsLayout, timespec)
 	}
 }
