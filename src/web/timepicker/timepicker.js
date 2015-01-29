@@ -14,6 +14,22 @@
 
         self.quickLists = _(quickRanges).groupBy('section').values().value();
 
+        self.relativeOptions = [
+          {text: 'Seconds ago', value: 's'},
+          {text: 'Minutes ago', value: 'm'},
+          {text: 'Hours ago', value: 'h'},
+          {text: 'Days ago', value: 'd'},
+          {text: 'Weeks ago', value: 'w'},
+          {text: 'Months ago', value: 'M'},
+          {text: 'Years ago', value: 'y'},
+        ];
+
+        self.relative = {
+          count: 30,
+          unit: 'm',
+          valid: true
+        };
+
         self.setMode = function(mode) {
           self.mode = mode;
         };
@@ -25,6 +41,22 @@
             to: option.to,
             display: option.display
           });
+        };
+
+        self.setRelative = function() {
+          var from = "now-" + self.relative.count + self.relative.unit,
+            display = "Last " + self.relative.count + self.relative.unit;
+          timefilter.set({
+            from: from,
+            to: 'now',
+            display: display,
+            mode: 'relative'
+          });
+        };
+
+        self.relativeValidate = function() {
+          var count = parseInt(self.relative.count);
+          self.relative.valid = (!isNaN(count) && count > 0);
         };
 
       },
@@ -72,6 +104,8 @@
             to: to,
             display: opt.display
           };
+        } else if (mode === 'relative') {
+          // TODO
         }
 
         // TODO: support for other modes

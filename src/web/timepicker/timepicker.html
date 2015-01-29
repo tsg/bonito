@@ -30,6 +30,7 @@
         <div class="col-md-10">
           <div ng-switch on="timepicker.mode" class="container-fluid">
 
+            <!-- Quick -->
             <div ng-switch-when="quick">
               <div ng-repeat="list in timepicker.quickLists" class="timepicker-section">
                 <ul class="list-unstyled">
@@ -40,8 +41,51 @@
               </div>
             </div>
 
+            <!-- Relative -->
             <div ng-switch-when="relative">
-              Relative filters go here
+              <form ng-submit="timepicker.setRelative()" class="form-inline" name="relativeTime">
+                <div class="timepicker-section">
+                  <label>
+                    From:
+                  </label>
+                  <br>
+                  <div class="form-group">
+                    <input
+                      required
+                      ng-model="timepicker.relative.count"
+                      ng-change="timepicker.relativeValidate()"
+                      type="number"
+                      class="form-control">
+                  </div>
+                  <div class="form-group">
+                    <select
+                      ng-model="timepicker.relative.unit"
+                      ng-options="opt.value as opt.text for opt in timepicker.relativeOptions"
+                      class="form-control col-xs-2">
+                    </select>
+                  </div>
+                </div>
+
+                <div class="timepicker-section">
+                  <label>
+                    To:
+                  </label>
+                  <br>
+                  <div class="form-group">
+                    <input type="text" disabled class="form-control" value="Now">
+                  </div>
+                </div>
+
+                <div class="timepicker-section">
+                  <label>&nbsp;</label>
+                  <br>
+                  <div class="form-group">
+                    <button type="submit" class="btn btn-primary" ng-disabled="!timepicker.relative.valid">
+                      Go
+                    </button>
+                  </div>
+                </div>
+              </form>
             </div>
 
             <div ng-switch-when="absolute">
