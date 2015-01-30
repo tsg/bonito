@@ -14,8 +14,8 @@
    */
   app.controller('ServicesListCtrl',
        ['_', 'Pages', 'byDimensionProxy', '$routeParams',
-       '$location', '$scope', 'timefilter',
-    function(_, Pages, Proxy, $routeParams, $location, $scope, timefilter) {
+       '$location', '$scope', 'timefilter', '$timeout',
+    function(_, Pages, Proxy, $routeParams, $location, $scope, timefilter, $timeout) {
 
     _.assign(Pages.activePage, Pages.getPageById('services'));
     Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'overview');
@@ -149,21 +149,40 @@
       ctrl.render();
     };
 
+    this.load = function() {
+      $timeout.cancel(ctrl.timer);
+
+      Proxy.load().then(function() {
+        ctrl.render();
+      });
+
+      if (timefilter.interval.value) {
+        ctrl.timer = $timeout(function() {
+          ctrl.load();
+        }, timefilter.interval.value);
+      }
+    };
+
     // initial service load
-    Proxy.load().then(function() {
-      ctrl.render();
-    });
+    this.load();
 
     // watch for time filter changes
     $scope.$watch(function() {
       return timefilter.time;
     }, function(newVals, oldVals) {
       if (newVals !== oldVals) {
-        Proxy.load().then(function() {
-          ctrl.render();
-        });
+        ctrl.load();
       }
     }, true);
+
+    // watch for interval changes
+    $scope.$watch(function() {
+      return timefilter.interval.value;
+    }, function(newVals, oldVals) {
+      if (newVals !== oldVals) {
+        ctrl.load();
+      }
+    });
 
   }]);
 })();

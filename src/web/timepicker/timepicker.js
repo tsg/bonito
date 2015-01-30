@@ -118,6 +118,10 @@
           });
         };
 
+        self.setRefreshInterval = function(interval) {
+          timefilter.setInterval(interval);
+        };
+
         // watch for time filter changes to update the URL bar
         $scope.$watch(function() {
           return timefilter.time;

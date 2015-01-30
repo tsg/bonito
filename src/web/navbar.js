@@ -15,6 +15,7 @@
         self.pages = Pages.getPages();
 
         self.timefilter = timefilter.time;
+        self.interval = timefilter.interval;
 
         // the activePage reference is shared between controllers
         self.activePage = Pages.activePage;

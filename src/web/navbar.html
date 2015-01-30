@@ -25,8 +25,12 @@
           <div class="right-buttons">
             <button type="button" class="btn btn-link"
                 ng-click="navbar.toggleTimepicker()">
-              <i class="fa fa-clock-o"></i>
+              <span ng-hide="navbar.interval.value === 0" class="interval-display">
+                {{ navbar.interval.display }}
+                <i class="fa fa-refresh"></i>
+              </span>
               {{ navbar.timefilter.display }}
+              <i class="fa fa-clock-o"></i>
             </button>
           </div>
         </li>
