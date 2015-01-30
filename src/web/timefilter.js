@@ -16,10 +16,19 @@
 
     var self = this;
 
+    self.timeJsFormat = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
     self.time = timeDefaults;
 
     return {
       time: self.time,
+      format: function(date) {
+        if (moment.isMoment(date)) {
+          console.log("Formatting", date);
+          return date.utc().format(self.timeJsFormat);
+        } else {
+          return date;
+        }
+      },
       set: function(options) {
         _.assign(self.time, options);
       }

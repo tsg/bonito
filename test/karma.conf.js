@@ -15,6 +15,7 @@ module.exports = function(config){
       '../src/web/bower_components/angular-mocks/angular-mocks.js',
       '../src/web/bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js',
       '../src/web/bower_components/d3/d3.js',
+      '../src/web/bower_components/moment/moment.js',
       // endbower
       '../src/web/*.js',
       '../src/web/timepicker/timepicker.js',

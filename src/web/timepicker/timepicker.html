@@ -88,8 +88,53 @@
               </form>
             </div>
 
+            <!-- Absolute -->
             <div ng-switch-when="absolute">
-              Absolute filters go here
+              <form name="absoluteTime" ng-submit="timepicker.setAbsolute()">
+                <div class="timepicker-section">
+                  <div>
+                    <label class="small">From: <span ng-show="!timepicker.absolute.from"><i>Invalid Date</i></span>
+                    </label>
+                    <input type="text" required class="form-control"
+                      input-datetime="{{timepicker.format}}"
+                      ng-change="timepicker.absoluteValidate()"
+                      ng-model="timepicker.absolute.from">
+                  </div>
+                  <div>
+                    <datepicker ng-model="timepicker.absolute.from"
+                      max="timepicker.absolute.to" show-weeks="false"
+                      ng-change="timepicker.absoluteValidate()">
+                    </datepicker>
+                  </div>
+                </div>
+
+                <div class="timepicker-section">
+                  <div>
+                    <label class="small">To: <span ng-show="!timepicker.absolute.to"><i>Invalid Date</i></span>
+                    </label>
+                    <input type="text" required class="form-control"
+                      input-datetime="{{timepicker.format}}"
+                      ng-change="timepicker.absoluteValidate()"
+                      ng-model="timepicker.absolute.to">
+                  </div>
+                  <div>
+                    <datepicker ng-model="timepicker.absolute.to"
+                      min="timepicker.absolute.from" show-weeks="false"
+                      ng-change="timepicker.absoluteValidate()">
+                    </datepicker>
+                  </div>
+                </div>
+
+                <div class="timepicker-section">
+                  <label>&nbsp;</label>
+                  <div class="form-group">
+                    <button class="btn btn-primary" ng-disabled="!timepicker.absolute.valid" type="submit">
+                      Go
+                    </button>
+                    <span class="small" ng-show="timepicker.absolute.from >= timepicker.absolute.to"><strong>From</strong> must occur before <strong>To</strong></span>
+                  </div>
+                </div>
+              </form>
             </div>
 
           </div>

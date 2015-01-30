@@ -39,8 +39,8 @@
     this.load = function() {
       var request = {
         timerange: {
-          from: timefilter.time.from,
-          to: timefilter.time.to
+          from: timefilter.format(timefilter.time.from),
+          to: timefilter.format(timefilter.time.to)
         },
         metrics: service.metrics,
         histogram_metrics: service.hist_metrics,

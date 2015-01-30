@@ -3,11 +3,19 @@
 
   var module = angular.module('bonitoTimepicker', []);
 
+  module.constant('defaultTime', {
+    mode: 'quick',
+    from: 'now-1h',
+    to: 'now',
+    display: 'Last 1 hour'
+  });
+
+
   module.directive('bonitoTimepicker', function(_, quickRanges) {
     return {
       restrict: 'E',
       templateUrl: 'timepicker/timepicker.html',
-      controller: function(timefilter) {
+      controller: function(timefilter, $scope, timepicker) {
         var self = this;
         self.time = timefilter.time;
         self.mode = 'quick';
@@ -27,6 +35,13 @@
         self.relative = {
           count: 30,
           unit: 'm',
+          valid: true
+        };
+
+        self.format = 'YYYY-MM-DD, HH:mm:ss.SSS';
+        self.absolute = {
+          to: moment(),
+          from: moment().subtract('minutes', 60),
           valid: true
         };
 
@@ -59,23 +74,60 @@
           self.relative.valid = (!isNaN(count) && count > 0);
         };
 
+        $scope.$watch('timepicker.absolute.from', function(date) {
+          // transform in a moment date
+          if (_.isDate(date)) self.absolute.from = moment(date);
+        });
+
+        $scope.$watch('timepicker.absolute.to', function(date) {
+          // transform in a moment date
+          if (_.isDate(date)) self.absolute.to = moment(date);
+        });
+
+
+        self.absoluteValidate = function() {
+          self.absolute.valid = !_.isUndefined(self.absolute.from) &&
+            !_.isUndefined(self.absolute.to) &&
+            self.absolute.from < self.absolute.to;
+        };
+
+        self.setAbsolute = function() {
+          timefilter.set({
+            from: self.absolute.from,
+            to: self.absolute.to,
+            display: timepicker.absoluteDisplay(self.absolute.from, self.absolute.to),
+            mode: 'absolute'
+          });
+        };
+
       },
       controllerAs: 'timepicker'
     };
   });
 
-  module.constant('defaultTime', {
-    mode: 'quick',
-    from: 'now-1h',
-    to: 'now',
-    display: 'Last 1 hour'
-  });
 
   module.service('timepicker', ['_', 'quickRanges', 'defaultTime',
       function(_, quickRanges, defaultTime) {
 
+    var timeFormat = 'YYYY-MM-DDTHH:mm:ss.SSS';
+    var absoluteDisplayFormat = 'YYYY-MM-DD HH:mm:ss.SSS';
+
+    self.absoluteDisplay = function(from, to) {
+        return from.format(absoluteDisplayFormat) + ' to ' +
+          to.format(absoluteDisplayFormat);
+    };
+
     return {
+      absoluteDisplay: absoluteDisplay,
+
       toUrlParameters: function(time) {
+        if (time.mode == 'absolute') {
+          return {
+            "time-from": time.from.format(timeFormat),
+            "time-to": time.to.format(timeFormat),
+            "time-mode": time.mode
+          };
+        }
         return {
           "time-from": time.from,
           "time-to": time.to,
@@ -121,6 +173,15 @@
             display: 'Last ' + count + unit
           };
 
+        } else if (mode == 'absolute') {
+          var mfrom = moment(from, timeFormat),
+            mto = moment(to, timeFormat);
+          return {
+            mode: 'absolute',
+            from: mfrom,
+            to: mto,
+            display: absoluteDisplay(mfrom, mto)
+          };
         }
 
         // TODO: support for other modes
