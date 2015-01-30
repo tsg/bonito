@@ -20,6 +20,7 @@ module.exports = function(config){
       '../src/web/*.js',
       '../src/web/timepicker/timepicker.js',
       '../src/web/timepicker/quick_ranges.js',
+      '../src/web/timepicker/refresh_intervals.js',
 
       'unit/**/*.js'
     ],

@@ -11,19 +11,20 @@
   });
 
 
-  module.directive('bonitoTimepicker', function(_, quickRanges) {
+  module.directive('bonitoTimepicker', function(_, quickRanges, refreshIntervals) {
     return {
       restrict: 'E',
       templateUrl: 'timepicker/timepicker.html',
       controller: ['timefilter', '$scope', 'timepicker', '$location', '$routeParams',
         function(timefilter, $scope, timepicker, $location, $routeParams) {
         var self = this;
-        self.mode = 'quick';
 
         self.quickLists = _(quickRanges).groupBy('section').values().value();
+        self.refreshLists = _(refreshIntervals).groupBy('section').values().value();
 
         timefilter.set(timepicker.fromUrlParameters($routeParams));
         self.time = timefilter.time;
+        self.mode = self.time.mode;
 
 
         self.relativeOptions = [
