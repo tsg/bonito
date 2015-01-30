@@ -24,7 +24,7 @@
       format: function(date) {
         if (moment.isMoment(date)) {
           console.log("Formatting", date);
-          return date.utc().format(self.timeJsFormat);
+          return moment(date).utc().format(self.timeJsFormat);
         } else {
           return date;
         }

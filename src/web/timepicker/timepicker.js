@@ -15,12 +15,16 @@
     return {
       restrict: 'E',
       templateUrl: 'timepicker/timepicker.html',
-      controller: function(timefilter, $scope, timepicker) {
+      controller: ['timefilter', '$scope', 'timepicker', '$location', '$routeParams',
+        function(timefilter, $scope, timepicker, $location, $routeParams) {
         var self = this;
-        self.time = timefilter.time;
         self.mode = 'quick';
 
         self.quickLists = _(quickRanges).groupBy('section').values().value();
+
+        timefilter.set(timepicker.fromUrlParameters($routeParams));
+        self.time = timefilter.time;
+
 
         self.relativeOptions = [
           {text: 'Seconds ago', value: 's'},
@@ -38,12 +42,25 @@
           valid: true
         };
 
+        if (self.time.mode === 'relative') {
+          var parsed = timepicker.parseRelativeFrom(self.time.from);
+          if (parsed !== undefined) {
+            self.relative.count = parsed[0];
+            self.relative.unit = parsed[1];
+          }
+        }
+
         self.format = 'YYYY-MM-DD, HH:mm:ss.SSS';
         self.absolute = {
           to: moment(),
-          from: moment().subtract('minutes', 60),
+          from: moment().subtract(60, 'minutes'),
           valid: true
         };
+
+        if (self.time.mode === 'absolute') {
+          self.absolute.to = self.time.to;
+          self.absolute.from = self.time.from;
+        }
 
         self.setMode = function(mode) {
           self.mode = mode;
@@ -100,7 +117,19 @@
           });
         };
 
-      },
+        // watch for time filter changes to update the URL bar
+        $scope.$watch(function() {
+          return timefilter.time;
+        }, function(newVals, oldVals) {
+          if (newVals !== oldVals) {
+            var params = timepicker.toUrlParameters(timefilter.time);
+            _.each(params, function(value, key) {
+              $location.search(key, value);
+            });
+          }
+        }, true);
+
+      }],
       controllerAs: 'timepicker'
     };
   });
@@ -109,7 +138,8 @@
   module.service('timepicker', ['_', 'quickRanges', 'defaultTime',
       function(_, quickRanges, defaultTime) {
 
-    var timeFormat = 'YYYY-MM-DDTHH:mm:ss.SSS';
+    var writeTimeFormat = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
+    var readTimeFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
     var absoluteDisplayFormat = 'YYYY-MM-DD HH:mm:ss.SSS';
 
     self.absoluteDisplay = function(from, to) {
@@ -117,14 +147,27 @@
           to.format(absoluteDisplayFormat);
     };
 
+    self.parseRelativeFrom = function(from) {
+      var m = from.match(/now-([0-9]+)([smhdwMy])/);
+      if (m === null) {
+        return undefined;
+      }
+      var count = parseInt(m[1]), unit = m[2];
+      if (isNaN(count) || unit === '') {
+        return undefined;
+      }
+      return [count, unit];
+    };
+
     return {
-      absoluteDisplay: absoluteDisplay,
+      absoluteDisplay: self.absoluteDisplay,
+      parseRelativeFrom: self.parseRelativeFrom,
 
       toUrlParameters: function(time) {
         if (time.mode == 'absolute') {
           return {
-            "time-from": time.from.format(timeFormat),
-            "time-to": time.to.format(timeFormat),
+            "time-from": moment(time.from).utc().format(writeTimeFormat),
+            "time-to": moment(time.to).utc().format(writeTimeFormat),
             "time-mode": time.mode
           };
         }
@@ -157,12 +200,9 @@
             display: opt.display
           };
         } else if (mode === 'relative') {
-          var m = from.match(/now-([0-9]+)([smhdwMy])/);
-          if (m === null) {
-            return defaultTime;
-          }
-          var count = parseInt(m[1]), unit = m[2];
-          if (isNaN(count) || unit === '') {
+
+          var parsed = self.parseRelativeFrom(from);
+          if (parsed === undefined) {
             return defaultTime;
           }
 
@@ -170,12 +210,12 @@
             mode: 'relative',
             from: from,
             to: 'now',
-            display: 'Last ' + count + unit
+            display: 'Last ' + parsed[0] + parsed[1]
           };
 
         } else if (mode == 'absolute') {
-          var mfrom = moment(from, timeFormat),
-            mto = moment(to, timeFormat);
+          var mfrom = moment(from, readTimeFormat).local(),
+            mto = moment(to, readTimeFormat).local();
           return {
             mode: 'absolute',
             from: mfrom,
@@ -184,7 +224,6 @@
           };
         }
 
-        // TODO: support for other modes
         return defaultTime;
       }
     };
