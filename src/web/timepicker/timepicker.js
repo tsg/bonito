@@ -84,9 +84,9 @@
       },
 
       fromUrlParameters: function(params) {
-        var mode = params['time-mode'] || 'quick',
-          from = params['time-from'] || 'now-1h',
-          to = params['time-to'] || 'now';
+        var mode = params['time-mode'] || defaultTime.mode,
+          from = params['time-from'] || defaultTime.from,
+          to = params['time-to'] || defaultTime.to;
 
         if (mode === 'quick') {
           var opt = _.find(quickRanges, function(d) {
@@ -105,7 +105,22 @@
             display: opt.display
           };
         } else if (mode === 'relative') {
-          // TODO
+          var m = from.match(/now-([0-9]+)([smhdwMy])/);
+          if (m === null) {
+            return defaultTime;
+          }
+          var count = parseInt(m[1]), unit = m[2];
+          if (isNaN(count) || unit === '') {
+            return defaultTime;
+          }
+
+          return {
+            mode: 'relative',
+            from: from,
+            to: 'now',
+            display: 'Last ' + count + unit
+          };
+
         }
 
         // TODO: support for other modes
