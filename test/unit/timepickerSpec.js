@@ -126,5 +126,76 @@
 
     });
 
+    describe('Timepicker directive', function() {
+      var $compile, $rootScope, $elem, $location;
+      beforeEach(module('templates'));
+      beforeEach(inject(function(_$compile_, _$rootScope_, _$location_) {
+        $compile = _$compile_;
+        $rootScope = _$rootScope_;
+        $location = _$location_;
+
+        $elem = angular.element('<bonito-timepicker></bonito-timepicker>');
+        $compile($elem)($rootScope);
+        $rootScope.$digest();
+      }));
+
+      it('should contain two tabs', function() {
+          expect($elem.find('.tab-pane').length).toBe(2);
+      });
+
+      it('should change tabs depending on the mode', function() {
+        $rootScope.timepicker.mode = 'relative';
+        $rootScope.$digest();
+
+        var el = $elem.find('.tab-content li.active a');
+        expect(el.text()).toBe('Relative');
+
+        $rootScope.timepicker.mode = 'absolute';
+        $rootScope.$digest();
+
+        el = $elem.find('.tab-content li.active a');
+        expect(el.text()).toBe('Absolute');
+      });
+
+      it('should generate three lists of quick options', function() {
+        expect($elem.find('div[ng-switch-when=quick] .timepicker-section').length).toBe(3);
+      });
+
+      it('calling the setQuick function should update the timefilter', function() {
+        $rootScope.timepicker.setQuick({
+          from: 'now/d',
+          to: 'now',
+          display: 'The day so far',
+          section: 0
+        });
+        expect($rootScope.timepicker.time.from).toBe('now/d');
+        expect($rootScope.timepicker.time.display).toBe('The day so far');
+      });
+
+      it('setting a time should update the location bar', function() {
+        $rootScope.timepicker.setQuick({
+          from: 'now/d',
+          to: 'now',
+          display: 'The day so far',
+          section: 0
+        });
+        $rootScope.$digest();
+
+        expect($location.url()).toContain('time-from=now%2Fd');
+      });
+
+      it('setting a time refresher interval should update the location bar', function() {
+        $rootScope.timepicker.setRefreshInterval({
+          value: 5000,
+          display: '5 seconds'
+        });
+        $rootScope.$digest();
+
+        expect($location.url()).toContain('interval=5000');
+      });
+
+
+    });
+
   });
 })();

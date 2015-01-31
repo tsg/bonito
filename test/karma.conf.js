@@ -22,8 +22,20 @@ module.exports = function(config){
       '../src/web/timepicker/quick_ranges.js',
       '../src/web/timepicker/refresh_intervals.js',
 
-      'unit/**/*.js'
+      'unit/**/*.js',
+
+      '../src/web/**/*.html'
     ],
+
+    // templates pre-processor
+    preprocessors: {
+      '../src/web/**/*.html': ['ng-html2js']
+    },
+
+    ngHtml2JsPreprocessor: {
+      stripPrefix: '.*/src/web/',
+      moduleName: 'templates'
+    },
 
     autoWatch : true,
 
@@ -34,7 +46,8 @@ module.exports = function(config){
     plugins : [
       'karma-chrome-launcher',
       'karma-phantomjs-launcher',
-      'karma-jasmine'
+      'karma-jasmine',
+      'karma-ng-html2js-preprocessor'
     ],
 
     junitReporter : {
