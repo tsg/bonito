@@ -120,7 +120,7 @@ module.exports = function(grunt) {
     },
     githooks: {
       all: {
-        'pre-commit': 'jshint shell:gofmt shell:govet test'
+        'pre-commit': 'precommit'
       }
     },
     concurrent: {
@@ -144,7 +144,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-protractor-runner');
   grunt.loadNpmTasks('grunt-shell');
-  grunt.loadNpmTasks('grunt-githooks');
+  grunt.loadNpmTasks('grunt-contrib-githooks');
   grunt.loadNpmTasks('grunt-concurrent');
 
   /** Custom tasks */
@@ -181,6 +181,13 @@ module.exports = function(grunt) {
   grunt.registerTask('e2e', 'Run end-to-end tests', [
     'gentestdata',
     'protractor:dev'
+  ]);
+
+  grunt.registerTask('precommit', 'Run the pre-commit tasks', [
+    'jshint',
+    'shell:gofmt',
+    'shell:govet',
+    'test'
   ]);
 
   // Default task(s)
