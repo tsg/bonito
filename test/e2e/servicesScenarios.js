@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  describe('Bonito App', function() {
+  describe('Services page', function() {
     describe('Services filtering', function() {
       beforeEach(function() {
         browser.get('/index.html#/services/overview?perRow=4');

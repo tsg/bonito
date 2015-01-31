@@ -14,8 +14,8 @@
    */
   app.controller('ServicesListCtrl',
        ['_', 'Pages', 'byDimensionProxy', '$routeParams',
-       '$location', '$scope', 'timefilter', '$timeout',
-    function(_, Pages, Proxy, $routeParams, $location, $scope, timefilter, $timeout) {
+       '$location', '$scope', 'timefilter', '$interval',
+    function(_, Pages, Proxy, $routeParams, $location, $scope, timefilter, $interval) {
 
     _.assign(Pages.activePage, Pages.getPageById('services'));
     Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'overview');
@@ -150,7 +150,7 @@
     };
 
     this.load = function() {
-      $timeout.cancel(ctrl.timer);
+      $interval.cancel(ctrl.timer);
       timefilter.interval.loading = true;
 
       Proxy.load().then(function() {
@@ -158,9 +158,11 @@
 
         timefilter.interval.loading = false;
         if (timefilter.interval.value) {
-          ctrl.timer = $timeout(function() {
+          // using $interval instead of $timeout here because
+          // the end-2-end tests don't wait for $interval but wait for $timeout.
+          ctrl.timer = $interval(function() {
             ctrl.load();
-          }, timefilter.interval.value);
+          }, timefilter.interval.value, 1);
         }
       });
 
