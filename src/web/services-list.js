@@ -151,16 +151,19 @@
 
     this.load = function() {
       $timeout.cancel(ctrl.timer);
+      timefilter.interval.loading = true;
 
       Proxy.load().then(function() {
         ctrl.render();
+
+        timefilter.interval.loading = false;
+        if (timefilter.interval.value) {
+          ctrl.timer = $timeout(function() {
+            ctrl.load();
+          }, timefilter.interval.value);
+        }
       });
 
-      if (timefilter.interval.value) {
-        ctrl.timer = $timeout(function() {
-          ctrl.load();
-        }, timefilter.interval.value);
-      }
     };
 
     // initial service load

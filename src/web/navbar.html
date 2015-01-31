@@ -27,7 +27,7 @@
                 ng-click="navbar.toggleTimepicker()">
               <span ng-hide="navbar.interval.value === 0" class="interval-display">
                 {{ navbar.interval.display }}
-                <i class="fa fa-refresh"></i>
+                <i class="fa fa-refresh" ng-class="{'fa-spin': navbar.interval.loading }"></i>
               </span>
               {{ navbar.timefilter.display }}
               <i class="fa fa-clock-o"></i>
