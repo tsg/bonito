@@ -23,6 +23,7 @@
         self.refreshLists = _(refreshIntervals).groupBy('section').values().value();
 
         timefilter.set(timepicker.fromUrlParameters($routeParams));
+        timefilter.setInterval(timepicker.intervalFromUrlParameters($routeParams));
         self.time = timefilter.time;
         self.mode = self.time.mode;
 
@@ -134,14 +135,31 @@
           }
         }, true);
 
+        // watch for interval changes to update the URL bar
+        $scope.$watch(function() {
+          return timefilter.interval;
+        }, function(newVals, oldVals) {
+          if (newVals !== oldVals) {
+            var params = timepicker.intervalToUrlParameters(timefilter.interval);
+            _.each(params, function(value, key) {
+              $location.search(key, value);
+            });
+
+            if (!params) {
+              // remove the parameter when it's not needed
+              $location.search('interval', null);
+            }
+          }
+        }, true);
+
       }],
       controllerAs: 'timepicker'
     };
   });
 
 
-  module.service('timepicker', ['_', 'quickRanges', 'defaultTime',
-      function(_, quickRanges, defaultTime) {
+  module.service('timepicker', ['_', 'quickRanges', 'defaultTime', 'refreshIntervals',
+      function(_, quickRanges, defaultTime, refreshIntervals) {
 
     var writeTimeFormat = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
     var readTimeFormat = 'YYYY-MM-DDTHH:mm:ss.SSSZ';
@@ -230,7 +248,29 @@
         }
 
         return defaultTime;
-      }
+      },
+
+      intervalFromUrlParameters: function(params) {
+        var value = parseInt(params.interval) || 0;
+        var interval = _.find(refreshIntervals,{value: value});
+        if (_.isUndefined(interval)) {
+          return {
+            value: 0,
+            display: 'Off'
+          };
+        }
+        return interval;
+      },
+
+      intervalToUrlParameters: function(interval) {
+        if (interval.value === 0) {
+          return {};    // 0 is implicit
+        }
+        return {
+          'interval': interval.value
+        };
+      },
+
     };
   }]);
 
