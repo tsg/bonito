@@ -97,9 +97,10 @@
       });
 
       it('should expand settings when clicking the cog', function() {
-        expect(element(by.css('.config')).isDisplayed()).toBeFalsy();
+        var config = element.all(by.css('.config')).get(1);
+        expect(config.isDisplayed()).toBeFalsy();
         element(by.css('.fa-cog')).click().then(function() {
-          expect(element(by.css('.config')).isDisplayed()).toBeTruthy();
+          expect(config.isDisplayed()).toBeTruthy();
         });
       });
 
