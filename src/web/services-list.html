@@ -6,7 +6,9 @@
         <form class="panels-quick-filter has-feedback">
           <div class="form-group">
             <input type="search" class="form-control input-sm"
-              placeholder="Filter services.." ng-model="app.filter" ng-change="app.updateFilter()" />
+              placeholder="Filter services.." ng-model="app.filter"
+              ng-change="app.updateFilter()"
+              kb-focus="filter" />
               <i class="fa fa-search form-control-feedback"></i>
           </div>
         </form>

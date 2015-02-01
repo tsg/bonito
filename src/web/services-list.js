@@ -6,7 +6,9 @@
     'infinite-scroll',
 
     'bydimension-service',
-    'config-directive'
+    'config-directive',
+    'cfp.hotkeys',
+    'keyboard'
   ]);
 
   /**
@@ -15,7 +17,9 @@
   app.controller('ServicesListCtrl',
        ['_', 'Pages', 'byDimensionProxy', '$routeParams',
        '$location', '$scope', 'timefilter', '$interval',
-    function(_, Pages, Proxy, $routeParams, $location, $scope, timefilter, $interval) {
+       'hotkeys', 'kbFocus',
+    function(_, Pages, Proxy, $routeParams, $location, $scope,
+      timefilter, $interval, hotkeys, kbFocus) {
 
     _.assign(Pages.activePage, Pages.getPageById('services'));
     Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'overview');
@@ -186,6 +190,24 @@
     }, function(newVals, oldVals) {
       if (newVals !== oldVals) {
         ctrl.load();
+      }
+    });
+
+    // Keyboard shortcuts
+    hotkeys.add({
+      combo: '/',
+      description: 'Filter services',
+      callback: function(event) {
+        event.preventDefault();
+        kbFocus('filter');
+      }
+    });
+    hotkeys.add({
+      combo: 's',
+      description: 'Open/hide settings for this page',
+      callback: function(event) {
+        event.preventDefault();
+        ctrl.configToggle();
       }
     });
 

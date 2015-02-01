@@ -16,6 +16,8 @@ module.exports = function(config){
       '../src/web/bower_components/ngInfiniteScroll/build/ng-infinite-scroll.js',
       '../src/web/bower_components/d3/d3.js',
       '../src/web/bower_components/moment/moment.js',
+      '../src/web/bower_components/angular-hotkeys/build/hotkeys.min.js',
+      '../src/web/bower_components/angular-keyboard/keyboard.min.js',
       // endbower
       '../src/web/*.js',
       '../src/web/timepicker/timepicker.js',
