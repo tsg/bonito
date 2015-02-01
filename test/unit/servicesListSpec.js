@@ -12,7 +12,7 @@
     beforeEach(inject(function(_$controller_, _$rootScope_, byDimensionProxyMock) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
-      ctrl = $controller("ServicesListCtrl as app", {
+      ctrl = $controller('ServicesListCtrl as app', {
         $scope: $rootScope,
         $routeParams: {
           pageSize: 16,
