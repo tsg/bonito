@@ -12,13 +12,18 @@
     'svggraph-directive',
     'bonito-filters',
     'bonitoTimepicker',
-    'bonitoTimefilter'
+    'bonitoTimefilter',
+    'bonitoPerformanceDashboard'
   ]);
 
   app.factory('Pages', ['_', function(_) {
     var pages = [{
       name: 'Dashboards',
-      path: 'dashboards'
+      path: 'dashboards',
+      subPages: [{
+        name: 'Platform wide',
+        path: 'platformwide'
+      }]
     }, {
       name: 'Discover',
       path: 'discover'
@@ -95,6 +100,13 @@
       when('/settings', {
         templateUrl: 'settings.html',
         controller: 'SettingsCtrl'
+      }).
+      when('/dashboards', {
+        redirectTo: '/dashboards/platformwide'
+      }).
+      when('/dashboards/platformwide', {
+        templateUrl: 'perfDash.html',
+        controller: 'performanceDashboard'
       }).
       otherwise({
         redirectTo: '/services/overview'
