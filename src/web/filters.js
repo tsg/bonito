@@ -23,6 +23,9 @@
       if (typeof precision === 'undefined') {
         precision = 1;
       }
+      if (input < 1.0) {
+        return '<1' + units[0];
+      }
       var number = Math.floor(Math.log(input) / Math.log(multiplier));
 
       if (number >= units.length) {
@@ -53,7 +56,7 @@
     return function(input, precision) {
       var units = ['', 'k', 'M', 'G', 'T', 'P'];
       input = parseFloat(input);
-      if (isNaN(input) || !isFinite(input) || input === 0) {
+      if (isNaN(input) || !isFinite(input) || input === 0 || Math.abs(input) < 1) {
         return 'number-' + units[0];
       }
 
@@ -81,7 +84,7 @@
     return function(input, precision) {
       var units = ['micro', 'ms', 's', 'm', 'h'];
       input = parseFloat(input);
-      if (isNaN(input) || !isFinite(input) || input === 0) {
+      if (isNaN(input) || !isFinite(input) || input === 0 || Math.abs(input) < 1) {
         return 'duration-' + units[0];
       }
 

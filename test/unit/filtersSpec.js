@@ -52,6 +52,10 @@
     it('should return 0 for 0', function() {
       expect(humanNumber('0')).toBe('0');
     });
+
+    it('should return <1 for very small numbers', function() {
+      expect(humanNumber('0.14')).toBe('<1');
+    });
   });
 
 
@@ -81,6 +85,10 @@
 
     it('should return number- for NaN', function() {
       expect(humanNumberClass('garbage')).toBe('number-');
+    });
+
+    it('should return number- for small values', function() {
+      expect(humanNumberClass('0.15')).toBe('number-');
     });
   });
 
@@ -119,6 +127,10 @@
     it('should return 0 for 0', function() {
       expect(humanDuration('0', 3)).toBe('0');
     });
+
+    it('should return <1micro for small numbers', function() {
+      expect(humanDuration('0.15', 3)).toBe('<1micro');
+    });
   });
 
   describe('Filter: humanDurationClass', function() {
@@ -139,6 +151,10 @@
 
     it('should return duraton-m for gigs', function() {
       expect(humanNumberClass('125813724259')).toBe('duration-m');
+    });
+
+    it('should return duraton-micro for small numbers', function() {
+      expect(humanNumberClass('0.15')).toBe('duration-micro');
     });
 
   });
