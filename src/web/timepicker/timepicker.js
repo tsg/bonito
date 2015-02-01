@@ -145,9 +145,12 @@
               $location.search(key, value);
             });
 
-            if (!params) {
+            if (_.isEmpty(params)) {
               // remove the parameter when it's not needed
-              $location.search('interval', null);
+              if ($location.$$search.interval) {
+                delete $location.$$search.interval;
+                $location.$$compose();
+              }
             }
           }
         }, true);

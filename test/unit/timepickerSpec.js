@@ -194,6 +194,25 @@
         expect($location.url()).toContain('interval=5000');
       });
 
+      it('setting the interval to off should remove param from the location bar', function() {
+        $rootScope.timepicker.setRefreshInterval({
+          value: 10000,
+          display: '10 seconds'
+        });
+        $rootScope.$digest();
+
+        expect($location.url()).toContain('interval=10000');
+
+        $rootScope.timepicker.setRefreshInterval({
+          value: 0,
+          display: 'Off'
+        });
+        $rootScope.$digest();
+
+        expect($location.url()).not.toContain('interval');
+
+      });
+
 
     });
 
