@@ -208,6 +208,7 @@
       callback: function(event) {
         event.preventDefault();
         ctrl.configToggle();
+        kbFocus('panelsPerRow');
       }
     });
 
