@@ -33,15 +33,10 @@
        infinite-scroll='app.loadMore()' infinite-scroll-distance="1">
 
     <div ng-repeat="panel in app.panels" class="bpanel"
-        ng-style="{width: app.panelWidth + 'px'}">
+      ng-style="{width: app.panelWidth + 'px'}">
 
-      <div class="bpanel-header">
-        <span class="name">
-          {{ panel.name }}
-        </span>
-      </div>
-
-      <svggraph height="app.panelHeight" data="panel.values" planet-size="panel.size_rel"></svggraph>
+      <bonito-panel title="panel.name">
+        <svggraph height="app.panelHeight" data="panel.values" planet-size="panel.size_rel"></svggraph>
 
         <table class="table table-condensed" style="width:50%;float:left">
           <tr>
@@ -85,6 +80,7 @@
           </tr>
         </table>
 
+      </bonito-panel>
     </div>
 
     <!-- required by the infinite-scroll to correctly get it's height. See FAQ -->
