@@ -11,12 +11,12 @@
       scope: {
         visible: '='
       },
-      controller: function($scope) {
+      controller: ['$scope', function($scope) {
         var config = this;
         this.close = function() {
           $scope.visible = false;
         };
-      },
+      }],
       controllerAs: 'config'
     };
   });
