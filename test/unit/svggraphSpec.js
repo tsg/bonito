@@ -5,7 +5,7 @@
     var $compile,
       $scope;
 
-    beforeEach(module('bonitoApp'));
+    beforeEach(module('bonitoViz'));
 
     beforeEach(inject(function(_$compile_, _$rootScope_) {
       $compile = _$compile_;

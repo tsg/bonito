@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  var app = angular.module('svggraph-directive', []);
+  var app = angular.module('bonitoViz', []);
 
   /**
    * Draws a graph using D3. The data, the width and height parameters are

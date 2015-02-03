@@ -20,9 +20,9 @@ module.exports = function(config){
       '../src/web/bower_components/angular-keyboard/keyboard.min.js',
       // endbower
       '../src/web/*.js',
+      '../src/web/viz/*.js',
       '../src/web/timepicker/timepicker.js',
-      '../src/web/timepicker/quick_ranges.js',
-      '../src/web/timepicker/refresh_intervals.js',
+      '../src/web/timepicker/*.js',
 
       'unit/**/*.js',
 

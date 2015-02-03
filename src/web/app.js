@@ -9,7 +9,7 @@
 
     'services-list',
     'navbar-directive',
-    'svggraph-directive',
+    'bonitoViz',
     'bonito-filters',
     'bonitoTimepicker',
     'bonitoTimefilter',
