@@ -37,10 +37,32 @@
       $rootScope.$digest();
     }));
 
-    it('should should create a set of graphs', function() {
-      expect($elem.find('.bnt-rpm-graph').length).toBe(1);
-      expect($elem.find('.bnt-errors-rate-graph').length).toBe(1);
-      expect($elem.find('.bnt-responsetimes-graph').length).toBe(1);
+    it('should should create a set of platform graphs', function() {
+      var platform = $elem.find('.section-platform');
+      expect(platform.find('.bnt-rpm-graph').length).toBe(1);
+      expect(platform.find('.bnt-errors-rate-graph').length).toBe(1);
+      expect(platform.find('.bnt-responsetime-50th').length).toBe(1);
+      expect(platform.find('.bnt-responsetime-99th').length).toBe(1);
+    });
+
+    it ('should show a set of metrics on the right side', function() {
+      var platform = $elem.find('.section-platform');
+      expect(platform.find('table tr').length).toBeGreaterThan(3);
+      var rows = platform.find('table tr');
+      expect(rows[0].children.length).toBeDefined();
+    });
+
+    it('should create a set of by dimension graphs (barcharts)', function() {
+      var services = $elem.find('.dimension-services');
+      expect(services.find('.bnt-dimension-graph').length).toBe(2);
+      expect(services.find('bonito-barchart').length).toBe(2);
+    });
+
+    it('should have a set of metrics on the left side', function() {
+      var services = $elem.find('.dimension-services');
+      expect(services.find('table tr').length).toBeGreaterThan(1);
+      var rows = services.find('table tr');
+      expect(rows[0].children.length).toBeDefined();
     });
   });
 

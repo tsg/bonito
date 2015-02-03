@@ -1,24 +1,90 @@
-<div ng-controller="performanceDashboard as perfDash">
+<div ng-controller="performanceDashboard as perfDash" class="bonito-perf-dash">
   <navbar></navbar>
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-6 bnt-rpm-graph">
-        <bonito-panel title="'Volume'">
-          Volume graph goes here
-        </bonito-panel>
+    <div class="row section-platform">
+      <div class="col-md-2">
+        <h3>Platform</h3>
+
+        <table class="table table-condensed">
+          <tr ng-repeat="metric in perfDash.metrics">
+            <th>{{ metric.display.name }}</th>
+            <td>
+              <span class="{{metric.display.class}}">
+                {{ metric.display.value }}
+              </span>
+            </td>
+          </tr>
+        </table>
       </div>
-      <div class="col-md-6 bnt-errors-rate-graph">
-        <bonito-panel title="'Error rate'">
-          Error rate graph goes here
-        </bonito-panel>
+      <div class="col-md-10">
+        <div class="row">
+          <div class="col-md-6 bnt-rpm-graph">
+            <bonito-panel title="'Volume'">
+              <svggraph
+                height="200"
+                data="perfDash.volumeData">
+              </svggraph>
+            </bonito-panel>
+          </div>
+          <div class="col-md-6 bnt-errors-rate-graph">
+            <bonito-panel title="'Errors rate'">
+              <svggraph
+                height="200"
+                data="perfDash.errorsData">
+              </svggraph>
+            </bonito-panel>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 bnt-responsetime-50th">
+            <bonito-panel title="'Response times: 50th percentile'">
+              <svggraph
+                height="200"
+                data="perfDash.rt50thData">
+              </svggraph>
+            </bonito-panel>
+          </div>
+          <div class="col-md-6 bnt-responsetime-99th">
+            <bonito-panel title="'Response times: 99th percentile'">
+              <svggraph
+                height="200"
+                data="perfDash.rt99thData">
+              </svggraph>
+            </bonito-panel>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="row bnt-responsetimes-graph">
-      <div class="col-md-12">
-        <bonito-panel title="'Response times'">
-          Response times graphs go here
-        </bonito-panel>
+
+    <div class="row" ng-repeat="dimension in perfDash.dimensions"
+        ng-class="'dimension-' + dimension.name">
+      <div class="col-md-2">
+        <h3>{{ dimension.display.section }}</h3>
+
+        <table class="table table-condensed">
+          <tr ng-repeat="metric in dimension.metrics">
+            <th>{{ metric.display.name }}</th>
+            <td>
+              <span class="{{metric.display.class}}">
+                {{ metric.display.value }}
+              </span>
+            </td>
+          </tr>
+        </table>
       </div>
+      <div class="col-md-10">
+        <div class="row">
+          <div class="col-md-6 bnt-dimension-graph"
+              ng-repeat="viz in dimension.viz">
+            <bonito-panel title="viz.display.title">
+              <bonito-barchart
+                height="200"
+                data="viz.values">
+              </bonito-barchart>
+            </bonito-panel>
+          </div>
+        </div>
     </div>
+
   </div>
 </div>
