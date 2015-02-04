@@ -7,7 +7,7 @@
    * Draws a graph using D3. The data, the width and height parameters are
    * required.
    */
-  module.directive('bonitoLinechart', ['d3', function(d3) {
+  module.directive('bonitoLinechart', ['d3', 'formatters', function(d3, formatters) {
     return {
       restrict: 'E',
       scope: {
@@ -43,6 +43,17 @@
         };
 
         var ylabel = attrs.ylabel || '';
+        var type = attrs.type || 'line';
+        var datatype = attrs.datatype || 'number';
+
+        var formatterFunc;
+        if (datatype === 'duration') {
+          formatterFunc = function(value) {
+            return formatters.formatDuration(value, 0);
+          };
+        } else {
+          formatterFunc = d3.format('s');   // iso prefixes
+        }
 
 
         // define rendering function
@@ -70,7 +81,7 @@
             .attr('transform', 'translate(' + margin.left +', ' + margin.bottom + ')');
 
           if (!isNaN(scope.planetSize)) {
-            // add size "planet"
+            // add size 'planet'
             chart.append('g')
               .attr('class', 'planet')
               .attr('transform',
@@ -93,20 +104,32 @@
             .scale(y)
             .orient('left')
             .ticks(5)
-            .tickFormat(d3.format('s'));  // iso prefixes
+            .tickFormat(formatterFunc);
 
           x.domain(d3.extent(data, function(d) { return d.ts; }));
           y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
           // line
-          var line = d3.svg.line()
-            .x(function(d) { return x(d.ts); })
-            .y(function(d) { return y(d.value); });
+          if (type == 'line') {
+            var line = d3.svg.line()
+              .x(function(d) { return x(d.ts); })
+              .y(function(d) { return y(d.value); });
 
-          chart.append('path')
-            .datum(data)
-            .attr('class', 'line')
-            .attr('d', line);
+            chart.append('path')
+              .datum(data)
+              .attr('class', 'line')
+              .attr('d', line);
+          } else {
+            var area = d3.svg.area()
+              .x(function(d) { return x(d.ts); })
+              .y0(height)
+              .y1(function(d) { return y(d.value); });
+
+            chart.append('path')
+              .datum(data)
+              .attr('class', 'area')
+              .attr('d', area);
+          }
 
           // draw axes
           chart.append('g')

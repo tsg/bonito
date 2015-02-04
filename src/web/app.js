@@ -10,7 +10,7 @@
     'services-list',
     'navbar-directive',
     'bonitoViz',
-    'bonito-filters',
+    'bonitoFilters',
     'bonitoTimepicker',
     'bonitoTimefilter',
     'bonitoPerformanceDashboard'

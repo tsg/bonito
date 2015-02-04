@@ -125,6 +125,9 @@
         to: timefilter.time.to
       }).then(function() {
         self.volumeData = Proxy.volumeValues();
+        self.errorsData = Proxy.errorsData();
+        self.rt50thData = Proxy.rt50thData();
+        self.rt99thData = Proxy.rt99thData();
 
         timefilter.interval.loading = false;
         if (timefilter.interval.value) {

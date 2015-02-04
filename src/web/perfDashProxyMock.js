@@ -24,6 +24,30 @@
         upper: 80e3
       });
 
+      self.errorsData = testdata.getRandoms({
+        from: self.config.from,
+        to: self.config.to,
+        points: self.config.points,
+        lower: 0,
+        upper: 30
+      });
+
+      self.rt50thData = testdata.getRandoms({
+        from: self.config.from,
+        to: self.config.to,
+        points: self.config.points,
+        lower: 100,
+        upper: 50000
+      });
+
+      self.rt99thData = testdata.getRandoms({
+        from: self.config.from,
+        to: self.config.to,
+        points: self.config.points,
+        lower: 30000,
+        upper: 100000
+      });
+
     };
 
     return {
@@ -40,6 +64,18 @@
 
       volumeValues: function() {
         return self.volumeValues;
+      },
+
+      errorsData: function() {
+        return self.errorsData;
+      },
+
+      rt50thData: function() {
+        return self.rt50thData;
+      },
+
+      rt99thData: function() {
+        return self.rt99thData;
       }
     };
   });

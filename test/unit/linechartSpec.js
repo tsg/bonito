@@ -50,5 +50,26 @@
       $scope.$digest();
       expect(el.find('g.y.axis text.label').text()).toEqual('burritos');
     });
+
+    it('should add micro suffix when using duration as data type', function() {
+      var el = $compile('<bonito-linechart data="data" datatype="duration" height="100"></bonito-linechart>')($scope);
+      $scope.$digest();
+      expect(el.find('g.y.axis text').eq(1).text()).toContain('micro');
+    });
+
+    it('should contain a line by default', function() {
+      var el = $compile('<bonito-linechart data="data" height="100"></bonito-linechart>')($scope);
+      $scope.$digest();
+      expect(el.find('path.line').length).toEqual(1);
+      expect(el.find('path.area').length).toEqual(0);
+    });
+
+    it('should contain an area when type is "area"', function() {
+      var el = $compile('<bonito-linechart data="data" type="area" height="100"></bonito-linechart>')($scope);
+      $scope.$digest();
+      expect(el.find('path.line').length).toEqual(0);
+      expect(el.find('path.area').length).toEqual(1);
+    });
+
   });
 })();

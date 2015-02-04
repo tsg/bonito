@@ -1,7 +1,9 @@
 (function() {
   'use strict';
 
-  var module = angular.module('bonitoViz', []);
+  var module = angular.module('bonitoViz', [
+    'bonitoFormatters'
+  ]);
 
   module.directive('bonitoBarchart', ['d3', function(d3) {
     return {

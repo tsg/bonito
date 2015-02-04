@@ -2,7 +2,7 @@
   'use strict';
 
   describe('Filter: humanNumber', function() {
-    beforeEach(module('bonito-filters'));
+    beforeEach(module('bonitoFilters'));
 
     var humanNumber;
     beforeEach(inject(function($filter) {
@@ -60,7 +60,7 @@
 
 
   describe('Filter: humanNumberClass', function() {
-    beforeEach(module('bonito-filters'));
+    beforeEach(module('bonitoFilters'));
 
     var humanNumberClass;
     beforeEach(inject(function($filter) {
@@ -93,7 +93,7 @@
   });
 
   describe('Filter: humanDuration', function() {
-    beforeEach(module('bonito-filters'));
+    beforeEach(module('bonitoFilters'));
 
     var humanDuration;
     beforeEach(inject(function($filter) {
@@ -134,7 +134,7 @@
   });
 
   describe('Filter: humanDurationClass', function() {
-    beforeEach(module('bonito-filters'));
+    beforeEach(module('bonitoFilters'));
 
     var humanNumberClass;
     beforeEach(inject(function($filter) {
