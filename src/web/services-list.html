@@ -36,7 +36,10 @@
       ng-style="{width: app.panelWidth + 'px'}">
 
       <bonito-panel title="panel.name">
-        <svggraph height="app.panelHeight" data="panel.values" planet-size="panel.size_rel"></svggraph>
+        <bonito-linechart
+          height="app.panelHeight" data="panel.values"
+          planet-size="panel.size_rel">
+        </bonito-linechart>
 
         <table class="table table-condensed" style="width:50%;float:left">
           <tr>

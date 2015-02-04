@@ -7,7 +7,7 @@
    * Draws a graph using D3. The data, the width and height parameters are
    * required.
    */
-  module.directive('svggraph', ['d3', function(d3) {
+  module.directive('bonitoLinechart', ['d3', function(d3) {
     return {
       restrict: 'E',
       scope: {

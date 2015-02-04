@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  describe('Directive: svggraph', function() {
+  describe('Directive: bonito-linechart', function() {
     var $compile,
       $scope;
 
@@ -27,20 +27,20 @@
     }));
 
     it('adds an svg element', function() {
-      var el = $compile('<svggraph data="data" width="200" height="100"></svggraph>')($scope);
+      var el = $compile('<bonito-linechart data="data" width="200" height="100"></bonito-linechart>')($scope);
       $scope.$digest();
       expect(el.children().length).toBe(1);
       expect((el.children()[0]).tagName).toBe('svg');
     });
 
     it('contains a line path', function() {
-      var el = $compile('<svggraph data="data" width="200" height="100"></svggraph>')($scope);
+      var el = $compile('<bonito-linechart data="data" width="200" height="100"></bonito-linechart>')($scope);
       $scope.$digest();
       expect(el.find('path.line')).toBeDefined();
     });
 
     it('contains axis', function() {
-      var el = $compile('<svggraph data="data" width="200" height="100"></svggraph>')($scope);
+      var el = $compile('<bonito-linechart data="data" width="200" height="100"></bonito-linechart>')($scope);
       $scope.$digest();
       expect(el.find('g.axis').length).toBe(2);
     });
