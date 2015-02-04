@@ -22,6 +22,7 @@
             <bonito-panel title="'Volume'">
               <bonito-linechart
                 height="200"
+                ylabel="Requests/s"
                 data="perfDash.volumeData">
               </bonito-linechart>
             </bonito-panel>
@@ -30,6 +31,7 @@
             <bonito-panel title="'Errors rate'">
               <bonito-linechart
                 height="200"
+                ylabel="Errors/k"
                 data="perfDash.errorsData">
               </bonito-linechart>
             </bonito-panel>
@@ -40,6 +42,7 @@
             <bonito-panel title="'Response times: 50th percentile'">
               <bonito-linechart
                 height="200"
+                ylabel="Response time 50th"
                 data="perfDash.rt50thData">
               </bonito-linechart>
             </bonito-panel>
@@ -48,6 +51,7 @@
             <bonito-panel title="'Response times: 99th percentile'">
               <bonito-linechart
                 height="200"
+                ylabel="Response time 99th"
                 data="perfDash.rt99thData">
               </bonito-linechart>
             </bonito-panel>

@@ -42,6 +42,8 @@
           left: parseInt(attrs.marginLeft) || 35
         };
 
+        var ylabel = attrs.ylabel || '';
+
 
         // define rendering function
         scope.render = function(data) {
@@ -116,12 +118,13 @@
               .attr('class', 'y axis')
               .call(yAxis)
             .append('text')
+              .attr('class', 'label')
               .attr('transform', 'rotate(-90)')
               .attr('y', 6)
               .attr('x', -height + 6)
               .attr('dy', '.71em')
               .style('text-anchor', 'beggining')
-              .text('Requests/s');
+              .text(ylabel);
 
           // draw grid
           chart.append('g')

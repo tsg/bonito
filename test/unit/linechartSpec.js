@@ -44,5 +44,11 @@
       $scope.$digest();
       expect(el.find('g.axis').length).toBe(2);
     });
+
+    it('should print the right label on the y axis', function() {
+      var el = $compile('<bonito-linechart data="data" ylabel="burritos" height="100"></bonito-linechart>')($scope);
+      $scope.$digest();
+      expect(el.find('g.y.axis text.label').text()).toEqual('burritos');
+    });
   });
 })();
