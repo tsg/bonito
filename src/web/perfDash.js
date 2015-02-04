@@ -114,6 +114,55 @@
           value: 196
         }]
       }]
+    }, {
+      name: 'hosts',
+      display: {
+        section: 'Hosts'
+      },
+      metrics: [{
+        display: {
+          name: 'Hosts',
+          value: '234',
+          class: 'number-'
+        }
+      }, {
+        display: {
+          name: 'Volume per host (avg)',
+          value: '100/s',
+          class: 'number-'
+        }
+      }],
+      viz: [{
+        display: {
+          title: 'Top hosts by volume',
+          type: 'barchart'
+        },
+        values: [{
+          name: 'alpha.service1.example.com',
+          value: 45
+        }, {
+          name: 'omega.service1.example.com',
+          value: 123
+        }, {
+          name: 'beta.service1.example.com',
+          value: 67
+        }],
+      }, {
+        display: {
+          title: 'Slowest hosts by 99th percentile',
+          type: 'barchart'
+        },
+        values: [{
+          name: 'java1.service-java.example.com',
+          value: 340
+        }, {
+          name: 'java2.service-java.example.com',
+          value: 250
+        }, {
+          name: 'jave4.service-java.example.com',
+          value: 203
+        }]
+      }]
     }];
 
     self.load = function() {
