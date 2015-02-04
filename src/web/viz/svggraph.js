@@ -1,13 +1,13 @@
 (function() {
   'use strict';
 
-  var app = angular.module('bonitoViz', []);
+  var module = angular.module('bonitoViz');
 
   /**
    * Draws a graph using D3. The data, the width and height parameters are
    * required.
    */
-  app.directive('svggraph', ['d3', function(d3) {
+  module.directive('svggraph', ['d3', function(d3) {
     return {
       restrict: 'E',
       scope: {

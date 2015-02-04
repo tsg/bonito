@@ -90,7 +90,7 @@
           value: 19700
         }, {
           name: 'Service34',
-          value: 19600
+          value: 9600
         }],
       }, {
         display: {
