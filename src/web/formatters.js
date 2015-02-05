@@ -42,6 +42,16 @@
         return negativeSign + (input / Math.pow(multiplier, number)).toFixed(precision) + units[number];
     };
 
+    var trimString = function(input, max_chars) {
+      if (!_.isString(input) || max_chars <= 3) {
+        throw 'Formatter: Invalid input';
+      }
+      if (input.length <= max_chars) {
+        return input;
+      }
+      return input.substring(0, max_chars-3) + '...';
+    };
+
 
     return {
       transform: transform,
@@ -50,7 +60,8 @@
       },
       formatNumber: function(input, precision) {
         return transform(input, precision, ['', 'k', 'M', 'G', 'T', 'P'], 1000);
-      }
+      },
+      trimString: trimString
     };
   });
 

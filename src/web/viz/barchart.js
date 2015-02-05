@@ -35,7 +35,9 @@
           left: parseInt(attrs.marginLeft) || 40
         };
 
+        var type = attrs.type || 'vertical';
         var datatype = attrs.datatype || 'number';
+
         var formatterFunc;
         if (datatype === 'duration') {
           formatterFunc = function(value) {
@@ -43,6 +45,11 @@
           };
         } else {
           formatterFunc = d3.format('s');   // iso prefixes
+        }
+
+        // in horizontal mode we need a minimum left margin
+        if (type === 'horizontal' && margin.left < 100) {
+          margin.left = 100;
         }
 
 
@@ -67,6 +74,21 @@
             .attr('height', totalHeight)
             .attr('class', 'svggraph');
 
+          var chart = svg.append('g')
+            .attr('class', 'bonito-barchart')
+            .attr('width', width)
+            .attr('height', height)
+            .attr('transform', 'translate(' + margin.left +', ' + margin.bottom + ')');
+
+          if (type === 'horizontal') {
+            scope.renderHorizontal(data, width, height, chart);
+          } else {
+            scope.renderVertical(data, width, height, chart);
+          }
+
+        };
+
+        scope.renderVertical = function(data, width, height, chart) {
           var x = d3.scale.ordinal()
             .rangeRoundBands([0, width], 0.1);
           x.domain(data.map(function(d) { return d.name; }));
@@ -75,6 +97,7 @@
             .range([height, 0]);
           y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
+          // Axes
           var xAxis = d3.svg.axis()
             .scale(x)
             .orient('bottom');
@@ -84,13 +107,6 @@
             .orient('left')
             .tickFormat(formatterFunc);
 
-          var chart = svg.append('g')
-            .attr('class', 'bonito-barchart')
-            .attr('width', width)
-            .attr('height', height)
-            .attr('transform', 'translate(' + margin.left +', ' + margin.bottom + ')');
-
-          // Axes
           chart.append('g')
             .attr('class', 'x axis')
             .attr('transform', 'translate(0,' + height + ')')
@@ -109,7 +125,44 @@
             .attr('y', function(d) { return y(d.value); })
             .attr('height', function(d) { return height - y(d.value); })
             .attr('width', x.rangeBand());
+        };
 
+        scope.renderHorizontal = function(data, width, height, chart) {
+          var y = d3.scale.ordinal()
+            .rangeRoundBands([0, height], 0.1);
+          y.domain(data.map(function(d) { return d.name; }));
+
+          var x = d3.scale.linear()
+            .range([0, width]);
+          x.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+          // Axes
+          var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient('top')
+            .tickFormat(formatterFunc);
+
+          var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient('left')
+            .tickFormat(function (v) { return formatters.trimString(v, 23);});
+
+          chart.append('g')
+            .attr('class', 'x axis')
+            .call(xAxis);
+
+          chart.append('g')
+            .attr('class', 'y axis')
+            .call(yAxis);
+
+          // Bars
+          chart.selectAll('.bar')
+            .data(data)
+          .enter().append('rect')
+            .attr('class', 'bar')
+            .attr('y', function(d) { return y(d.name); })
+            .attr('width', function(d) { return x(d.value); })
+            .attr('height', y.rangeBand());
         };
       }
     };

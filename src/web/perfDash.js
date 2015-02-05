@@ -97,7 +97,7 @@
         datatype: 'duration',
         display: {
           title: 'Slowest services by 99th percentile',
-          type: 'barchart',
+          type: 'horizontal',
           class: 'warning'
         },
         values: [{
@@ -115,6 +115,15 @@
         }, {
           name: 'Service34',
           value: 196000
+        }, {
+          name: 'Service52',
+          value: 203000
+        }, {
+          name: 'Service91',
+          value: 107000
+        }, {
+          name: 'Service3',
+          value: 106000
         }]
       }, {
         display: {
@@ -203,8 +212,8 @@
         }]
       }, {
         display: {
-          title: 'Hosts with most errors',
-          type: 'barchart',
+          title: 'Top hosts by total number of errors',
+          type: 'horizontal',
           class: 'errors'
         },
         values: [{
