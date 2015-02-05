@@ -8,7 +8,7 @@
       templateUrl: 'panel.html',
       transclude: true,
       scope: {
-        title: '='
+        title: '=panelTitle'
       }
     };
   });

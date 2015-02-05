@@ -35,7 +35,7 @@
     <div ng-repeat="panel in app.panels" class="bpanel"
       ng-style="{width: app.panelWidth + 'px'}">
 
-      <bonito-panel title="panel.name">
+      <bonito-panel panel-title="panel.name">
         <bonito-linechart
           height="app.panelHeight" data="panel.values"
           ylabel="Requests/s"

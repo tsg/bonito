@@ -19,7 +19,7 @@
       <div class="col-md-10">
         <div class="row">
           <div class="col-md-6 bnt-rpm-graph">
-            <bonito-panel title="'Volume'">
+            <bonito-panel panel-title="'Volume'">
               <bonito-linechart
                 height="200"
                 ylabel="Requests/s"
@@ -28,7 +28,7 @@
             </bonito-panel>
           </div>
           <div class="col-md-6 bnt-errors-rate-graph">
-            <bonito-panel title="'Errors rate'">
+            <bonito-panel panel-title="'Errors rate'">
               <bonito-linechart
                 class="errors"
                 height="200"
@@ -41,7 +41,7 @@
         </div>
         <div class="row">
           <div class="col-md-6 bnt-responsetime-histogram">
-            <bonito-panel title="'Response times histogram'">
+            <bonito-panel panel-title="'Response times histogram'">
               <bonito-histogram
                 height="200"
                 datatype="duration"
@@ -51,7 +51,7 @@
             </bonito-panel>
           </div>
           <div class="col-md-6 bnt-responsetime-99th">
-            <bonito-panel title="'Response times: 99th percentile'">
+            <bonito-panel panel-title="'Response times: 99th percentile'">
               <bonito-linechart
                 height="200"
                 ylabel="Response time 99th"
@@ -84,7 +84,7 @@
         <div class="row">
           <div class="col-md-6 bnt-dimension-graph"
               ng-repeat="viz in dimension.viz">
-            <bonito-panel title="viz.display.title">
+            <bonito-panel panel-title="viz.display.title">
               <bonito-barchart
                 height="200"
                 datatype="{{viz.datatype}}"
