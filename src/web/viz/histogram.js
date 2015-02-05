@@ -1,12 +1,10 @@
 (function() {
   'use strict';
 
-  var module = angular.module('bonitoViz', [
-    'bonitoFormatters',
-    'bonitoColors'
-  ]);
+  var module = angular.module('bonitoViz');
 
-  module.directive('bonitoBarchart', ['d3', function(d3) {
+  module.directive('bonitoHistogram', ['d3', 'formatters', 'colors',
+      function(d3, formatters, colors) {
     return {
       restrict: 'E',
       scope: {
@@ -36,16 +34,24 @@
           bottom: parseInt(attrs.marginBottom) || 30,
           left: parseInt(attrs.marginLeft) || 40
         };
+        var datatype = attrs.datatype || 'number';
 
+        var formatterFunc;
+        if (datatype === 'duration') {
+          formatterFunc = function(value) {
+            return formatters.formatDuration(value, 0);
+          };
+        } else {
+          formatterFunc = d3.format('s');   // iso prefixes
+        }
 
         // define rendering function
         scope.render = function(data) {
+
+
           // clean
           d3.select(element[0])
             .select('svg').remove();
-
-          // make sure data is sorted descending by value
-          data = _.sortBy(data, function(d) { return -d.value; });
 
           var totalWidth = scope.width || element.parent().innerWidth();
           var totalHeight = parseInt(scope.height) || 200;
@@ -59,17 +65,24 @@
             .attr('height', totalHeight)
             .attr('class', 'svggraph');
 
-          var x = d3.scale.ordinal()
-            .rangeRoundBands([0, width], 0.1);
-          x.domain(data.map(function(d) { return d.name; }));
+          var dx = data[1].value - data[0].value;
+
+          var x = d3.scale.linear()
+            .domain([0, d3.max(data, function(d) { return d.value; }) + dx])
+            .range([0, width]);
+
+          var color = d3.scale.linear()
+            .domain([0, d3.max(data, function(d) { return d.value; }) + dx])
+            .range([colors['@brand-success'], colors['@brand-danger']]);
 
           var y = d3.scale.linear()
+            .domain([0, d3.max(data, function(d) { return d.count; })])
             .range([height, 0]);
-          y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
           var xAxis = d3.svg.axis()
             .scale(x)
-            .orient('bottom');
+            .orient('bottom')
+            .tickFormat(formatterFunc);
 
           var yAxis = d3.svg.axis()
             .scale(y)
@@ -77,7 +90,7 @@
             .tickFormat(d3.format('s')); // iso prefixes
 
           var chart = svg.append('g')
-            .attr('class', 'bonito-barchart')
+            .attr('class', 'bonito-histogram')
             .attr('width', width)
             .attr('height', height)
             .attr('transform', 'translate(' + margin.left +', ' + margin.bottom + ')');
@@ -93,14 +106,19 @@
             .call(yAxis);
 
           // Bars
-          chart.selectAll('.bar')
+          var bar = chart.selectAll('.bar')
             .data(data)
-          .enter().append('rect')
+          .enter().append('g')
             .attr('class', 'bar')
-            .attr('x', function(d) { return x(d.name); })
-            .attr('y', function(d) { return y(d.value); })
-            .attr('height', function(d) { return height - y(d.value); })
-            .attr('width', x.rangeBand());
+            .attr('transform', function(d) { return 'translate(' + x(d.value) + ',' + y(d.count) + ')'; });
+
+
+          bar.append('rect')
+            .attr('x', 2)
+            .style('fill', function(d) {return color(d.value);})
+            .attr('width', (width / data.length) - 4)
+            .attr('height', function(d) { return height - y(d.count); });
+
 
         };
       }

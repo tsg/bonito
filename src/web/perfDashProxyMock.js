@@ -48,6 +48,14 @@
         upper: 100000
       });
 
+      self.rtHistogramData = testdata.getLogNormal({
+        samples: 1000,
+        max: 500000,
+        median:  150000,
+        multiplier: 50,
+        points: 20
+      });
+
     };
 
     return {
@@ -76,6 +84,10 @@
 
       rt99thData: function() {
         return self.rt99thData;
+      },
+
+      rtHistogramData: function() {
+        return self.rtHistogramData;
       }
     };
   });

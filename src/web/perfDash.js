@@ -20,6 +20,7 @@
     self.errorsData = [];
     self.rt50thData = [];
     self.rt99thData = [];
+    self.rtHistogramData = [];
 
     self.metrics = [{
       display: {
@@ -177,6 +178,7 @@
         self.errorsData = Proxy.errorsData();
         self.rt50thData = Proxy.rt50thData();
         self.rt99thData = Proxy.rt99thData();
+        self.rtHistogramData = Proxy.rtHistogramData();
 
         timefilter.interval.loading = false;
         if (timefilter.interval.value) {

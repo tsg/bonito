@@ -3,8 +3,10 @@
 
   // generate random testdata useful during development and
   // unit tests.
-  var module = angular.module('bonitoTestData', []);
-  module.factory('testdata', function() {
+  var module = angular.module('bonitoTestData', [
+    'd3'
+  ]);
+  module.factory('testdata', ['d3', function(d3) {
 
     this.getRandoms = function(config) {
       if (_.isUndefined(config)) {
@@ -86,9 +88,28 @@
       }
     };
 
-    return {
-      getRandoms: this.getRandoms
+
+    this.getLogNormal = function(config) {
+      var samples = config.samples || 1000;
+      var max = config.max || 1000;
+      var median = config.median || 300;
+      var points = config.points || 10;
+      var multiplier = config.multiplier || 1;
+
+      var values = d3.range(samples).map(d3.random.logNormal(Math.log(median), 0.5));
+      var x = d3.scale.linear().domain([0, max]);
+      var data = d3.layout.histogram().bins(x.ticks(points))(values);
+      return _.map(data, function(d, i) { return {
+        value: x.ticks(points)[i],
+        count: d.length * multiplier
+      };});
     };
-  });
+
+    return {
+      getRandoms: this.getRandoms,
+
+      getLogNormal: this.getLogNormal
+    };
+  }]);
 
 })();

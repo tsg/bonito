@@ -40,14 +40,13 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-md-6 bnt-responsetime-50th">
-            <bonito-panel title="'Response times: 50th percentile'">
-              <bonito-linechart
+          <div class="col-md-6 bnt-responsetime-histogram">
+            <bonito-panel title="'Response times histogram'">
+              <bonito-histogram
                 height="200"
-                ylabel="Response time 50th"
                 datatype="duration"
-                data="perfDash.rt50thData">
-              </bonito-linechart>
+                data="perfDash.rtHistogramData">
+              </bonito-histogram>
             </bonito-panel>
           </div>
           <div class="col-md-6 bnt-responsetime-99th">
