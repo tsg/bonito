@@ -54,8 +54,8 @@
 
     it('should create a set of by dimension graphs (barcharts)', function() {
       var services = $elem.find('.dimension-services');
-      expect(services.find('.bnt-dimension-graph').length).toBe(2);
-      expect(services.find('bonito-barchart').length).toBe(2);
+      expect(services.find('.bnt-dimension-graph').length).toBe(3);
+      expect(services.find('bonito-barchart').length).toBe(3);
     });
 
     it('should have a set of metrics on the left side', function() {

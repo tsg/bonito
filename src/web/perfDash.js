@@ -97,7 +97,8 @@
         datatype: 'duration',
         display: {
           title: 'Slowest services by 99th percentile',
-          type: 'barchart'
+          type: 'barchart',
+          class: 'warning'
         },
         values: [{
           name: 'Service16',
@@ -114,6 +115,40 @@
         }, {
           name: 'Service34',
           value: 196000
+        }]
+      }, {
+        display: {
+          title: 'Services with most errors',
+          type: 'barchart',
+          class: 'errors'
+        },
+        values: [{
+          name: 'Service34',
+          value: 164
+        }, {
+          name: 'Service92',
+          value: 65
+        }, {
+          name: 'Service12',
+          value: 12
+        }, {
+          name: 'Service5',
+          value: 9
+        }, {
+          name: 'Service6',
+          value: 9
+        }, {
+          name: 'Service72',
+          value: 65
+        }, {
+          name: 'Service32',
+          value: 12
+        }, {
+          name: 'Service51',
+          value: 9
+        }, {
+          name: 'Service62',
+          value: 9
         }]
       }]
     }, {
@@ -153,7 +188,8 @@
         datatype: 'duration',
         display: {
           title: 'Slowest hosts by 99th percentile',
-          type: 'barchart'
+          type: 'barchart',
+          class: 'warning'
         },
         values: [{
           name: 'java1.service-java.example.com',
@@ -164,6 +200,25 @@
         }, {
           name: 'jave4.service-java.example.com',
           value: 203000
+        }]
+      }, {
+        display: {
+          title: 'Hosts with most errors',
+          type: 'barchart',
+          class: 'errors'
+        },
+        values: [{
+          name: 'java1.service-java.example.com',
+          value: 64
+        }, {
+          name: 'java2.service-java.example.com',
+          value: 65
+        }, {
+          name: 'jave4.service-java.example.com',
+          value: 12
+        }, {
+          name: 'jave14.service-java.example.com',
+          value: 9
         }]
       }]
     }];

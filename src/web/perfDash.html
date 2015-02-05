@@ -38,8 +38,6 @@
               </bonito-linechart>
             </bonito-panel>
           </div>
-        </div>
-        <div class="row">
           <div class="col-md-6 bnt-responsetime-histogram">
             <bonito-panel panel-title="'Response times histogram'">
               <bonito-histogram
@@ -87,6 +85,7 @@
             <bonito-panel panel-title="viz.display.title">
               <bonito-barchart
                 height="200"
+                class="{{viz.display.class}}"
                 datatype="{{viz.datatype}}"
                 data="viz.values">
               </bonito-barchart>
