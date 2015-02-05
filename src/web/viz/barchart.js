@@ -6,7 +6,8 @@
     'bonitoColors'
   ]);
 
-  module.directive('bonitoBarchart', ['d3', 'formatters', function(d3, formatters) {
+  module.directive('bonitoBarchart', ['d3', 'formatters', '$window',
+    function(d3, formatters) {
     return {
       restrict: 'E',
       scope: {
@@ -16,13 +17,10 @@
       },
       link: function(scope, element, attrs) {
 
-        //watch for resizes
-        scope.$watch(function() {
-            return [element.parent().innerWidth(), element.parent().innerHeight()].join('x');
-          }, function(newVals) {
-            return scope.render(scope.data);
-          }
-        );
+        // re-render on window-width changes
+        angular.element(window).on('resize', function(ev) {
+          scope.render(scope.data);
+        });
 
         // watch for data changes and re-render
         scope.$watch('data', function(newVals, oldVals) {

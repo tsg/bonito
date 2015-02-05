@@ -14,13 +14,10 @@
       },
       link: function(scope, element, attrs) {
 
-        //watch for resizes
-        scope.$watch(function() {
-            return [element.parent().innerWidth(), element.parent().innerHeight()].join('x');
-          }, function(newVals) {
-            return scope.render(scope.data);
-          }
-        );
+        // re-render on window-width changes
+        angular.element(window).on('resize', function(ev) {
+          scope.render(scope.data);
+        });
 
         // watch for data changes and re-render
         scope.$watch('data', function(newVals, oldVals) {
