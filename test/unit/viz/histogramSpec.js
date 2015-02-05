@@ -20,6 +20,7 @@
       $elem = $compile(
         '<bonito-histogram ' +
             'data="data" height="height" ' +
+            'ylabel="Burritos" ' +
             'datatype="duration">' +
         '</bonito-histogram>')($scope);
       $scope.$digest();
@@ -32,6 +33,10 @@
 
     it('should contain 10 bars', function() {
       expect($elem.find('g.bar').length).toBe(10);
+    });
+
+    it('should have a label on the y axis', function() {
+      expect($elem.find('g.y.axis text.label').text()).toEqual('Burritos');
     });
   });
 })();

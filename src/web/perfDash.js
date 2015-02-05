@@ -94,25 +94,26 @@
           value: 9600
         }],
       }, {
+        datatype: 'duration',
         display: {
           title: 'Slowest services by 99th percentile',
           type: 'barchart'
         },
         values: [{
           name: 'Service16',
-          value: 340
+          value: 340000
         }, {
           name: 'Service18',
-          value: 250
+          value: 250000
         }, {
           name: 'Service5',
-          value: 203
+          value: 203000
         }, {
           name: 'Service9',
-          value: 197
+          value: 197000
         }, {
           name: 'Service34',
-          value: 196
+          value: 196000
         }]
       }]
     }, {
@@ -149,19 +150,20 @@
           value: 67
         }],
       }, {
+        datatype: 'duration',
         display: {
           title: 'Slowest hosts by 99th percentile',
           type: 'barchart'
         },
         values: [{
           name: 'java1.service-java.example.com',
-          value: 340
+          value: 640000
         }, {
           name: 'java2.service-java.example.com',
-          value: 250
+          value: 250000
         }, {
           name: 'jave4.service-java.example.com',
-          value: 203
+          value: 203000
         }]
       }]
     }];

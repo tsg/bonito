@@ -35,6 +35,7 @@
           left: parseInt(attrs.marginLeft) || 40
         };
         var datatype = attrs.datatype || 'number';
+        var ylabel = attrs.ylabel || '';
 
         var formatterFunc;
         if (datatype === 'duration') {
@@ -104,6 +105,20 @@
           chart.append('g')
             .attr('class', 'y axis')
             .call(yAxis);
+
+          if (ylabel) {
+            chart.append('g')
+                .attr('class', 'y axis')
+                .call(yAxis)
+              .append('text')
+                .attr('class', 'label')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', 6)
+                .attr('x', -height + 6)
+                .attr('dy', '.71em')
+                .style('text-anchor', 'beggining')
+                .text(ylabel);
+          }
 
           // Bars
           var bar = chart.selectAll('.bar')

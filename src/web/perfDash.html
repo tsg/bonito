@@ -45,6 +45,7 @@
               <bonito-histogram
                 height="200"
                 datatype="duration"
+                ylabel="Number of transactions"
                 data="perfDash.rtHistogramData">
               </bonito-histogram>
             </bonito-panel>
@@ -86,6 +87,7 @@
             <bonito-panel title="viz.display.title">
               <bonito-barchart
                 height="200"
+                datatype="{{viz.datatype}}"
                 data="viz.values">
               </bonito-barchart>
             </bonito-panel>

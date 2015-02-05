@@ -6,7 +6,7 @@
     'bonitoColors'
   ]);
 
-  module.directive('bonitoBarchart', ['d3', function(d3) {
+  module.directive('bonitoBarchart', ['d3', 'formatters', function(d3, formatters) {
     return {
       restrict: 'E',
       scope: {
@@ -36,6 +36,16 @@
           bottom: parseInt(attrs.marginBottom) || 30,
           left: parseInt(attrs.marginLeft) || 40
         };
+
+        var datatype = attrs.datatype || 'number';
+        var formatterFunc;
+        if (datatype === 'duration') {
+          formatterFunc = function(value) {
+            return formatters.formatDuration(value, 0);
+          };
+        } else {
+          formatterFunc = d3.format('s');   // iso prefixes
+        }
 
 
         // define rendering function
@@ -74,7 +84,7 @@
           var yAxis = d3.svg.axis()
             .scale(y)
             .orient('left')
-            .tickFormat(d3.format('s')); // iso prefixes
+            .tickFormat(formatterFunc);
 
           var chart = svg.append('g')
             .attr('class', 'bonito-barchart')
