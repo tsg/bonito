@@ -93,6 +93,11 @@
               res[metric.name] = { value: rt_val * 1.5 };
             }
             break;
+          case 'cardinality':
+            res[metric.name] = { value: 42 };
+            break;
+          case 'card_volume':
+            res[metric.name] = { value: base_val / 42 };
         }
       });
       return res;
@@ -102,6 +107,13 @@
       load: function(config) {
         self.vizResult = self.genVizData(config.viz);
         self.metricsResult = self.getMetricValues(120000, 23500, config.metrics);
+
+        self.dimResult = {};
+        _.each(config.dimensions, function(dim) {
+          self.dimResult[dim.name] = {
+            metrics: self.getMetricValues(120000, 12000, dim.metrics)
+          };
+        });
 
 
         // returns a dummy promise that resolves immediately.
@@ -118,6 +130,10 @@
 
       metricsResult: function() {
         return self.metricsResult;
+      },
+
+      dimResult: function() {
+        return self.dimResult;
       },
 
       volumeValues: function() {

@@ -139,16 +139,24 @@
         section: 'Services'
       },
       metrics: [{
+        name: 'services',
+        config: {
+          type: 'cardinality',
+          field: 'service'
+        },
         display: {
-          name: 'Services',
-          value: '45',
-          class: 'number-'
+          name: 'Services'
         }
       }, {
+        name: 'avg_volume_per_service',
+        config: {
+          type: 'card_volume',
+          agg: 'avg',
+          dimension_field: 'service',
+          field: 'count'
+        },
         display: {
-          name: 'Volume per service (avg)',
-          value: '2666/s',
-          class: 'number-'
+          name: 'Volume per service (avg)'
         }
       }],
       viz: [{
@@ -245,16 +253,24 @@
         section: 'Hosts'
       },
       metrics: [{
+        name: 'hosts',
+        config: {
+          type: 'cardinality',
+          field: 'host'
+        },
         display: {
-          name: 'Hosts',
-          value: '234',
-          class: 'number-'
+          name: 'Hosts'
         }
       }, {
+        name: 'avg_volume_per_host',
+        config: {
+          type: 'card_volume',
+          agg: 'avg',
+          dimension_field: 'host',
+          field: 'count'
+        },
         display: {
-          name: 'Volume per host (avg)',
-          value: '100/s',
-          class: 'number-'
+          name: 'Volume per host (avg)'
         }
       }],
       viz: [{
@@ -311,6 +327,16 @@
       }]
     }];
 
+    self.setMetricDisplay = function(metric, value) {
+      if (metric.config.datatype === 'duration') {
+        metric.display.value = formatters.formatDuration(value);
+        metric.display.class = formatters.formatDurationClass(value);
+      } else {
+        metric.display.value = formatters.formatNumber(value);
+        metric.display.class = formatters.formatNumberClass(value);
+      }
+    };
+
     self.load = function() {
       $interval.cancel(self.timer);
       timefilter.interval.loading = true;
@@ -319,7 +345,8 @@
         from: timefilter.time.from,
         to: timefilter.time.to,
         viz: self.viz,
-        metrics: self.metrics
+        metrics: self.metrics,
+        dimensions: self.dimensions
       }).then(function() {
 
         _.each(Proxy.vizResult(), function(result, name) {
@@ -329,13 +356,16 @@
         _.each(Proxy.metricsResult(), function(result, name) {
           var metric = _.find(self.metrics, {name: name});
           metric.value = result.value;
-          if (metric.config.datatype === 'duration') {
-            metric.display.value = formatters.formatDuration(result.value);
-            metric.display.class = formatters.formatDurationClass(result.value);
-          } else {
-            metric.display.value = formatters.formatNumber(result.value);
-            metric.display.class = formatters.formatNumberClass(result.value);
-          }
+          self.setMetricDisplay(metric, result.value);
+        });
+
+        _.each(Proxy.dimResult(), function(dimRes, name) {
+          var dim = _.find(self.dimensions, {name: name});
+          _.each(dimRes.metrics, function(result, name) {
+            var metric = _.find(dim.metrics, {name: name});
+            metric.value = result.value;
+            self.setMetricDisplay(metric, result.value);
+          });
         });
 
         timefilter.interval.loading = false;
