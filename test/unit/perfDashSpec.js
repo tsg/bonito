@@ -73,7 +73,10 @@
     }));
 
     it('should generate 50 points for the volume histogram', function() {
-      perfDashProxyMock.load().then(function() {
+      var viz = [{
+        name: 'volume'
+      }];
+      perfDashProxyMock.load({viz: viz}).then(function() {
         expect(perfDashProxyMock.volumeValues().length).toBe(50);
       });
     });

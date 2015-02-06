@@ -5,27 +5,23 @@
   var module = angular.module('bonitoPerformanceDashboard', [
     'bonitoPerfDashMocks',
     'bonitoTimefilter',
-    'bonitoPanel'
+    'bonitoPanel',
+    'bonitoFormatters'
   ]);
 
   module.controller('performanceDashboard',
-    ['_', 'Pages', 'perfDashProxyMock', 'timefilter', '$scope', '$interval',
-  function(_, Pages, Proxy, timefilter, $scope, $interval) {
+    ['_', 'Pages', 'perfDashProxyMock', 'timefilter', '$scope', '$interval', 'formatters',
+  function(_, Pages, Proxy, timefilter, $scope, $interval, formatters) {
     _.assign(Pages.activePage, Pages.getPageById('dashboards'));
     Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'platformwide');
 
     var self = this;
 
-    self.volumeData = [];
-    self.errorsData = [];
-    self.rt50thData = [];
-    self.rt99thData = [];
-    self.rtHistogramData = [];
-
     self.viz = [{
       name: 'volume',
       type: 'linechart',
       config: {
+        type: 'volume',
         field: 'count',
       },
       display: {
@@ -37,6 +33,7 @@
       name: 'errorsrate',
       type: 'linechart',
       config: {
+        type: 'errorsrate',
         status_field: 'status',
         ok_value: 'Ok',
         count_field: 'count'
@@ -57,6 +54,7 @@
         datatype: 'duration'
       },
       config: {
+        type: 'histogram',
         rt_field: 'responsetime',
         count_field: 'count'
       }
@@ -70,40 +68,68 @@
         datatype: 'duration'
       },
       config: {
+        type: 'percentile',
         rt_field: 'responsetime',
         percentile: 99
       }
     }];
 
     self.metrics = [{
+      name: 'volume_avg',
+      config: {
+        type: 'volume',
+        field: 'count',
+        agg: 'avg',
+        interval: 's'
+      },
       display: {
         name: 'Volume average',
-        value: '120k/s',
-        class: 'number-k'
       }
     }, {
+      name: 'volume_max',
+      config: {
+        type: 'volume',
+        field: 'count',
+        agg: 'max',
+        interval: 's'
+      },
       display: {
         name: 'Volume peak',
-        value: '520k/s',
-        class: 'number-k'
       }
     }, {
+      name: 'errorsrate',
+      config: {
+        type: 'errorsrate',
+        status_field: 'status',
+        ok_value: 'Ok',
+        count_field: 'count',
+        interval: 's',
+        agg: 'avg'
+      },
       display: {
         name: 'Errors/k',
-        value: '300',
-        class: 'number'
       }
     }, {
+      name: 'rt_50th',
+      config: {
+        type: 'percentile',
+        field: 'responsetime',
+        datatype: 'duration',
+        percentile: 50.0
+      },
       display: {
         name: 'Response time 50th',
-        value: '20ms',
-        class: 'duration-ms'
       }
     }, {
+      name: 'rt_90th',
+      config: {
+        type: 'percentile',
+        field: 'responsetime',
+        datatype: 'duration',
+        percentile: 99.0
+      },
       display: {
         name: 'Response time 99th',
-        value: '30ms',
-        class: 'duration-ms'
       }
     }];
 
@@ -291,12 +317,26 @@
 
       Proxy.load({
         from: timefilter.time.from,
-        to: timefilter.time.to
+        to: timefilter.time.to,
+        viz: self.viz,
+        metrics: self.metrics
       }).then(function() {
-        _.find(self.viz, {name: 'volume'}).data = Proxy.volumeValues();
-        _.find(self.viz, {name: 'errorsrate'}).data = Proxy.errorsData();
-        _.find(self.viz, {name: 'rt_histogram'}).data = Proxy.rtHistogramData();
-        _.find(self.viz, {name: 'rt_percentile'}).data = Proxy.rt99thData();
+
+        _.each(Proxy.vizResult(), function(result, name) {
+          _.find(self.viz, {name: name}).data = result.data;
+        });
+
+        _.each(Proxy.metricsResult(), function(result, name) {
+          var metric = _.find(self.metrics, {name: name});
+          metric.value = result.value;
+          if (metric.config.datatype === 'duration') {
+            metric.display.value = formatters.formatDuration(result.value);
+            metric.display.class = formatters.formatDurationClass(result.value);
+          } else {
+            metric.display.value = formatters.formatNumber(result.value);
+            metric.display.class = formatters.formatNumberClass(result.value);
+          }
+        });
 
         timefilter.interval.loading = false;
         if (timefilter.interval.value) {

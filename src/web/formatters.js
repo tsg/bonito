@@ -55,12 +55,43 @@
 
     return {
       transform: transform,
+
       formatDuration: function(input, precision) {
         return transform(input, precision, ['micro', 'ms', 's', 'm', 'h'], 1000);
       },
+
+      formatDurationClass: function(input) {
+        var units = ['micro', 'ms', 's', 'm', 'h'];
+        input = parseFloat(input);
+        if (isNaN(input) || !isFinite(input) || input === 0 || Math.abs(input) < 1) {
+          return 'duration-' + units[0];
+        }
+
+        var number = Math.floor(Math.log(input) / Math.log(1000));
+        if (number >= units.length) {
+          return 'duration-' + units[0];
+        }
+        return 'duration-' + units[number];
+      },
+
       formatNumber: function(input, precision) {
         return transform(input, precision, ['', 'k', 'M', 'G', 'T', 'P'], 1000);
       },
+
+      formatNumberClass: function(input) {
+        var units = ['', 'k', 'M', 'G', 'T', 'P'];
+        input = parseFloat(input);
+        if (isNaN(input) || !isFinite(input) || input === 0 || Math.abs(input) < 1) {
+          return 'number-' + units[0];
+        }
+
+        var number = Math.floor(Math.log(input) / Math.log(1000));
+        if (number >= units.length) {
+          return 'number-' + units[0];
+        }
+        return 'number-' + units[number];
+      },
+
       trimString: trimString
     };
   });

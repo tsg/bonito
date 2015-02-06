@@ -15,7 +15,7 @@
       points: 50
     };
 
-    self.genData = function() {
+    self.genVizData = function(viz) {
       self.volumeValues = testdata.getRandoms({
         from: self.config.from,
         to: self.config.to,
@@ -56,11 +56,53 @@
         points: 20
       });
 
+      return {
+        volume: {
+          data: self.volumeValues
+        },
+        errorsrate: {
+          data: self.errorsData
+        },
+        rt_histogram: {
+          data: self.rtHistogramData
+        },
+        rt_percentile: {
+          data: self.rt99thData
+        }
+      };
+    };
+
+    self.getMetricValues = function(base_val, rt_val, metrics) {
+      var res = {};
+      _.each(metrics, function(metric) {
+        switch (metric.config.type) {
+          case 'volume':
+            if (metric.config.agg === 'avg') {
+              res[metric.name] = { value: base_val };
+            } else {
+              res[metric.name] = { value: base_val * 1.5 };
+            }
+            break;
+          case 'errorsrate':
+            res[metric.name] = { value: base_val / 1000 };
+            break;
+          case 'percentile':
+            if (metric.config.percentile == 50) {
+              res[metric.name] = { value: rt_val };
+            } else {
+              res[metric.name] = { value: rt_val * 1.5 };
+            }
+            break;
+        }
+      });
+      return res;
     };
 
     return {
-      load: function() {
-        self.genData();
+      load: function(config) {
+        self.vizResult = self.genVizData(config.viz);
+        self.metricsResult = self.getMetricValues(120000, 23500, config.metrics);
+
 
         // returns a dummy promise that resolves immediately.
         return {
@@ -68,6 +110,14 @@
             f();
           }
         };
+      },
+
+      vizResult: function() {
+        return self.vizResult;
+      },
+
+      metricsResult: function() {
+        return self.metricsResult;
       },
 
       volumeValues: function() {
