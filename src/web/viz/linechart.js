@@ -106,8 +106,8 @@
           x.domain(d3.extent(data, function(d) { return d.ts; }));
           y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
-          // line
-          if (type == 'line') {
+          if (type != 'area') {
+            // line
             var line = d3.svg.line()
               .x(function(d) { return x(d.ts); })
               .y(function(d) { return y(d.value); });
@@ -117,6 +117,7 @@
               .attr('class', 'line')
               .attr('d', line);
           } else {
+            // area
             var area = d3.svg.area()
               .x(function(d) { return x(d.ts); })
               .y0(height)

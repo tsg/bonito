@@ -22,6 +22,59 @@
     self.rt99thData = [];
     self.rtHistogramData = [];
 
+    self.viz = [{
+      name: 'volume',
+      type: 'linechart',
+      config: {
+        field: 'count',
+      },
+      display: {
+        title: 'Volume',
+        ylabel: 'Requests/s',
+        classes: 'bnt-volume-graph'
+      }
+    }, {
+      name: 'errorsrate',
+      type: 'linechart',
+      config: {
+        status_field: 'status',
+        ok_value: 'Ok',
+        count_field: 'count'
+      },
+      display: {
+        ylabel: 'Errors/k',
+        title: 'Errors rate',
+        type: 'area',
+        classes: 'errors bnt-errors-rate-graph'
+      }
+    }, {
+      name: 'rt_histogram',
+      type: 'histogram',
+      display: {
+        title: 'Response time histogram',
+        ylabel: 'Number of transactions',
+        classes: 'bnt-responsetime-histogram',
+        datatype: 'duration'
+      },
+      config: {
+        rt_field: 'responsetime',
+        count_field: 'count'
+      }
+    }, {
+      name: 'rt_percentile',
+      type: 'linechart',
+      display: {
+        title: 'Response times: 99th percentile',
+        ylabel: 'Response time 99th',
+        classes: 'bnt-responsetime-99th',
+        datatype: 'duration'
+      },
+      config: {
+        rt_field: 'responsetime',
+        percentile: 99
+      }
+    }];
+
     self.metrics = [{
       display: {
         name: 'Volume average',
@@ -240,11 +293,10 @@
         from: timefilter.time.from,
         to: timefilter.time.to
       }).then(function() {
-        self.volumeData = Proxy.volumeValues();
-        self.errorsData = Proxy.errorsData();
-        self.rt50thData = Proxy.rt50thData();
-        self.rt99thData = Proxy.rt99thData();
-        self.rtHistogramData = Proxy.rtHistogramData();
+        _.find(self.viz, {name: 'volume'}).data = Proxy.volumeValues();
+        _.find(self.viz, {name: 'errorsrate'}).data = Proxy.errorsData();
+        _.find(self.viz, {name: 'rt_histogram'}).data = Proxy.rtHistogramData();
+        _.find(self.viz, {name: 'rt_percentile'}).data = Proxy.rt99thData();
 
         timefilter.interval.loading = false;
         if (timefilter.interval.value) {

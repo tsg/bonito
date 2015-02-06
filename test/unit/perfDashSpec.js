@@ -39,7 +39,7 @@
 
     it('should should create a set of platform graphs', function() {
       var platform = $elem.find('.section-platform');
-      expect(platform.find('.bnt-rpm-graph').length).toBe(1);
+      expect(platform.find('.bnt-volume-graph').length).toBe(1);
       expect(platform.find('.bnt-errors-rate-graph').length).toBe(1);
       expect(platform.find('.bnt-responsetime-histogram').length).toBe(1);
       expect(platform.find('.bnt-responsetime-99th').length).toBe(1);
