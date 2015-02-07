@@ -264,6 +264,24 @@
       }]
     };
 
+    self.extractConfig = function(dashboard) {
+      var pickConfig = function(d) {
+        return _.pick(d, ['name', 'config']);
+      };
+      return {
+        metrics: _.map(dashboard.metrics, pickConfig),
+        viz: _.map(dashboard.viz, pickConfig),
+        dimensions: _.map(dashboard.dimensions, function(dim) {
+          return {
+            name: dim.name,
+            config: dim.config || {},
+            metrics: _.map(dim.metrics, pickConfig),
+            viz: _.map(dim.viz, pickConfig)
+          };
+        })
+      };
+    };
+
     self.setMetricDisplay = function(metric, value) {
       if (metric.config.datatype === 'duration') {
         metric.display.value = formatters.formatDuration(value);
@@ -281,7 +299,7 @@
       Proxy.load({
         from: timefilter.time.from,
         to: timefilter.time.to,
-        dashboard: self.dashboard
+        dashboard: self.extractConfig(self.dashboard)
       }).then(function() {
 
         _.each(Proxy.vizResult(), function(result, name) {

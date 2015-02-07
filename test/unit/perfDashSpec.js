@@ -23,6 +23,64 @@
       expect(Pages.activePage.activeSubpage.path).toBe('platformwide');
     }));
 
+    describe('extractConfig', function() {
+      it('should remove values and display properties', function() {
+        var dashboard = {
+          metrics: [{
+            name: 'test',
+            config: { type: 'test' },
+            values: [1, 2],
+            display: { type: 'something' }
+          }],
+          viz : [{
+            name: 'test',
+            config: { type: 'test' },
+            values: [1, 2],
+            display: { type: 'something' }
+          }],
+          dimensions: [{
+            name: 'dimtest',
+            metrics: [{
+              name: 'test',
+              config: { type: 'test' },
+              values: [1, 2],
+              display: { type: 'something' }
+            }],
+            viz : [{
+              name: 'test',
+              config: { type: 'testviz' },
+              values: [1, 2],
+              display: { type: 'something' }
+            }],
+          }]
+        };
+
+        var dash_config = ctrl.extractConfig(dashboard);
+        expect(dash_config).toEqual({
+          metrics: [{
+            name: 'test',
+            config: { type: 'test' }
+          }],
+          viz : [{
+            name: 'test',
+            config: { type: 'test' }
+          }],
+          dimensions: [{
+            name: 'dimtest',
+            config: {},
+            metrics: [{
+              name: 'test',
+              config: { type: 'test' }
+            }],
+            viz : [{
+              name: 'test',
+              config: { type: 'testviz' }
+            }]
+          }]
+        });
+      });
+    });
+
   });
 
   describe('perfDash template', function() {

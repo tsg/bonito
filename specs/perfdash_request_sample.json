@@ -1,0 +1,90 @@
+{
+  "timerange": {
+    "from": "2015-14-12T12:12:12.000Z",
+    "to": "2015-14-12T13:12:12.000Z"
+  },
+  "metrics": [
+    {
+      "name": "volume_avg",
+      "config": { "type": "volume", "field": "count", "agg": "avg", "interval": "s" }
+    },
+    {
+      "name": "volume_max",
+      "config": { "type": "volume", "field": "count", "agg": "max", "interval": "s" }
+    },
+    {
+      "name": "errorsrate",
+      "config": {
+        "type": "errorsrate",
+        "status_field": "status",
+        "ok_value": "Ok",
+        "count_field": "count",
+        "interval": "s",
+        "agg": "avg"
+      }
+    },
+    {
+      "name": "rt_50th",
+      "config": { "type": "percentile", "field": "responsetime", "datatype": "duration", "percentile": 50 }
+    },
+    {
+      "name": "rt_90th",
+      "config": { "type": "percentile", "field": "responsetime", "datatype": "duration", "percentile": 99 }
+    }
+  ],
+  "viz": [
+    { "name": "volume", "config": { "type": "volume", "field": "count" } },
+    {
+      "name": "errorsrate",
+      "config": { "type": "errorsrate", "status_field": "status", "ok_value": "Ok", "count_field": "count" }
+    },
+    {
+      "name": "rt_histogram",
+      "config": { "type": "histogram", "rt_field": "responsetime", "count_field": "count" }
+    },
+    {
+      "name": "rt_percentile",
+      "config": { "type": "percentile", "rt_field": "responsetime", "percentile": 99 }
+    }
+  ],
+  "dimensions": [
+    {
+      "name": "services",
+      "config": { },
+      "metrics": [
+        { "name": "services", "config": { "type": "cardinality", "field": "service" } },
+        {
+          "name": "avg_volume_per_service",
+          "config": { "type": "card_volume", "agg": "avg", "dimension_field": "service", "field": "count" }
+        }
+      ],
+      "viz": [
+        { "name": "topvolume", "config": { "type": "topvolume", "field": "count" } },
+        {
+          "name": "toppercentile",
+          "config": { "type": "toppercentile", "field": "responsetime", "percentile": 99 }
+        },
+        { "name": "toperrors", "config": { "type": "toperrors", "status_field": "status", "ok_value": "Ok" } }
+      ]
+    },
+    {
+      "name": "hosts",
+      "config": { },
+      "metrics": [
+        { "name": "hosts", "config": { "type": "cardinality", "field": "host" } },
+        {
+          "name": "avg_volume_per_host",
+          "config": { "type": "card_volume", "agg": "avg", "dimension_field": "host", "field": "count" }
+        }
+      ],
+      "viz": [
+        { "name": "topvolume", "config": { "type": "topvolume", "field": "count" } },
+        {
+          "name": "toppercentile",
+          "config": { "type": "toppercentile", "field": "responsetime", "percentile": 99 }
+        },
+        { "name": "toperrors", "config": { "type": "toperrors", "status_field": "status", "ok_value": "Ok" } }
+      ]
+    }
+  ]
+}
