@@ -174,13 +174,13 @@
         config: {
           type: 'toppercentile',
           field: 'responsetime',
-          percentile: 99.0,
-          datatype: 'duration'
+          percentile: 99.0
         },
         display: {
           title: 'Slowest services by 99th percentile',
           type: 'horizontal',
-          class: 'warning'
+          class: 'warning',
+          datatype: 'duration'
         }
       }, {
         name: 'toperrors',
@@ -236,12 +236,12 @@
         config: {
           type: 'toppercentile',
           field: 'responsetime',
-          percentile: 99.0,
-          datatype: 'duration'
+          percentile: 99.0
         },
         display: {
           title: 'Slowest hosts by 99th percentile',
           type: 'barchart',
+          datatype: 'duration',
           class: 'warning'
         }
       }, {
