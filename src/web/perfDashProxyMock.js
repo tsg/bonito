@@ -116,11 +116,11 @@
 
     return {
       load: function(config) {
-        self.vizResult = self.genVizData(config.viz);
-        self.metricsResult = self.getMetricValues(120000, 23500, config.metrics);
+        self.vizResult = self.genVizData(config.dashboard.viz);
+        self.metricsResult = self.getMetricValues(120000, 23500, config.dashboard.metrics);
 
         self.dimResult = {};
-        _.each(config.dimensions, function(dim) {
+        _.each(config.dashboard.dimensions, function(dim) {
 
           var names = [];
           if (dim.name === 'services') {

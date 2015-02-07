@@ -73,10 +73,12 @@
     }));
 
     it('should generate 50 points for the volume histogram', function() {
-      var viz = [{
+      var dashboard = {
+        viz: [{
         name: 'volume'
-      }];
-      perfDashProxyMock.load({viz: viz}).then(function() {
+        }]
+      };
+      perfDashProxyMock.load({dashboard: dashboard}).then(function() {
         expect(perfDashProxyMock.volumeValues().length).toBe(50);
       });
     });

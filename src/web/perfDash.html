@@ -3,10 +3,10 @@
   <div class="container-fluid">
     <div class="row section-platform">
       <div class="col-md-2">
-        <h3>Platform</h3>
+        <h3>{{ perfDash.dashboard.display.title }}</h3>
 
         <table class="table table-condensed">
-          <tr ng-repeat="metric in perfDash.metrics">
+          <tr ng-repeat="metric in perfDash.dashboard.metrics">
             <th>{{ metric.display.name }}</th>
             <td>
               <span class="{{metric.display.class}}">
@@ -19,7 +19,7 @@
 
       <div class="col-md-10">
         <div class="row">
-          <div ng-repeat="viz in perfDash.viz"
+          <div ng-repeat="viz in perfDash.dashboard.viz"
             class="col-md-6 {{viz.display.classes}}">
             <bonito-panel panel-title="viz.display.title" ng-switch="viz.type">
               <bonito-linechart
@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <div class="row" ng-repeat="dimension in perfDash.dimensions"
+    <div class="row" ng-repeat="dimension in perfDash.dashboard.dimensions"
         ng-class="'dimension-' + dimension.name">
       <div class="col-md-2">
         <h4>{{ dimension.display.section }}</h4>
