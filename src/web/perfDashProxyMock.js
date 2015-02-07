@@ -103,6 +103,17 @@
       return res;
     };
 
+    self.getDimVizValues = function(values, baseval) {
+      var res = [];
+      _.each(values, function(name, i) {
+        res.push({
+          name: name,
+          value: baseval  / (i+1)
+        });
+      });
+      return res;
+    };
+
     return {
       load: function(config) {
         self.vizResult = self.genVizData(config.viz);
@@ -110,8 +121,44 @@
 
         self.dimResult = {};
         _.each(config.dimensions, function(dim) {
+
+          var names = [];
+          if (dim.name === 'services') {
+            names = ['Service16', 'Service18', 'Service5', 'Service9',
+              'Service34', 'Service52', 'Service91', 'Service3'];
+          } else {
+            names = [
+              'java1.service-java.example.com',
+              'java2.service-java.example.com',
+              'java4.service-java.example.com',
+              'java14.service-java.example.com',
+            ];
+          }
+
+          var vizResult = {};
+          _.each(dim.viz, function(viz) {
+            switch (viz.config.type) {
+            case 'topvolume':
+              vizResult[viz.name] = {
+                values: self.getDimVizValues(names, 20000)
+              };
+              break;
+            case 'toppercentile':
+              vizResult[viz.name] = {
+                values: self.getDimVizValues(names, 50000)
+              };
+              break;
+            case 'toperrors':
+              vizResult[viz.name] = {
+                values: self.getDimVizValues(names, 50)
+              };
+              break;
+            }
+          });
+
           self.dimResult[dim.name] = {
-            metrics: self.getMetricValues(120000, 12000, dim.metrics)
+            metrics: self.getMetricValues(120000, 12000, dim.metrics),
+            viz: vizResult
           };
         });
 
