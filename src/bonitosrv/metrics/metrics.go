@@ -16,7 +16,8 @@ type Interval struct {
 
 type metric interface {
 	buildEsAggs(metric ConfigRaw) (MapStr, error)
-	fromEsResponse(resp json.RawMessage, interval Interval) (MapStr, error)
+	fromEsResponse(resp map[string]json.RawMessage,
+		metric ConfigRaw, interval Interval) (MapStr, error)
 }
 
 type Metrics struct {
@@ -31,6 +32,7 @@ func (metrics *Metrics) RegisterAll() {
 	metrics.metrics = map[string]metric{
 		"volume":     volumeMetric{},
 		"percentile": percentileMetric{},
+		"errorsrate": errorsrateMetric{},
 	}
 }
 

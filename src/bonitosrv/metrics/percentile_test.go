@@ -43,12 +43,18 @@ var _ = Describe("Percentile metric", func() {
 
 	Context("fromEsResponse", func() {
 		It("should extract the value from the ES values array", func() {
-			resp := json.RawMessage(`{
-				"values": {
-					"50.0": 123.4
-				}
-			}`)
-			rez, err := metric.fromEsResponse(resp, Interval{})
+			resp := map[string]json.RawMessage{
+				"percentile_50th": json.RawMessage(`{
+					"values": {
+						"50.0": 123.4
+					}
+				}`),
+			}
+			config := ConfigRaw{
+				Name: "percentile_50th",
+				Type: "percentile",
+			}
+			rez, err := metric.fromEsResponse(resp, config, Interval{})
 			Expect(err).NotTo(HaveOccurred())
 			Expect(rez["value"].(float32)).To(BeNumerically("~", 123.4, 0.001))
 		})

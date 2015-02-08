@@ -41,10 +41,16 @@ var _ = Describe("Volume metric", func() {
 
 	Context("fromEsResponse", func() {
 		It("should extract the value from the ES value", func() {
-			resp := json.RawMessage(`{
-				"value": 123.4
-			}`)
-			rez, err := metric.fromEsResponse(resp, Interval{Seconds: 2.0})
+			resp := map[string]json.RawMessage{
+				"volume_avg": json.RawMessage(`{
+					"value": 123.4
+				}`),
+			}
+			config := ConfigRaw{
+				Name: "volume_avg",
+				Type: "volume",
+			}
+			rez, err := metric.fromEsResponse(resp, config, Interval{Seconds: 2.0})
 			Expect(err).NotTo(HaveOccurred())
 			Expect(rez["value"].(float32)).To(BeNumerically("~", 61.7, 0.001))
 		})

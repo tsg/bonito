@@ -18,9 +18,7 @@
         "type": "errorsrate",
         "status_field": "status",
         "ok_value": "Ok",
-        "count_field": "count",
-        "interval": "s",
-        "agg": "avg"
+        "count_field": "count"
       }
     },
     {

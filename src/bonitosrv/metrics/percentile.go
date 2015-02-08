@@ -30,12 +30,19 @@ func (m percentileMetric) buildEsAggs(metric ConfigRaw) (MapStr, error) {
 	}, nil
 }
 
-func (m percentileMetric) fromEsResponse(resp json.RawMessage, interval Interval) (MapStr, error) {
+func (m percentileMetric) fromEsResponse(resp map[string]json.RawMessage,
+	metric ConfigRaw, interval Interval) (MapStr, error) {
+
 	var percentiles struct {
 		Values map[string]float32
 	}
 
-	err := json.Unmarshal(resp, &percentiles)
+	val, exists := resp[metric.Name]
+	if !exists {
+		return nil, errors.New("Elasticsearch didn't return the aggregation")
+	}
+
+	err := json.Unmarshal(val, &percentiles)
 	if err != nil {
 		return nil, err
 	}

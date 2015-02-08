@@ -94,8 +94,7 @@
         config: {
           type: 'volume',
           field: 'count',
-          agg: 'max',
-          interval: 's'
+          agg: 'total'
         },
         display: {
           name: 'Volume peak',
@@ -106,9 +105,7 @@
           type: 'errorsrate',
           status_field: 'status',
           ok_value: 'Ok',
-          count_field: 'count',
-          interval: 's',
-          agg: 'avg'
+          count_field: 'count'
         },
         display: {
           name: 'Errors/k',
