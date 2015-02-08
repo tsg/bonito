@@ -173,7 +173,7 @@ var _ = Describe("PerfDashApi", func() {
 			//fmt.Println("index name", index_name)
 		})
 
-		It("should get volume metric", func() {
+		It("should get a json with metrics", func() {
 			req := PerfDashRequest{
 				Timerange: Timerange{
 					From: MustParseJsTime("2015-01-02T15:04:04.000Z"),
@@ -205,7 +205,7 @@ var _ = Describe("PerfDashApi", func() {
 			resp, code, err := api.Query(&req)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(code).To(Equal(200))
-			Expect(json.Marshal(resp)).To(BeEquivalentTo(`{"metrics":{"percentile_50th":{"value":2000},"volume_avg":{"value":4.5}}}`))
+			Expect(json.Marshal(resp)).To(BeEquivalentTo(`{"metrics":{"percentile_50th":{"value":2000},"volume_avg":{"value":4.5}},"status":"ok"}`))
 
 		})
 	})

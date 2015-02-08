@@ -45,11 +45,13 @@
 
         // define rendering function
         scope.render = function(data) {
-
-
           // clean
           d3.select(element[0])
             .select('svg').remove();
+
+          if (_.isEmpty(data)) {
+            return;
+          }
 
           var totalWidth = scope.width || element.parent().innerWidth();
           var totalHeight = parseInt(scope.height) || 200;

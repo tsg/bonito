@@ -150,6 +150,7 @@ func (api *PerfDashApi) Query(req *PerfDashRequest) (MapStr, int, error) {
 		req.Metrics, interval)
 
 	return MapStr{
+		"status":  "ok",
 		"metrics": metricsRes,
 	}, 200, nil
 }

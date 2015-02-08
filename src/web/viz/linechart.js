@@ -59,6 +59,10 @@
           d3.select(element[0])
             .select('svg').remove();
 
+          if (_.isEmpty(data)) {
+            return;
+          }
+
           var totalWidth = scope.width || element.parent().innerWidth();
           var totalHeight = scope.height;
 

@@ -59,6 +59,10 @@
           d3.select(element[0])
             .select('svg').remove();
 
+          if (_.isEmpty(data)) {
+            return;
+          }
+
           // make sure data is sorted descending by value
           data = _.sortBy(data, function(d) { return -d.value; });
 

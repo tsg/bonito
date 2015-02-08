@@ -18,8 +18,6 @@ func newNegroniServer(index_name string, enableLogging bool) *negroni.Negroni {
 		IndentJSON: true,
 	})
 
-	api := NewByDimensionApi(index_name)
-
 	router := mux.NewRouter()
 	router.HandleFunc("/api/ping", func(w http.ResponseWriter, req *http.Request) {
 		r.JSON(w, 200, map[string]interface{}{
@@ -29,7 +27,39 @@ func newNegroniServer(index_name string, enableLogging bool) *negroni.Negroni {
 	}).Methods("GET")
 
 	router.HandleFunc("/api/bydimension", func(w http.ResponseWriter, req *http.Request) {
+		api := NewByDimensionApi(index_name)
 		var request ByDimensionRequest
+		body, err := ioutil.ReadAll(req.Body)
+		if err != nil {
+			panic(err)
+		}
+		if len(body) > 0 {
+			err := json.Unmarshal(body, &request)
+			if err != nil {
+				r.JSON(w, 400, map[string]interface{}{
+					"status":  "error",
+					"message": fmt.Sprintf("Bad parameter: %s", err),
+				})
+				return
+			}
+		}
+
+		resp, code, err := api.Query(&request)
+		if err != nil {
+			fmt.Printf("Error: %s\n", err)
+			r.JSON(w, code, MapStr{
+				"status":  "error",
+				"message": fmt.Sprintf("Error: %s", err),
+			})
+		}
+
+		r.JSON(w, code, resp)
+
+	}).Methods("GET", "POST")
+
+	router.HandleFunc("/api/perfdash", func(w http.ResponseWriter, req *http.Request) {
+		api := NewPerfDashApi(index_name)
+		var request PerfDashRequest
 		body, err := ioutil.ReadAll(req.Body)
 		if err != nil {
 			panic(err)

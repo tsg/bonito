@@ -22,16 +22,16 @@
 
 
     this.metrics = [
-      "volume",
-      "rt_max",
-      "rt_avg",
-      "rt_percentiles",
-      "secondary_count",
-      "errors_rate"
+      'volume',
+      'rt_max',
+      'rt_avg',
+      'rt_percentiles',
+      'secondary_count',
+      'errors_rate'
     ];
 
     this.hist_metrics = [
-      "volume"
+      'volume'
     ];
 
     var service = this;
@@ -53,7 +53,7 @@
           service.afterLoad(service.data);
         })
         .error(function(data, status, headers, config) {
-          console.log("Error: ", status);
+          console.log('Error: ', status);
         });
     };
 

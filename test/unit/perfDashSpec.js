@@ -9,12 +9,12 @@
       $controller,
       $rootScope;
 
-    beforeEach(inject(function(_$controller_, _$rootScope_, byDimensionProxyMock) {
+    beforeEach(inject(function(_$controller_, _$rootScope_, perfDashProxyMock) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       ctrl = $controller('performanceDashboard as perfDash', {
-        $scope: $rootScope
-        //byDimensionProxy: byDimensionProxyMock
+        $scope: $rootScope,
+        perfDashProxy: perfDashProxyMock
       });
     }));
 
@@ -84,11 +84,31 @@
   });
 
   describe('perfDash template', function() {
-    var $compile, $rootScope, $elem;
+    var $compile, $rootScope, $elem, $httpBackend, $proxy, $ctrl;
     beforeEach(module('templates'));
-    beforeEach(inject(function(_$compile_, _$rootScope_, $templateCache) {
+    beforeEach(inject(function(_$compile_, _$rootScope_,
+      $templateCache, _$httpBackend_, perfDashProxyMock,
+      $controller) {
+
       $compile = _$compile_;
       $rootScope = _$rootScope_;
+      $httpBackend = _$httpBackend_;
+      $proxy = perfDashProxyMock;
+      $ctrl = $controller('performanceDashboard as perfDash', {
+        $scope: $rootScope,
+        perfDashProxy: perfDashProxyMock
+      });
+
+      $proxy.load({
+        dashboard: $ctrl.extractConfig($ctrl.dashboard)
+      });
+
+      $httpBackend.whenPOST('/api/perfdash').respond({
+        'status': 'ok',
+        'metrics': $proxy.metricsResult(),
+        'viz': $proxy.vizResult(),
+        'dim': $proxy.dimResult()
+      });
 
       $elem = angular.element($templateCache.get('perfDash.html'));
       $compile($elem)($rootScope);

@@ -3,14 +3,14 @@
 
   // Displays a detailed performance dashboard.
   var module = angular.module('bonitoPerformanceDashboard', [
-    'bonitoPerfDashMocks',
+    //'bonitoPerfDashMocks',
     'bonitoTimefilter',
     'bonitoPanel',
     'bonitoFormatters'
   ]);
 
   module.controller('performanceDashboard',
-    ['_', 'Pages', 'perfDashProxyMock', 'timefilter', '$scope', '$interval', 'formatters',
+    ['_', 'Pages', 'perfDashProxy', 'timefilter', '$scope', '$interval', 'formatters',
   function(_, Pages, Proxy, timefilter, $scope, $interval, formatters) {
     _.assign(Pages.activePage, Pages.getPageById('dashboards'));
     Pages.activePage.activeSubpage = Pages.subpageById(Pages.activePage, 'platformwide');
@@ -80,8 +80,8 @@
 
       metrics: [{
         name: 'volume_avg',
+        type: 'volume',
         config: {
-          type: 'volume',
           field: 'count',
           agg: 'avg',
           interval: 's'
@@ -91,8 +91,8 @@
         }
       }, {
         name: 'volume_max',
+        type: 'volume',
         config: {
-          type: 'volume',
           field: 'count',
           agg: 'total'
         },
@@ -101,8 +101,8 @@
         }
       }, {
         name: 'errorsrate',
+        type: 'errorsrate',
         config: {
-          type: 'errorsrate',
           status_field: 'status',
           ok_value: 'Ok',
           count_field: 'count'
@@ -112,8 +112,8 @@
         }
       }, {
         name: 'rt_50th',
+        type: 'percentile',
         config: {
-          type: 'percentile',
           field: 'responsetime',
           datatype: 'duration',
           percentile: 50.0
@@ -123,8 +123,8 @@
         }
       }, {
         name: 'rt_90th',
+        type: 'percentile',
         config: {
-          type: 'percentile',
           field: 'responsetime',
           datatype: 'duration',
           percentile: 99.0
@@ -263,7 +263,7 @@
 
     self.extractConfig = function(dashboard) {
       var pickConfig = function(d) {
-        return _.pick(d, ['name', 'config']);
+        return _.pick(d, ['name', 'type', 'config']);
       };
       return {
         metrics: _.map(dashboard.metrics, pickConfig),
@@ -298,7 +298,6 @@
         to: timefilter.time.to,
         dashboard: self.extractConfig(self.dashboard)
       }).then(function() {
-
         _.each(Proxy.vizResult(), function(result, name) {
           _.find(self.dashboard.viz, {name: name}).data = result.data;
         });
