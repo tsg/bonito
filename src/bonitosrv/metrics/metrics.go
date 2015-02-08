@@ -25,7 +25,21 @@ type Metrics struct {
 }
 
 func (metrics *Metrics) BuildEsAggs(metric ConfigRaw) (MapStr, error) {
-	return metrics.metrics[metric.Type].buildEsAggs(metric)
+	m, exists := metrics.metrics[metric.Type]
+	if !exists {
+		return MapStr{}, nil
+	}
+	return m.buildEsAggs(metric)
+}
+
+func (metrics *Metrics) FromEsResponse(resp map[string]json.RawMessage,
+	metric ConfigRaw, interval Interval) (MapStr, error) {
+
+	m, exists := metrics.metrics[metric.Type]
+	if !exists {
+		return MapStr{}, nil
+	}
+	return m.fromEsResponse(resp, metric, interval)
 }
 
 func (metrics *Metrics) RegisterAll() {

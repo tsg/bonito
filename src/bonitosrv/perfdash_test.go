@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bonitosrv/elasticsearch"
 	"bonitosrv/metrics"
+	"bonitosrv/testdata"
 	"encoding/json"
+	"fmt"
+	"os"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -113,4 +117,97 @@ var _ = Describe("PerfDashApi", func() {
 			})
 		})
 	})
+
+	Context("With test ES", func() {
+		var es *elasticsearch.Elasticsearch
+		var index_name string
+		var api *PerfDashApi
+		BeforeEach(func() {
+			index_name = fmt.Sprintf("packetbeat-unittest-%v", os.Getpid())
+			es = elasticsearch.NewElasticsearch()
+
+			_, err := es.DeleteIndex(index_name)
+			Expect(err).To(BeNil())
+			es.Refresh(index_name)
+
+			ts1, _ := elasticsearch.TimeParse("2015-01-02T15:04:05.000Z")
+			ts2, _ := elasticsearch.TimeParse("2015-01-02T15:04:05.001Z")
+
+			transactions := []testdata.TestTransaction{
+				testdata.TestTransaction{
+					Timestamp:    ts1,
+					Service:      "service1",
+					Host:         "Host0",
+					Count:        2,
+					Responsetime: 2000,
+					Status:       "ok",
+				},
+				testdata.TestTransaction{
+					Timestamp:    ts2,
+					Service:      "service2",
+					Host:         "Host3",
+					Count:        4,
+					Responsetime: 2000,
+					Status:       "ok",
+				},
+				testdata.TestTransaction{
+					Timestamp:    ts2,
+					Service:      "service1",
+					Host:         "host2",
+					Count:        3,
+					Responsetime: 2100,
+					Status:       "error",
+				},
+			}
+
+			err = testdata.InsertInto(es, index_name, transactions)
+			Expect(err).To(BeNil())
+
+			api = NewPerfDashApi(index_name)
+
+		})
+		AfterEach(func() {
+			_, err := es.DeleteIndex(index_name)
+			Expect(err).To(BeNil())
+			es.Refresh(index_name)
+			//fmt.Println("index name", index_name)
+		})
+
+		It("should get volume metric", func() {
+			req := PerfDashRequest{
+				Timerange: Timerange{
+					From: MustParseJsTime("2015-01-02T15:04:04.000Z"),
+					To:   MustParseJsTime("2015-01-02T15:04:06.000Z"),
+				},
+				Metrics: []ConfigRaw{
+					ConfigRaw{
+						Name: "volume_avg",
+						Type: "volume",
+						Config: json.RawMessage(`{ "type": "volume",
+							"field": "count",
+							"agg": "avg",
+							"interval": "s" }`,
+						),
+					},
+					ConfigRaw{
+						Name: "percentile_50th",
+						Type: "percentile",
+						Config: json.RawMessage(
+							`{ "type": "percentile",
+							"field": "responsetime",
+							"datatype": "duration",
+							"percentile": 50 }`,
+						),
+					},
+				},
+			}
+
+			resp, code, err := api.Query(&req)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(code).To(Equal(200))
+			Expect(json.Marshal(resp)).To(BeEquivalentTo(`{"metrics":{"percentile_50th":{"value":2000},"volume_avg":{"value":4.5}}}`))
+
+		})
+	})
+
 })

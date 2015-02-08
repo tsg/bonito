@@ -4,6 +4,8 @@ import (
 	"bonitosrv/elasticsearch"
 	"bonitosrv/metrics"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"time"
 )
 
@@ -37,12 +39,6 @@ type DimensionConfigRaw struct {
 	Config  json.RawMessage
 	Metrics []ConfigRaw
 	Viz     []ConfigRaw
-}
-
-type PerfDashResponse struct {
-	Metrics    map[string]json.RawMessage   `json:"metrics"`
-	Viz        map[string]json.RawMessage   `json:"viz"`
-	Dimensions map[string]DimensionResponse `json:"dimensions"`
 }
 
 type DimensionResponse struct {
@@ -84,13 +80,33 @@ func (api *PerfDashApi) buildEsAggs(req *PerfDashRequest) (MapStr, error) {
 	return aggs, nil
 }
 
-func (api *PerfDashApi) Query(req *PerfDashRequest) (*PerfDashResponse, int, error) {
+func (api *PerfDashApi) metricsFromEsResponse(resp map[string]json.RawMessage,
+	configs []ConfigRaw, interval metrics.Interval) (MapStr, error) {
+
+	result := MapStr{}
+
+	for _, metric := range configs {
+		res, err := api.metrics.FromEsResponse(resp,
+			metrics.ConfigRaw(metric), interval)
+		if err != nil {
+			return nil, err
+		}
+
+		result[metric.Name] = res
+	}
+
+	return result, nil
+}
+
+func (api *PerfDashApi) Query(req *PerfDashRequest) (MapStr, int, error) {
 	var err error
 	api.setRequestDefaults(req)
 
 	esreq := MapStr{}
 	esreq["query"] = MapStr{
-		"filter": esBuildTimeFilter(req.Config.Timestamp_field, req.Timerange),
+		"filtered": MapStr{
+			"filter": esBuildTimeFilter(req.Config.Timestamp_field, req.Timerange),
+		},
 	}
 
 	esreq["aggs"], err = api.buildEsAggs(req)
@@ -98,7 +114,44 @@ func (api *PerfDashApi) Query(req *PerfDashRequest) (*PerfDashResponse, int, err
 		return nil, 400, err
 	}
 
-	return nil, 0, nil
+	objreq, err := json.Marshal(&esreq)
+	if err != nil {
+		return nil, 500, err
+	}
+
+	fmt.Println(string(objreq))
+
+	resp, err := api.es.Search(api.Index, "?search_type=count",
+		string(objreq))
+	defer resp.Body.Close()
+	if err != nil {
+		return nil, 500, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, 500, err
+	}
+
+	var answ struct {
+		Aggregations map[string]json.RawMessage
+	}
+	err = json.Unmarshal(body, &answ)
+	if err != nil {
+		return nil, 500, err
+	}
+
+	interval := metrics.Interval{
+		Seconds: float32(time.Time(req.Timerange.To).Sub(
+			time.Time(req.Timerange.From))) / 1e9,
+	}
+
+	metricsRes, err := api.metricsFromEsResponse(answ.Aggregations,
+		req.Metrics, interval)
+
+	return MapStr{
+		"metrics": metricsRes,
+	}, 200, nil
 }
 
 func NewPerfDashApi(index string) *PerfDashApi {
