@@ -29,7 +29,8 @@ func (metrics *Metrics) BuildEsAggs(metric ConfigRaw) (MapStr, error) {
 
 func (metrics *Metrics) RegisterAll() {
 	metrics.metrics = map[string]metric{
-		"volume": volumeMetric{},
+		"volume":     volumeMetric{},
+		"percentile": percentileMetric{},
 	}
 }
 
