@@ -116,17 +116,6 @@ type EsByDimensionReq struct {
 	} `json:"aggs"`
 }
 
-func (api *ByDimensionApi) buildTimeFilter(req *ByDimensionRequest) *MapStr {
-	return &MapStr{
-		"range": MapStr{
-			req.Config.Timestamp_field: MapStr{
-				"lte": elasticsearch.Time(req.Timerange.To),
-				"gte": elasticsearch.Time(req.Timerange.From),
-			},
-		},
-	}
-}
-
 func (api *ByDimensionApi) buildRequestAggs(req *ByDimensionRequest) (*MapStr, error) {
 	aggs := MapStr{}
 	for _, metric := range req.Metrics {
@@ -393,7 +382,8 @@ func (api *ByDimensionApi) Query(req *ByDimensionRequest) (*ByDimensionResponse,
 
 	// set timestamp filter
 	esreq.Query.Filtered = MapStr{}
-	esreq.Query.Filtered["filter"] = *api.buildTimeFilter(req)
+	esreq.Query.Filtered["filter"] = esBuildTimeFilter(
+		req.Config.Timestamp_field, req.Timerange)
 
 	aggs, err := api.buildRequestAggs(req)
 	if err != nil {

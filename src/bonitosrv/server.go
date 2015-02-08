@@ -12,9 +12,6 @@ import (
 	"github.com/unrolled/render"
 )
 
-// General purpose shortcut
-type MapStr map[string]interface{}
-
 func newNegroniServer(index_name string, enableLogging bool) *negroni.Negroni {
 
 	r := render.New(render.Options{
