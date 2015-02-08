@@ -20,7 +20,8 @@ var _ = Describe("Percentile metric", func() {
 			var config = ConfigRaw{
 				Name: "percentile_50th",
 				Type: "percentile",
-				Config: json.RawMessage(`{ "type": "percentile",
+				Config: json.RawMessage(
+					`{ "type": "percentile",
 					"field": "responsetime",
 					"datatype": "duration",
 					"percentile": 50 }`,
