@@ -141,8 +141,8 @@
         },
         metrics: [{
           name: 'services',
+          type: 'cardinality',
           config: {
-            type: 'cardinality',
             field: 'service'
           },
           display: {
@@ -150,11 +150,10 @@
           }
         }, {
           name: 'avg_volume_per_service',
+          type: 'cardvolume',
           config: {
-            type: 'card_volume',
-            agg: 'avg',
             dimension_field: 'service',
-            field: 'count'
+            count_field: 'count'
           },
           display: {
             name: 'Volume per service (avg)'
@@ -162,8 +161,8 @@
         }],
         viz: [{
           name: 'topvolume',
+          type: 'topvolume',
           config: {
-            type: 'topvolume',
             field: 'count'
           },
           display: {
@@ -172,8 +171,8 @@
           }
         }, {
           name: 'toppercentile',
+          type: 'toppercentile',
           config: {
-            type: 'toppercentile',
             field: 'responsetime',
             percentile: 99.0
           },
@@ -185,8 +184,8 @@
           }
         }, {
           name: 'toperrors',
+          type: 'toperrors',
           config: {
-            type: 'toperrors',
             status_field: 'status',
             ok_value: 'Ok'
           },
@@ -203,8 +202,8 @@
         },
         metrics: [{
           name: 'hosts',
+          type: 'cardinality',
           config: {
-            type: 'cardinality',
             field: 'host'
           },
           display: {
@@ -212,11 +211,11 @@
           }
         }, {
           name: 'avg_volume_per_host',
+          type: 'cardvolume',
           config: {
-            type: 'card_volume',
             agg: 'avg',
             dimension_field: 'host',
-            field: 'count'
+            count_field: 'count'
           },
           display: {
             name: 'Volume per host (avg)'

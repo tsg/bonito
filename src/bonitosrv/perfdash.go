@@ -20,7 +20,7 @@ type PerfDashRequest struct {
 	Timerange  Timerange
 	Metrics    []ConfigRaw
 	Viz        []ConfigRaw
-	Dimensions DimensionConfigRaw
+	Dimensions []DimensionConfigRaw
 
 	Config struct {
 		Timestamp_field string
@@ -73,9 +73,20 @@ func (api *PerfDashApi) buildEsAggs(req *PerfDashRequest) (MapStr, error) {
 	for _, metric := range req.Metrics {
 		agg, err := api.metrics.BuildEsAggs(metrics.ConfigRaw(metric))
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Metric '%s' error: %v", metric.Name, err)
 		}
 		aggs.update(MapStr(agg))
+	}
+
+	for _, dim := range req.Dimensions {
+		for _, metric := range dim.Metrics {
+			agg, err := api.metrics.BuildEsAggs(metrics.ConfigRaw(metric))
+			if err != nil {
+				return nil, fmt.Errorf("Dim '%s' metric '%s': %v",
+					dim.Name, metric.Name, err)
+			}
+			aggs.update(MapStr(agg))
+		}
 	}
 	return aggs, nil
 }
@@ -149,9 +160,23 @@ func (api *PerfDashApi) Query(req *PerfDashRequest) (MapStr, int, error) {
 	metricsRes, err := api.metricsFromEsResponse(answ.Aggregations,
 		req.Metrics, interval)
 
+	dimRes := MapStr{}
+	for _, dim := range req.Dimensions {
+		dimMetricsRes, err := api.metricsFromEsResponse(answ.Aggregations,
+			dim.Metrics, interval)
+		if err != nil {
+			return nil, 500, err
+		}
+
+		dimRes[dim.Name] = MapStr{
+			"metrics": dimMetricsRes,
+		}
+	}
+
 	return MapStr{
 		"status":  "ok",
 		"metrics": metricsRes,
+		"dim":     dimRes,
 	}, 200, nil
 }
 

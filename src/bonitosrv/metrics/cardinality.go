@@ -5,15 +5,15 @@ import (
 	"errors"
 )
 
-type volumeMetric struct {
+type cardinalityMetric struct {
 }
 
-type volumeMetricConfig struct {
+type cardinalityMetricConfig struct {
 	Field string
 }
 
-func (m volumeMetric) buildEsAggs(metric ConfigRaw) (MapStr, error) {
-	var config volumeMetricConfig
+func (m cardinalityMetric) buildEsAggs(metric ConfigRaw) (MapStr, error) {
+	var config cardinalityMetricConfig
 	err := json.Unmarshal(metric.Config, &config)
 	if err != nil {
 		return nil, err
@@ -21,17 +21,17 @@ func (m volumeMetric) buildEsAggs(metric ConfigRaw) (MapStr, error) {
 
 	return MapStr{
 		metric.Name: MapStr{
-			"sum": MapStr{
+			"cardinality": MapStr{
 				"field": config.Field,
 			},
 		},
 	}, nil
 }
 
-func (m volumeMetric) fromEsResponse(resp map[string]json.RawMessage,
+func (m cardinalityMetric) fromEsResponse(resp map[string]json.RawMessage,
 	metric ConfigRaw, interval Interval) (MapStr, error) {
 
-	var volume struct {
+	var cardinality struct {
 		Value float32
 	}
 
@@ -40,12 +40,12 @@ func (m volumeMetric) fromEsResponse(resp map[string]json.RawMessage,
 		return nil, errors.New("Elasticsearch didn't return the aggregation")
 	}
 
-	err := json.Unmarshal(val, &volume)
+	err := json.Unmarshal(val, &cardinality)
 	if err != nil {
 		return nil, err
 	}
 
 	return MapStr{
-		"value": volume.Value / interval.Seconds,
+		"value": cardinality.Value,
 	}, nil
 }

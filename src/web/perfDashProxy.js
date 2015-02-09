@@ -19,7 +19,7 @@
         },
         metrics: config.dashboard.metrics,
         viz: config.dashboard.viz,
-        dim: config.dashboard.dim
+        dimensions: config.dashboard.dimensions
       };
 
       return $http.post('/api/perfdash', request)

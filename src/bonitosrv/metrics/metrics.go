@@ -44,9 +44,11 @@ func (metrics *Metrics) FromEsResponse(resp map[string]json.RawMessage,
 
 func (metrics *Metrics) RegisterAll() {
 	metrics.metrics = map[string]metric{
-		"volume":     volumeMetric{},
-		"percentile": percentileMetric{},
-		"errorsrate": errorsrateMetric{},
+		"volume":      volumeMetric{},
+		"percentile":  percentileMetric{},
+		"errorsrate":  errorsrateMetric{},
+		"cardinality": cardinalityMetric{},
+		"cardvolume":  cardvolumeMetric{},
 	}
 }
 

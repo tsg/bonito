@@ -205,7 +205,44 @@ var _ = Describe("PerfDashApi", func() {
 			resp, code, err := api.Query(&req)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(code).To(Equal(200))
-			Expect(json.Marshal(resp)).To(BeEquivalentTo(`{"metrics":{"percentile_50th":{"value":2000},"volume_avg":{"value":4.5}},"status":"ok"}`))
+			Expect(json.Marshal(resp)).To(BeEquivalentTo(`{"dim":{},"metrics":{"percentile_50th":{"value":2000},"volume_avg":{"value":4.5}},"status":"ok"}`))
+
+		})
+
+		It("should get a json with dimensions' metrics", func() {
+			req := PerfDashRequest{
+				Timerange: Timerange{
+					From: MustParseJsTime("2015-01-02T15:04:04.000Z"),
+					To:   MustParseJsTime("2015-01-02T15:04:06.000Z"),
+				},
+				Dimensions: []DimensionConfigRaw{
+					DimensionConfigRaw{
+						Name: "services",
+						Metrics: []ConfigRaw{
+							ConfigRaw{
+								Name: "services",
+								Type: "cardinality",
+								Config: json.RawMessage(`{
+									"field": "service"
+								}`),
+							},
+							ConfigRaw{
+								Name: "volume_per_service",
+								Type: "cardvolume",
+								Config: json.RawMessage(`{
+									"dimension_field": "service",
+									"count_field": "count"
+								}`),
+							},
+						},
+					},
+				},
+			}
+
+			resp, code, err := api.Query(&req)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(code).To(Equal(200))
+			Expect(json.Marshal(resp)).To(BeEquivalentTo(`{"dim":{"services":{"metrics":{"services":{"value":2},"volume_per_service":{"value":2.25}}}},"metrics":{},"status":"ok"}`))
 
 		})
 	})
