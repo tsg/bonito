@@ -65,7 +65,7 @@
     });
 
     it('should contain an area when type is "area"', function() {
-      var el = $compile('<bonito-linechart data="data" type="area" height="100"></bonito-linechart>')($scope);
+      var el = $compile('<bonito-linechart data="data" linetype="area" height="100"></bonito-linechart>')($scope);
       $scope.$digest();
       expect(el.find('path.line').length).toEqual(0);
       expect(el.find('path.area').length).toEqual(1);

@@ -21,12 +21,12 @@
         <div class="row">
           <div ng-repeat="viz in perfDash.dashboard.viz"
             class="col-md-6 {{viz.display.classes}}">
-            <bonito-panel panel-title="viz.display.title" ng-switch="viz.type">
+            <bonito-panel panel-title="viz.display.title" ng-switch="viz.disyplay.type">
               <bonito-linechart
                 ng-switch-when="linechart"
                 ylabel="{{viz.display.ylabel}}"
                 height="200"
-                type="{{viz.display.type}}"
+                linetype="{{viz.display.linetype}}"
                 datatype="{{viz.display.datatype}}"
                 data="viz.data">
               </bonito-linechart>

@@ -40,7 +40,7 @@
         };
 
         var ylabel = attrs.ylabel || '';
-        var type = attrs.type || 'line';
+        var linetype = attrs.linetype || 'line';
         var datatype = attrs.datatype || 'number';
 
         var formatterFunc;
@@ -110,7 +110,7 @@
           x.domain(d3.extent(data, function(d) { return d.ts; }));
           y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
-          if (type != 'area') {
+          if (linetype != 'area') {
             // line
             var line = d3.svg.line()
               .x(function(d) { return x(d.ts); })

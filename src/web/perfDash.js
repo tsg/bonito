@@ -23,57 +23,58 @@
       },
       viz: [{
         name: 'volume',
-        type: 'linechart',
+        type: 'volume-line',
         config: {
-          type: 'volume',
-          field: 'count',
+          count_field: 'count',
+          ts_field: 'timestamp'
         },
         display: {
+          type: 'linechart',
           title: 'Volume',
           ylabel: 'Requests/s',
           classes: 'bnt-volume-graph'
         }
       }, {
         name: 'errorsrate',
-        type: 'linechart',
+        type: 'errorsrate-line',
         config: {
-          type: 'errorsrate',
           status_field: 'status',
           ok_value: 'Ok',
           count_field: 'count'
         },
         display: {
+          type: 'linechart',
           ylabel: 'Errors/k',
           title: 'Errors rate',
-          type: 'area',
+          linetype: 'area',
           classes: 'errors bnt-errors-rate-graph'
         }
       }, {
         name: 'rt_histogram',
         type: 'histogram',
         display: {
+          type: 'histogram',
           title: 'Response time histogram',
           ylabel: 'Number of transactions',
           classes: 'bnt-responsetime-histogram',
           datatype: 'duration'
         },
         config: {
-          type: 'histogram',
-          rt_field: 'responsetime',
+          field: 'responsetime',
           count_field: 'count'
         }
       }, {
         name: 'rt_percentile',
-        type: 'linechart',
+        type: 'percentile-line',
         display: {
+          type: 'linechart',
           title: 'Response times: 99th percentile',
           ylabel: 'Response time 99th',
           classes: 'bnt-responsetime-99th',
           datatype: 'duration'
         },
         config: {
-          type: 'percentile',
-          rt_field: 'responsetime',
+          field: 'responsetime',
           percentile: 99
         }
       }],
