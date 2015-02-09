@@ -1,4 +1,4 @@
-package main
+package datetime
 
 import (
 	"encoding/json"

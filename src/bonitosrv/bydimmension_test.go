@@ -7,6 +7,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	"bonitosrv/datetime"
 	"bonitosrv/elasticsearch"
 	"bonitosrv/testdata"
 )
@@ -69,8 +70,8 @@ var _ = Describe("ByDimension API", func() {
 
 		It("should get", func() {
 			var req ByDimensionRequest
-			req.Timerange.From = MustParseJsTime("2015-01-02T15:04:04.000Z")
-			req.Timerange.To = MustParseJsTime("2015-01-02T15:04:06.000Z")
+			req.Timerange.From = datetime.MustParseJsTime("2015-01-02T15:04:04.000Z")
+			req.Timerange.To = datetime.MustParseJsTime("2015-01-02T15:04:06.000Z")
 			req.Metrics = []string{"volume", "rt_avg", "rt_max",
 				"rt_percentiles", "secondary_count", "errors_rate"}
 			req.Config.Percentiles = []float32{50, 99.995}
@@ -112,8 +113,8 @@ var _ = Describe("ByDimension API", func() {
 
 		It("should get error rate if only that is requested", func() {
 			var req ByDimensionRequest
-			req.Timerange.From = MustParseJsTime("2015-01-02T15:04:04.000Z")
-			req.Timerange.To = MustParseJsTime("2015-01-02T15:04:06.000Z")
+			req.Timerange.From = datetime.MustParseJsTime("2015-01-02T15:04:04.000Z")
+			req.Timerange.To = datetime.MustParseJsTime("2015-01-02T15:04:06.000Z")
 			req.Metrics = []string{"errors_rate"}
 
 			resp, _, err := api.Query(&req)
@@ -132,8 +133,8 @@ var _ = Describe("ByDimension API", func() {
 
 		It("should get 1.0 error rates when nothing is successful", func() {
 			var req ByDimensionRequest
-			req.Timerange.From = MustParseJsTime("2015-01-02T15:04:04.000Z")
-			req.Timerange.To = MustParseJsTime("2015-01-02T15:04:06.000Z")
+			req.Timerange.From = datetime.MustParseJsTime("2015-01-02T15:04:04.000Z")
+			req.Timerange.To = datetime.MustParseJsTime("2015-01-02T15:04:06.000Z")
 			req.Metrics = []string{"errors_rate"}
 			req.Config.Status_value_ok = "nothing"
 
@@ -164,8 +165,8 @@ var _ = Describe("ByDimension API", func() {
 			var req ByDimensionRequest
 
 			// request a two minutes interval, a point for each minute
-			req.Timerange.From = MustParseJsTime("2015-01-02T15:03:00.000Z")
-			req.Timerange.To = MustParseJsTime("2015-01-02T15:04:59.999Z")
+			req.Timerange.From = datetime.MustParseJsTime("2015-01-02T15:03:00.000Z")
+			req.Timerange.To = datetime.MustParseJsTime("2015-01-02T15:04:59.999Z")
 			req.Config.Histogram_points = 2
 			req.HistogramMetrics = []string{"volume"}
 
@@ -197,9 +198,9 @@ var _ = Describe("ByDimension API", func() {
 
 	Context("computeHistogramInterval", func() {
 		It("should return 15m for a 1 hour interval and 4 points", func() {
-			tr := Timerange{
-				From: MustParseJsTime("now-1h"),
-				To:   MustParseJsTime("now"),
+			tr := datetime.Timerange{
+				From: datetime.MustParseJsTime("now-1h"),
+				To:   datetime.MustParseJsTime("now"),
 			}
 			interval, str := computeHistogramInterval(&tr, 4)
 			Expect(str).To(Equal("900.000s"))
@@ -207,9 +208,9 @@ var _ = Describe("ByDimension API", func() {
 		})
 
 		It("should return 1m for a 1 hour interval and 60 points", func() {
-			tr := Timerange{
-				From: MustParseJsTime("now-1h"),
-				To:   MustParseJsTime("now"),
+			tr := datetime.Timerange{
+				From: datetime.MustParseJsTime("now-1h"),
+				To:   datetime.MustParseJsTime("now"),
 			}
 			interval, str := computeHistogramInterval(&tr, 60)
 			Expect(str).To(Equal("60.000s"))
@@ -218,24 +219,27 @@ var _ = Describe("ByDimension API", func() {
 	})
 
 	Context("computeRealSecondsInInterval on a two minutes time window, 1 minute interval", func() {
-		var tr Timerange
+		var tr datetime.Timerange
 		BeforeEach(func() {
-			tr.From = MustParseJsTime("2015-01-02T15:03:10.000Z")
-			tr.To = MustParseJsTime("2015-01-02T15:04:30.000Z")
+			tr.From = datetime.MustParseJsTime("2015-01-02T15:03:10.000Z")
+			tr.To = datetime.MustParseJsTime("2015-01-02T15:04:30.000Z")
 		})
 
 		It("should get smaller than 1 minute interval at the start", func() {
-			secs := computeRealSecondsInInterval(60, MustParseTime("2015-01-02T15:03:00.000Z"), &tr)
+			secs := computeRealSecondsInInterval(60,
+				datetime.MustParseTime("2015-01-02T15:03:00.000Z"), &tr)
 			Expect(secs).To(BeNumerically("~", 50.0))
 		})
 
 		It("should get smaller than 1 minute interval at the end", func() {
-			secs := computeRealSecondsInInterval(60, MustParseTime("2015-01-02T15:04:00.000Z"), &tr)
+			secs := computeRealSecondsInInterval(60,
+				datetime.MustParseTime("2015-01-02T15:04:00.000Z"), &tr)
 			Expect(secs).To(BeNumerically("~", 30.0))
 		})
 
 		It("should get exactly 1 minute in the middle", func() {
-			secs := computeRealSecondsInInterval(60, MustParseTime("2015-01-02T15:03:20.000Z"), &tr)
+			secs := computeRealSecondsInInterval(60,
+				datetime.MustParseTime("2015-01-02T15:03:20.000Z"), &tr)
 			Expect(secs).To(BeNumerically("~", 60.0))
 		})
 	})

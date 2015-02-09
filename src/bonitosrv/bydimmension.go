@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bonitosrv/datetime"
 	"bonitosrv/elasticsearch"
 	"encoding/json"
 	"fmt"
@@ -22,7 +23,7 @@ func NewByDimensionApi(index string) *ByDimensionApi {
 }
 
 type ByDimensionRequest struct {
-	Timerange        Timerange
+	Timerange        datetime.Timerange
 	Metrics          []string
 	HistogramMetrics []string `json:"histogram_metrics"`
 	Config           struct {
@@ -76,8 +77,8 @@ func (api *ByDimensionApi) setRequestDefaults(req *ByDimensionRequest) {
 	}
 
 	if req.Timerange.IsZero() {
-		req.Timerange.From = JsTime(time.Now().Add(-1 * time.Hour))
-		req.Timerange.To = JsTime(time.Now())
+		req.Timerange.From = datetime.JsTime(time.Now().Add(-1 * time.Hour))
+		req.Timerange.To = datetime.JsTime(time.Now())
 	}
 }
 
@@ -95,8 +96,8 @@ type PrimaryDimension struct {
 }
 
 type HistogramValue struct {
-	Ts    JsTime  `json:"ts"`
-	Value float32 `json:"value"`
+	Ts    datetime.JsTime `json:"ts"`
+	Value float32         `json:"value"`
 }
 
 // EsByDimensionReq is the structure that gets marshaled to JSON
@@ -180,7 +181,7 @@ func (api *ByDimensionApi) buildRequestAggs(req *ByDimensionRequest) (*MapStr, e
 // to the Elasticseach date_histogram field. For example, 613.234s is a valid
 // interval. The interval is computed in such a way so that there will be
 // approximately the given number of points in the histogram.
-func computeHistogramInterval(tr *Timerange, points int) (float32, string) {
+func computeHistogramInterval(tr *datetime.Timerange, points int) (float32, string) {
 
 	// the bucket interval in seconds (can be a float)
 	total_interval := time.Time(tr.To).Sub(time.Time(tr.From))
@@ -191,7 +192,7 @@ func computeHistogramInterval(tr *Timerange, points int) (float32, string) {
 // Returns the real number of seconds in a bucket returned by Elasticsearch.
 // This can be different from interval_secs for the first and last buckets,
 // which can be smaller.
-func computeRealSecondsInInterval(interval_secs float32, start_interval time.Time, tr *Timerange) float32 {
+func computeRealSecondsInInterval(interval_secs float32, start_interval time.Time, tr *datetime.Timerange) float32 {
 	// When dividing by the seconds, we have to be careful with
 	// the first and the last interval which can be shorter.
 	var from, to time.Time
@@ -356,7 +357,7 @@ func (api *ByDimensionApi) bucketToPrimary(req *ByDimensionRequest,
 					time.Time(bucket.Key_as_string), &req.Timerange)
 
 				values = append(values, HistogramValue{
-					Ts:    JsTime(bucket.Key_as_string),
+					Ts:    datetime.JsTime(bucket.Key_as_string),
 					Value: bucket.Volume.Value / bucket_secs,
 				})
 			}

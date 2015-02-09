@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bonitosrv/datetime"
 	"bonitosrv/elasticsearch"
 	"bonitosrv/metrics"
 	"bonitosrv/testdata"
@@ -175,9 +176,9 @@ var _ = Describe("PerfDashApi", func() {
 
 		It("should get a json with metrics", func() {
 			req := PerfDashRequest{
-				Timerange: Timerange{
-					From: MustParseJsTime("2015-01-02T15:04:04.000Z"),
-					To:   MustParseJsTime("2015-01-02T15:04:06.000Z"),
+				Timerange: datetime.Timerange{
+					From: datetime.MustParseJsTime("2015-01-02T15:04:04.000Z"),
+					To:   datetime.MustParseJsTime("2015-01-02T15:04:06.000Z"),
 				},
 				Metrics: []ConfigRaw{
 					ConfigRaw{
@@ -211,9 +212,9 @@ var _ = Describe("PerfDashApi", func() {
 
 		It("should get a json with dimensions' metrics", func() {
 			req := PerfDashRequest{
-				Timerange: Timerange{
-					From: MustParseJsTime("2015-01-02T15:04:04.000Z"),
-					To:   MustParseJsTime("2015-01-02T15:04:06.000Z"),
+				Timerange: datetime.Timerange{
+					From: datetime.MustParseJsTime("2015-01-02T15:04:04.000Z"),
+					To:   datetime.MustParseJsTime("2015-01-02T15:04:06.000Z"),
 				},
 				Dimensions: []DimensionConfigRaw{
 					DimensionConfigRaw{

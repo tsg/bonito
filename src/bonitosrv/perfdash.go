@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bonitosrv/datetime"
 	"bonitosrv/elasticsearch"
 	"bonitosrv/metrics"
 	"encoding/json"
@@ -17,7 +18,7 @@ type PerfDashApi struct {
 }
 
 type PerfDashRequest struct {
-	Timerange  Timerange
+	Timerange  datetime.Timerange
 	Metrics    []ConfigRaw
 	Viz        []ConfigRaw
 	Dimensions []DimensionConfigRaw
@@ -51,12 +52,12 @@ func (api *PerfDashApi) setRequestDefaults(req *PerfDashRequest) {
 		req.Config.Timestamp_field = "timestamp"
 	}
 	if req.Timerange.IsZero() {
-		req.Timerange.From = JsTime(time.Now().Add(-1 * time.Hour))
-		req.Timerange.To = JsTime(time.Now())
+		req.Timerange.From = datetime.JsTime(time.Now().Add(-1 * time.Hour))
+		req.Timerange.To = datetime.JsTime(time.Now())
 	}
 }
 
-func esBuildTimeFilter(tsField string, tr Timerange) MapStr {
+func esBuildTimeFilter(tsField string, tr datetime.Timerange) MapStr {
 	return MapStr{
 		"range": MapStr{
 			tsField: MapStr{
